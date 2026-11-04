@@ -40,7 +40,7 @@ Last updated: **2026-11-04** · Session: **2**
 |---|---|
 | 0. Product idea, feature list, design draft (HTML) | ✅ Done |
 | 1. Project documents (this folder) | ✅ Done |
-| 2. Environment check, SDK decision, scaffold | ⏳ **In progress.** Scaffolded, reset to a blank app, docs in place, typecheck passes. Left: ESLint setup + lint, Phase 3 package installs (§6 steps 7–8) |
+| 2. Environment check, SDK decision, scaffold | ✅ Done (2026-11-04). Blank app, docs, ESLint, Phase 3 packages installed; lint + typecheck pass |
 | 3. Foundations (theme, fonts, errors, storage, DB, query client) | ⬜ |
 | 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ⬜ |
 | 5. Data layer (API client, schemas, repositories, hooks) | ⬜ |
@@ -85,11 +85,26 @@ Last updated: **2026-11-04** · Session: **2**
 
 ## 5. Installed packages
 
-**None yet.** No project has been created. When you install something, add a row:
+Template packages come from the SDK 58 default template (see `package.json`). Added since:
 
 | Package | Version installed | Date | Confirmed by user | Notes |
 |---|---|---|---|---|
-| | | | | |
+| `eslint` (dev) | 9.39.5 (`^9.0.0`) | 2026-11-04 | ✅ | Added by `npx expo lint`. Expo chose v9, not npm-latest 10.14.0 |
+| `eslint-config-expo` (dev) | 58.0.4 | 2026-11-04 | ✅ | `eslint.config.js` (flat config) created |
+| `expo-sqlite` | 58.0.15 | 2026-11-04 | ✅ | Config plugin added to `app.json` |
+| `@react-native-async-storage/async-storage` | 2.2.0 | 2026-11-04 | ✅ | SDK 58 pin (npm latest 3.1.1) |
+| `@tanstack/react-query` | 5.105.3 | 2026-11-04 | ✅ | `npm install` |
+| `zod` | 4.6.7 | 2026-11-04 | ✅ | `npm install` |
+| `react-native-svg` | 15.16.0 | 2026-11-04 | ✅ | |
+| `@expo-google-fonts/bricolage-grotesque` | 0.4.1 | 2026-11-04 | ✅ | Weights 200–800. Imports like `BricolageGrotesque_800ExtraBold` |
+| `@expo-google-fonts/figtree` | 0.4.1 | 2026-11-04 | ✅ | Weights 300–900 (+ italics). Imports like `Figtree_400Regular` |
+| `expo-haptics` | 58.0.7 | 2026-11-04 | ✅ | |
+| `expo-network` | 58.0.4 | 2026-11-04 | ✅ | |
+
+`npm audit` reports 12 moderate vulnerabilities. Do **not** run `npm audit fix --force`, because it can break SDK pins. Review this at the QA phase.
+
+**Network quirk on the dev machine:** IPv6 to the npm registry hangs, so npm/npx time out (`ETIMEDOUT`). Fix: run them with
+`NODE_OPTIONS="--dns-result-order=ipv4first --network-family-autoselection-attempt-timeout=2000"`. Even then, downloads are slow (an install can take ~10 min).
 
 Planned (not installed): see `ARCHITECTURE.md` §4 for the full verified list.
 
@@ -105,8 +120,8 @@ Do these in order. Stop and ask where marked.
 4. ~~Docs into the project root~~ ✅ `ARCHITECTURE.md`, `DESIGN.md`, `PROGRESS.md` in the root, draft in `design-reference/`. Commit `chore: add project docs and design reference`.
 5. ~~`npm run reset-project`~~ ✅ Run with the "delete" option (no `app-example/`). Commit `chore: reset template to blank app`.
 6. Install VS Code extensions: ESLint, Prettier, Expo Tools, Error Lens (the template recommends Expo Tools in `.vscode/extensions.json`). *(User's machine; not checked.)*
-7. **Install the Phase 3 packages one group at a time, confirming each group with the user** (§2 policy): storage and DB (`expo-sqlite`, async-storage), data (`@tanstack/react-query`, `zod`), UI (`react-native-svg`, fonts, `expo-haptics`, `expo-network`). Record versions in §5.
-8. Run `npx expo lint` and `npx tsc --noEmit`; both must pass. Update this file. Commit. *(tsc ✅ passes on the blank app. ESLint is not installed yet: the first `npx expo lint` installs `eslint` + `eslint-config-expo`, so it needs the user's OK first.)*
+7. ~~Install the Phase 3 packages~~ ✅ All four groups confirmed and installed 2026-11-04 (see §5). Original note (§2 policy): storage and DB (`expo-sqlite`, async-storage), data (`@tanstack/react-query`, `zod`), UI (`react-native-svg`, fonts, `expo-haptics`, `expo-network`). Record versions in §5.
+8. Run `npx expo lint` and `npx tsc --noEmit`; both must pass. Update this file. Commit. ✅ Both pass (2026-11-04, after all installs).
 
 **Definition of done for Phase 2:** project runs on the Android phone, blank screen with the correct fonts or system fonts, git initialised, docs in place, lint and type-check pass, §5 filled in.
 
@@ -183,8 +198,9 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - `npx tsc --noEmit` passes. Lint not run yet (ESLint not installed).
 - Re-verified the planned package versions on 2026-11-04. All match `ARCHITECTURE.md` §4, and SDK 58 still pins async-storage 2.2.0 (npm latest is 3.1.1). Also found: `eslint-config-expo` 58.0.4, `eslint` 10.14.0.
 - Problem: `npm view` can't reach the registry from the assistant's sandboxed shell (curl works). Installs may need to run outside the sandbox or in the user's own terminal.
-- Nothing installed yet.
-- **Next action:** with the user's OK, set up ESLint, then install the Phase 3 groups one at a time (§6 step 7).
+- Fixed the npm problem: it is IPv6, not the sandbox (see the §5 network note). Installed ESLint plus all Phase 3 groups (user approved all four). Recorded in §5. One commit per group.
+- `npx expo lint` and `npx tsc --noEmit` both pass. **Phase 2 done.** (Re-open the app in Expo Go once to confirm it still loads after the installs.)
+- **Next action:** Phase 3 (Foundations). Start with `theme/tokens.ts` from `DESIGN.md`, and show the user the type-color swatch page for OD-5 before building on those colors.
 
 ### Session 1, 2026-11-04 (planning and design)
 - Chose the stack direction: Expo + Expo Router + TypeScript, TanStack Query, SQLite for cached API data, AsyncStorage for favorites/team/settings.
