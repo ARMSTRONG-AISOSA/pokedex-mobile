@@ -46,8 +46,8 @@ Last updated: **2026-11-05** · Session: **3**
 | 5. Data layer (API client, schemas, repositories, hooks) | ✅ Done 2026-11-04 (137 tests; SQLite checked on the user's phone) |
 | 6. Pokédex list screen | ✅ Done 2026-11-04 (checked on the user's phone) |
 | 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ✅ Done 2026-11-04 (checked on the user's phone). Extra: **About** section (see below) |
-| 8. Team builder, Saved, add-to-team sheet | ⏳ Built. Bug fixed 2026-11-05 (sheet closed itself after a fresh start). **Waiting on the user's full device check** |
-| 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ⬜ |
+| 8. Team builder, Saved, add-to-team sheet | ✅ Done 2026-11-05 (checked on both devices after the sheet fix) |
+| 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ⏳ Built 2026-11-05, spot-checked over adb on both devices. **Waiting on the user's device check** |
 | 10. Offline and error QA, accessibility, dark mode pass | ⬜ |
 | 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ⬜ |
 
@@ -213,12 +213,12 @@ Do these in order. Stop and ask where marked.
 4. A Pokémon you've never opened shows grey skeleton lines first, then the text fades in.
 
 **Phase 8, Team / Saved / Picker**
-*Built 2026-11-04 (session 2). Tick after the device check.*
-- [ ] Team tab: six slots (filled: tinted card + “×”; empty: dashed “Add Pokémon”), tip when empty, “Type weak spots” table over 18 types with “Needs cover” in words, summary sentence, “Average stats” bars, “Clear team”; save failures show “Couldn’t save your team. Try again.”
-- [ ] Add-to-team sheet (D-025): slides up (400 ms) over a dimmed background, search over all Pokémon, rows say “Add” or “On team” (disabled); Android back / tap outside / × close it (350 ms)
-- [ ] Saved tab = the list screen in “saved” mode: title “Saved”, count “N Pokémon saved”, empty “No saved Pokémon yet”
-- [ ] Domain: `teamSummary`, `averageStats` (tests)
-- [ ] Persistence across app restarts (team + favorites)
+*Built 2026-11-04 (session 2). Device check passed 2026-11-05 on both devices.*
+- [x] Team tab: six slots (filled: tinted card + “×”; empty: dashed “Add Pokémon”), tip when empty, “Type weak spots” table over 18 types with “Needs cover” in words, summary sentence, “Average stats” bars, “Clear team”; save failures show “Couldn’t save your team. Try again.”
+- [x] Add-to-team sheet (D-025): slides up (400 ms) over a dimmed background, search over all Pokémon, rows say “Add” or “On team” (disabled); Android back / tap outside / × close it (350 ms)
+- [x] Saved tab = the list screen in “saved” mode: title “Saved”, count “N Pokémon saved”, empty “No saved Pokémon yet”
+- [x] Domain: `teamSummary`, `averageStats` (tests)
+- [x] Persistence across app restarts (team + favorites)
 
 **Device check for Phase 8:**
 1. Team tab with an empty team: six dashed slots and the tip. Tap a slot: the sheet slides up; search “char”, tap Charizard: the sheet slides down and Charizard fills slot 1.
@@ -230,7 +230,23 @@ Do these in order. Stop and ask where marked.
 7. Close Expo Go fully and reopen: team and saved Pokémon are still there.
 
 **Phase 9, Motion and haptics**
-- [ ] Tab slide + indicator, detail parallax and a *visible* close animation, slot pop, shiny swap and sparkles, launch animation (once per cold start, skippable), haptics map, reduced-motion behavior
+*Built 2026-11-05 (session 3). Tick after the device check.*
+- [ ] Tab switch: the new tab slides in 40 px from its side while fading in (400 ms); the bar above the tabs slides to the new tab (380 ms) and the active icon lifts 2 px and grows to 1.1 (`features/navigation/tab-transitions.ts`, `tab-bar.tsx`)
+- [ ] Only the focused tab takes taps (`focus-gate.tsx`); found over adb: during the slide the tab you just left caught taps
+- [ ] Open detail: slides in from the right, the tabs underneath shift left and dim to 50%; Back plays it in reverse, visibly (D-027, `detail-dim.tsx`)
+- [ ] Slot pop: a Pokémon chosen in the sheet pops into its slot (.82 → 1, 500 ms, after 300 ms)
+- [ ] Launch animation (`features/launch/launch-animation.tsx`): ball drops, wobbles, splits with a flash, “Pokédex” wordmark, fade out (~2.4 s). Once per cold start, tap to skip, skipped with reduced motion. Splash colour in `app.json` is now `#13222b` (only visible in a real build; Expo Go shows its own loading screen)
+- [x] Already built in earlier phases: detail entrance, stat bars, shiny swap + sparkles, card press, sort arrow, sheet slide, skeleton shimmer
+- [x] Haptics map (DESIGN.md §9) audited: every call matches the table
+- [ ] Reduced motion: tabs cross-fade (150 ms), no launch animation, slot and sparkles fade instead of popping (sparkles fixed this phase)
+
+**Device check for Phase 9:**
+1. Close Expo Go fully and reopen: the dark launch screen plays (ball drop → wobble → flash → “Pokédex”) and fades into the list. Reopen from the background: it does **not** replay. Cold start again and tap during it: it skips.
+2. Tap Team, then Saved, then Pokédex: each new tab slides in from its side; the bar above the tab glides across; the icon lifts. Tap a card straight after switching: the right Pokémon opens.
+3. Open a Pokémon: it slides in from the right while the list moves left and dims. Back: the detail slides away and the list comes back undimmed. Same from a Team card.
+4. Add a Pokémon from the Team sheet: the sheet slides down and the new slot pops in.
+5. Turn on Android's “Remove animations” (Settings → Accessibility → Visibility enhancements, wording varies): no launch animation, tabs just fade, the slot fades in. Turn it off again.
+6. Haptics: tab switch, filters and sort tick lightly; save/add to team/shiny on give a “success” buzz; remove from team a firmer tap.
 
 **Phase 10, QA**
 - [ ] Airplane-mode test: visited Pokémon and their evolution chains open offline
@@ -263,13 +279,18 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 
 ## 9. Session log
 
-### Session 3, 2026-11-05 (adb device access, add-to-team bug)
+### Session 3, 2026-11-05 (adb device access, add-to-team bug, Phase 9 motion)
 - The user reported: (1) tab switches aren't smooth (planned for Phase 9), (2) tapping “Add Pokémon” on the Team tab did nothing after an app refresh, on both devices.
 - An attempt to reproduce (2) with Testing Library screen tests went badly (Reanimated 4 / Worklets Jest mocks wouldn't load; a hand-made mock hung). The user stopped it and asked for a cheaper way to see the app.
 - **Set up Wi-Fi adb** (`sudo apt install adb`, 34.0.4; phone: Developer options → Wireless debugging → pair with code → `adb connect IP:PORT`). Ports change after a phone restart; re-run `adb connect` with the new port. Now possible: `adb exec-out screencap -p` (screenshots), `adb shell input tap/text/keyevent` (drive the app), `adb logcat -s ReactNativeJS:V` (JS logs), `am start -d exp://LAPTOP-IP:8081` / `am force-stop host.exp.exponent` (open / fresh-restart Expo Go). Decision D-026.
 - **Bug (2) found and fixed with logs on the phone:** the picker kept its own “mounted” state alongside the parent's `visible`; after a fresh start it flipped back to unmounted ~0.2 s after opening (likely the render-time state pattern under React Compiler). Rewritten so the parent alone controls `visible`; the sheet animates in on open, and on close slides out first, then calls `onClose`. Verified on the Samsung: open after a fresh restart, Android back closes it, reopen, add, and the team survives a restart.
 - Removed the unfinished screen-test setup (`jest.setup.js`, test file, `package.json` Jest change). 163 unit tests still pass.
-- **Next action:** the user re-checks Phase 8 (§7) on both devices, then Phase 9 (smooth tab transitions first, then the rest of the motion list and the launch animation). Check each change on the phone with adb screenshots.
+- The user confirmed Phase 8 on both devices. **Phase 8 done.**
+- **Phase 9 built:** tab slide + fade and the sliding indicator/icon lift (via the js-tabs `sceneStyleInterpolator`/`transitionSpec`), detail push as native `ios_from_right` plus a dim layer over the tabs (D-027), slot pop, launch animation, splash colour `#13222b`, reduced-motion fixes (sparkles). Haptics already matched DESIGN.md §9.
+- **Bug found over adb while testing:** after switching tabs, the tab you just left stayed on top (invisible) for over a second and caught taps (tapping an empty spot on the Pokédex opened a Team member). Fixed with `FocusGate` (only the focused tab takes touches); re-tested on the Samsung.
+- Tip: a change to a `_layout.tsx` file may not hot-reload; force-stop and reopen Expo Go before judging it. To see fast animations over adb, temporarily multiply the durations in `theme/motion.ts` (adb screenshots come ~0.4 s apart), then put them back.
+- Spot-checked on both devices with adb: launch animation, tab slide, indicator, detail open/close (tabs undimmed after back), slot pop. 163 tests, tsc and lint pass.
+- **Next action:** the user runs the Phase 9 device check (§7) on both devices. Then Phase 10 (offline/error QA, accessibility, dark mode pass).
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
 - Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).
