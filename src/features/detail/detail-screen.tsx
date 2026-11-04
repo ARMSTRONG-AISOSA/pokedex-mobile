@@ -32,7 +32,7 @@ import { AboutSection, AboutSkeleton } from './about-section';
 import { ART_BOTTOM, ART_SIZE, DetailHero, HeroArtwork } from './detail-hero';
 import { EvolutionTree, EvolutionTreeSkeleton } from './evolution-tree';
 import { MatchupGroups } from './matchup-groups';
-import { StatBars, StatBarsSkeleton } from './stat-bars';
+import { StatBars, StatBarsSkeleton } from '@/components/ui/stat-bars';
 import { TeamButton } from './team-button';
 
 /**

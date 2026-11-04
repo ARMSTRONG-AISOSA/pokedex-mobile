@@ -24,8 +24,13 @@ import { useDexList } from './use-dex-list';
 
 const SKELETON_ITEMS = [1, 2, 3, 4, 5, 6] as const;
 
-/** The Pokédex tab (DESIGN.md §5.1). */
-export function PokedexScreen() {
+const COPY = {
+  all: { title: 'Pokédex', subtitle: 'Find a Pokémon, then follow its evolutions.' },
+  saved: { title: 'Saved', subtitle: 'Your favorite Pokémon, all in one place.' },
+} as const;
+
+/** The Pokédex tab (DESIGN.md §5.1), and with `mode="saved"` the Saved tab (§5.4). */
+export function PokedexScreen({ mode = 'all' }: { mode?: 'all' | 'saved' }) {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const { colors, scheme, text } = useTheme();
@@ -34,7 +39,8 @@ export function PokedexScreen() {
   const [type, setType] = useState<TypeName | 'all'>('all');
 
   const { key: sortKey, asc: ascending } = settings.sort;
-  const list = useDexList({ type, query, sortKey, ascending });
+  const savedMode = mode === 'saved';
+  const list = useDexList({ type, query, sortKey, ascending, only: savedMode ? favorites : undefined });
   const saved = new Set(favorites);
 
   // Two columns: screen width minus side padding and the gap between columns.
@@ -73,18 +79,16 @@ export function PokedexScreen() {
       ? 'Loading Pokémon…'
       : list.partial
         ? `${list.items.length} Pokémon. Sort and filters cover the ${list.loadedCount} loaded so far.`
-        : `${list.items.length} Pokémon`;
+        : `${list.items.length} Pokémon${savedMode ? ' saved' : ''}`;
 
   const header = (
     <View style={[styles.header, { paddingTop: insets.top + 22 }]}>
       <View style={[styles.top, styles.padded]}>
         <View style={styles.titles}>
           <Text style={[text.h1, { color: colors.ink }]} accessibilityRole="header">
-            Pokédex
+            {COPY[mode].title}
           </Text>
-          <Text style={[text.subtitle, styles.subtitle, { color: colors.muted }]}>
-            Find a Pokémon, then follow its evolutions.
-          </Text>
+          <Text style={[text.subtitle, styles.subtitle, { color: colors.muted }]}>{COPY[mode].subtitle}</Text>
         </View>
         <IconButton
           onPress={onToggleTheme}
@@ -155,7 +159,11 @@ export function PokedexScreen() {
         list.isLoadingMore ? <ActivityIndicator style={styles.footer} color={colors.muted} /> : <View style={styles.footer} />
       }
       ListEmptyComponent={
-        <EmptyState title="Nothing matches" message="Try another name, or clear the type filter." />
+        savedMode && favorites.length === 0 ? (
+          <EmptyState title="No saved Pokémon yet" message="Open a Pokémon and tap the heart to keep it here." />
+        ) : (
+          <EmptyState title="Nothing matches" message="Try another name, or clear the type filter." />
+        )
       }
       renderItem={({ item }) => (
         <View style={{ width: cardWidth }}>

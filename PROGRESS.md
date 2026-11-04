@@ -46,7 +46,7 @@ Last updated: **2026-11-04** · Session: **2**
 | 5. Data layer (API client, schemas, repositories, hooks) | ✅ Done 2026-11-04 (137 tests; SQLite checked on the user's phone) |
 | 6. Pokédex list screen | ✅ Done 2026-11-04 (checked on the user's phone) |
 | 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ✅ Done 2026-11-04 (checked on the user's phone). Extra: **About** section (see below) |
-| 8. Team builder, Saved, add-to-team sheet | ⬜ |
+| 8. Team builder, Saved, add-to-team sheet | ⏳ Built; tsc, lint, 163 tests, Android bundle pass. **Waiting on a device check** |
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ⬜ |
 | 10. Offline and error QA, accessibility, dark mode pass | ⬜ |
 | 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ⬜ |
@@ -213,7 +213,21 @@ Do these in order. Stop and ask where marked.
 4. A Pokémon you've never opened shows grey skeleton lines first, then the text fades in.
 
 **Phase 8, Team / Saved / Picker**
-- [ ] Six slots, picker sheet, remove, clear, weak-spot table, average stats; Saved grid; persistence across app restarts; disabled add when full
+*Built 2026-11-04 (session 2). Tick after the device check.*
+- [ ] Team tab: six slots (filled: tinted card + “×”; empty: dashed “Add Pokémon”), tip when empty, “Type weak spots” table over 18 types with “Needs cover” in words, summary sentence, “Average stats” bars, “Clear team”; save failures show “Couldn’t save your team. Try again.”
+- [ ] Add-to-team sheet (D-025): slides up (400 ms) over a dimmed background, search over all Pokémon, rows say “Add” or “On team” (disabled); Android back / tap outside / × close it (350 ms)
+- [ ] Saved tab = the list screen in “saved” mode: title “Saved”, count “N Pokémon saved”, empty “No saved Pokémon yet”
+- [ ] Domain: `teamSummary`, `averageStats` (tests)
+- [ ] Persistence across app restarts (team + favorites)
+
+**Device check for Phase 8:**
+1. Team tab with an empty team: six dashed slots and the tip. Tap a slot: the sheet slides up; search “char”, tap Charizard: the sheet slides down and Charizard fills slot 1.
+2. The table now shows Rock with Weak 1 and “Needs cover”; the sentence lists the weak types and ends “Based on 1 of 6 Pokémon.” Average stats match Charizard's stats.
+3. Open the sheet again: Charizard's row is greyed out and says “On team”. Android back closes the sheet.
+4. Fill all six: no empty slots left and the sentence has no “Based on” part. Tap “×” on one: it disappears. “Clear team” empties everything.
+5. Tap a team card: its detail screen opens.
+6. Saved tab: hearts you saved earlier appear here; search and type chips work within them. Unsave everything: “No saved Pokémon yet”.
+7. Close Expo Go fully and reopen: team and saved Pokémon are still there.
 
 **Phase 9, Motion and haptics**
 - [ ] Tab slide + indicator, detail parallax and a *visible* close animation, slot pop, shiny swap and sparkles, launch animation (once per cold start, skippable), haptics map, reduced-motion behavior
@@ -280,7 +294,10 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - No component tests yet (provider/mocking setup is still to do); covered by the device check.
 - The user confirmed the Phase 7 device check passed. **Phase 7 done.**
 - **New feature (user request):** an **About** section on the detail screen. The user added it to the HTML draft (committed as `design: add About section…`). Built: `domain/about.ts` (+ `parentOf` in evolution.ts), GraphQL `fetchAbout`/`toAbout`, `data/db/aboutRepo.ts`, migration 3 (`pokemon_about`), `useAbout`, `features/detail/about-section.tsx`. DESIGN.md §5.2 and ARCHITECTURE.md §7 updated; D-024.
-- **Next action:** device check for the About section (§7 “Phase 7b”), then Phase 8 (Team, Saved, add-to-team sheet).
+- The user confirmed the About section works. **Phase 7b done.**
+- **Phase 8 built:** `domain/team.ts` (+ tests), `useTeamMembers`, `features/team/*` (team-screen, team-slot, weak-spot-table, picker-sheet), Saved mode in `PokedexScreen`, `StatBars` moved to `components/ui` (with `showTotal`). Placeholder screen removed. D-025 (picker as Modal).
+- **Next action:** Phase 8 device check (§7), then Phase 9 (motion polish + the launch animation the user asked about).
+- *(Earlier:)* device check for the About section (§7 “Phase 7b”), then Phase 8 (Team, Saved, add-to-team sheet).
 - *(Earlier:)* Phase 7 device check (§7), then Phase 8 (Team, Saved, add-to-team sheet).
 - *(Earlier:)* Phase 7 (detail screen), unless the user wants the launch animation pulled forward.
 - *(Earlier:)* Phase 6 device check (§7), then Phase 7 (detail screen).

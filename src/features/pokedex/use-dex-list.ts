@@ -3,7 +3,12 @@ import { usePokemonPages } from '@/data/queries/usePokemonPages';
 import { filterPokemon, sortPokemon, type DexFilter, type SortKey } from '@/domain/sorting';
 import type { Pokemon } from '@/domain/types';
 
-type Options = DexFilter & { sortKey: SortKey; ascending: boolean };
+type Options = DexFilter & {
+  sortKey: SortKey;
+  ascending: boolean;
+  /** Only these ids (the Saved tab). */
+  only?: readonly number[];
+};
 
 export type DexList = {
   status: 'loading' | 'error' | 'ready';
@@ -24,13 +29,14 @@ export type DexList = {
  * The list screen's data: every Pokémon from the one-request summary (D-021),
  * or page by page if that fails, then filtered and sorted.
  */
-export function useDexList({ type, query, sortKey, ascending }: Options): DexList {
+export function useDexList({ type, query, sortKey, ascending, only }: Options): DexList {
   const all = useAllPokemon();
   const fallback = all.isError;
   const pages = usePokemonPages({ enabled: fallback });
 
   const source: Pokemon[] | undefined = all.data ?? (fallback ? pages.data?.pages.flatMap((p) => p.items) : undefined);
-  const items = source ? sortPokemon(filterPokemon(source, { type, query }), sortKey, ascending) : [];
+  const scoped = source && only ? source.filter((p) => only.includes(p.id)) : source;
+  const items = scoped ? sortPokemon(filterPokemon(scoped, { type, query }), sortKey, ascending) : [];
 
   const status = source ? 'ready' : fallback && pages.isError ? 'error' : 'loading';
 

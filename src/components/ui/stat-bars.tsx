@@ -25,7 +25,7 @@ const ROWS: { key: keyof Stats; label: string }[] = [
 const SCALE_MAX = 150;
 
 /** Six stat bars plus the total. Bars grow from 0 when they appear (DESIGN.md §7). */
-export function StatBars({ stats, color }: { stats: Stats; color: string }) {
+export function StatBars({ stats, color, showTotal = true }: { stats: Stats; color: string; showTotal?: boolean }) {
   const { colors, text } = useTheme();
   return (
     <View>
@@ -38,10 +38,12 @@ export function StatBars({ stats, color }: { stats: Stats; color: string }) {
           </View>
         ))}
       </View>
-      <View style={[styles.total, { borderTopColor: colors.line }]}>
-        <Text style={[text.label, { color: colors.ink }]}>Total</Text>
-        <Text style={[text.labelStrong, styles.totalValue, { color: colors.ink }]}>{statTotal(stats)}</Text>
-      </View>
+      {showTotal ? (
+        <View style={[styles.total, { borderTopColor: colors.line }]}>
+          <Text style={[text.label, { color: colors.ink }]}>Total</Text>
+          <Text style={[text.labelStrong, styles.totalValue, { color: colors.ink }]}>{statTotal(stats)}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
