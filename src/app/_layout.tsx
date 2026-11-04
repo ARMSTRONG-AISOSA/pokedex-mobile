@@ -5,12 +5,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
 import { useEffect, useState } from 'react';
-import { useColorScheme, View } from 'react-native';
+import { StyleSheet, useColorScheme, View } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 
 import { ErrorState } from '@/components/ui/error-state';
 import { getDatabase } from '@/data/db/database';
 import { queryClient } from '@/data/queries/queryClient';
 import { UserDataProvider, useUserData } from '@/data/storage/user-data-provider';
+import { LaunchAnimation, shouldPlayLaunch } from '@/features/launch/launch-animation';
 import { errorCopy } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { palettes } from '@/theme/tokens';
@@ -57,6 +59,9 @@ function AppShell() {
   const { ready: userDataReady } = useUserData();
   const [databaseChecked, setDatabaseChecked] = useState(false);
   const { scheme, colors } = useTheme();
+  const reduceMotion = useReducedMotion();
+  // Once per cold start; skipped with reduced motion (DESIGN.md §5.6).
+  const [launching, setLaunching] = useState(() => shouldPlayLaunch() && !reduceMotion);
 
   useEffect(() => {
     // Resolves to null if the database can't open; the app still runs without the cache.
@@ -83,12 +88,18 @@ function AppShell() {
   if (!appReady) return null;
 
   return (
-    <>
+    <View style={styles.root}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="pokemon/[id]" options={{ animation: 'slide_from_right' }} />
+        {/* Detail slides over the tabs, which shift left; DetailDim fades them (D-027). */}
+        <Stack.Screen name="pokemon/[id]" options={{ animation: 'ios_from_right' }} />
       </Stack>
-    </>
+      {launching ? <LaunchAnimation onDone={() => setLaunching(false)} /> : null}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+});

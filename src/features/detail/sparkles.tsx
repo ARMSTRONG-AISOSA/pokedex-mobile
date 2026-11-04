@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
+  useReducedMotion,
   useSharedValue,
   withDelay,
   withTiming,
@@ -33,15 +34,25 @@ export function Sparkles({ size }: { size: number }) {
 }
 
 function Sparkle({ size, left, top, delay }: { size: number; left: number; top: number; delay: number }) {
+  const reduceMotion = useReducedMotion();
   const progress = useSharedValue(0);
   useEffect(() => {
-    progress.set(withDelay(delay, withTiming(1, { duration: duration.sparkle, easing: ease.overshoot })));
-  }, [delay, progress]);
+    progress.set(
+      reduceMotion
+        ? withTiming(1, { duration: duration.reducedFade })
+        : withDelay(delay, withTiming(1, { duration: duration.sparkle, easing: ease.overshoot })),
+    );
+  }, [delay, progress, reduceMotion]);
 
-  const style = useAnimatedStyle(() => ({
-    opacity: Math.min(1, progress.value * 2),
-    transform: [{ scale: progress.value }, { rotate: `${(1 - progress.value) * -90}deg` }],
-  }));
+  // Reduced motion: a plain fade, no pop or twist.
+  const style = useAnimatedStyle(() =>
+    reduceMotion
+      ? { opacity: progress.value }
+      : {
+          opacity: Math.min(1, progress.value * 2),
+          transform: [{ scale: progress.value }, { rotate: `${(1 - progress.value) * -90}deg` }],
+        },
+  );
 
   return (
     <Animated.View style={[{ position: 'absolute', left: left - size / 2, top: top - size / 2 }, style]}>

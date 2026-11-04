@@ -27,6 +27,8 @@ export function TeamScreen() {
   const { members, error, retry } = useTeamMembers(team);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  // The Pokémon just chosen in the sheet; its slot pops in (DESIGN.md §7).
+  const [poppedId, setPoppedId] = useState<number | null>(null);
 
   const save = (next: number[]) => {
     setSaveError(null);
@@ -40,6 +42,7 @@ export function TeamScreen() {
   const pick = (pokemon: Pokemon) => {
     if (team.length >= TEAM_SIZE || team.includes(pokemon.id)) return;
     haptic('success');
+    setPoppedId(pokemon.id);
     save([...team, pokemon.id]);
   };
   const remove = (id: number) => {
@@ -66,7 +69,13 @@ export function TeamScreen() {
     const member = id !== undefined ? byId.get(id) : undefined;
     slots.push(
       member ? (
-        <FilledSlot key={member.id} pokemon={member} onOpen={() => open(member.id)} onRemove={() => remove(member.id)} />
+        <FilledSlot
+          key={member.id}
+          pokemon={member}
+          pop={member.id === poppedId}
+          onOpen={() => open(member.id)}
+          onRemove={() => remove(member.id)}
+        />
       ) : id !== undefined ? (
         <View key={`loading-${id}`} style={[styles.loadingSlot, { backgroundColor: colors.field }]} />
       ) : (

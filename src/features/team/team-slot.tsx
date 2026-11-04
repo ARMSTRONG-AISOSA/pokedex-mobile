@@ -1,25 +1,60 @@
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { TypePill } from '@/components/ui/type-pill';
 import { displayName, formatDexNumber } from '@/domain/names';
 import type { Pokemon } from '@/domain/types';
 import { Artwork } from '@/features/pokedex/pokemon-card';
 import { mix, withAlpha } from '@/theme/color';
+import { duration, ease } from '@/theme/motion';
 import { useTheme } from '@/theme/useTheme';
 
 type FilledProps = {
   pokemon: Pokemon;
   onOpen: () => void;
   onRemove: () => void;
+  /** True for a Pokémon just chosen in the add sheet: the slot pops in once. */
+  pop?: boolean;
 };
 
 /** A team member (DESIGN.md §5.3): tinted card with a round "×" to remove it. */
-export function FilledSlot({ pokemon, onOpen, onRemove }: FilledProps) {
+export function FilledSlot({ pokemon, onOpen, onRemove, pop = false }: FilledProps) {
   const { colors, typeColors, text } = useTheme();
   const tint = typeColors[pokemon.types[0]].c;
   const name = displayName(pokemon.name);
+
+  // Slot pop (DESIGN.md §7): scale .82 → 1 and fade in while the sheet slides away.
+  // Decided once, when the slot first appears, so later renders never replay it.
+  const reduceMotion = useReducedMotion();
+  const [popOnMount] = useState(pop);
+  const appear = useSharedValue(popOnMount ? 0 : 1);
+  useEffect(() => {
+    if (!popOnMount) return;
+    appear.set(
+      reduceMotion
+        ? withTiming(1, { duration: duration.reducedFade })
+        : withDelay(300, withTiming(1, { duration: duration.slotPop, easing: ease.overshoot })),
+    );
+  }, [popOnMount, appear, reduceMotion]);
+  const appearStyle = useAnimatedStyle(() => ({
+    opacity: Math.min(1, appear.value),
+    transform: reduceMotion ? [] : [{ scale: 0.82 + 0.18 * appear.value }],
+  }));
+
   return (
-    <View style={[styles.slot, { backgroundColor: mix(tint, colors.surface, 16), borderColor: mix(tint, colors.line, 30), borderWidth: 1 }]}>
+    <Animated.View
+      style={[
+        styles.slot,
+        { backgroundColor: mix(tint, colors.surface, 16), borderColor: mix(tint, colors.line, 30), borderWidth: 1 },
+        appearStyle,
+      ]}>
       <Pressable onPress={onOpen} accessibilityRole="button" accessibilityLabel={`Open ${name}`} style={styles.main}>
         <Text style={[text.dexNumber, { color: colors.muted }]}>{formatDexNumber(pokemon.id)}</Text>
         <View style={styles.art}>
@@ -45,7 +80,7 @@ export function FilledSlot({ pokemon, onOpen, onRemove }: FilledProps) {
         ]}>
         <Text style={[styles.removeText, { color: colors.ink }]}>×</Text>
       </Pressable>
-    </View>
+    </Animated.View>
   );
 }
 
