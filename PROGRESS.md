@@ -41,7 +41,7 @@ Last updated: **2026-11-04** · Session: **2**
 | 0. Product idea, feature list, design draft (HTML) | ✅ Done |
 | 1. Project documents (this folder) | ✅ Done |
 | 2. Environment check, SDK decision, scaffold | ✅ Done (2026-11-04). Blank app, docs, ESLint, Phase 3 packages installed; lint + typecheck pass |
-| 3. Foundations (theme, fonts, errors, storage, DB, query client) | ⬜ |
+| 3. Foundations (theme, fonts, errors, storage, DB, query client) | ⏳ Code written; lint, typecheck and Android bundle pass. **Waiting on a device check** (rule 7) |
 | 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ⬜ |
 | 5. Data layer (API client, schemas, repositories, hooks) | ⬜ |
 | 6. Pokédex list screen | ⬜ |
@@ -61,7 +61,7 @@ Last updated: **2026-11-04** · Session: **2**
 | OD-2 | How to fill the list (details per card) without hammering PokéAPI? | See `ARCHITECTURE.md` §7 "Open data question" | Start with 20 per page + limited concurrency + SQLite cache; revisit if slow |
 | OD-3 | Custom tab bar vs Expo Router `NativeTabs` | Design uses a custom sliding indicator | Custom first (matches the approved design) |
 | OD-4 | Keep AsyncStorage next to SQLite, or use `expo-sqlite/kv-store` for everything small? | One fewer dependency with kv-store | Keep AsyncStorage for now (user agreed to both earlier); revisit |
-| OD-5 | Approve the 9 proposed type colors (fighting, ground, rock, bug, ghost, steel, ice, dragon, fairy) | Contrast-checked. Swatch page: `design-reference/type-colors.html` (shown 2026-11-04). Round 1: the user asked for Fighting → brick red `#c03028`, Ground → `#9a6b3f`, and Fairy moved away from Psychic (Fairy changed, since Psychic was already approved). Revised in `DESIGN.md` §2.2 | Waiting on the user's final OK |
+| ~~OD-5~~ | **RESOLVED 2026-11-04: all 18 type colors approved** (after revising fighting, ground, fairy). In `src/theme/tokens.ts`. *(Original: approve the 9 proposed type colors)* | Contrast-checked. Swatch page: `design-reference/type-colors.html` (shown 2026-11-04). Round 1: the user asked for Fighting → brick red `#c03028`, Ground → `#9a6b3f`, and Fairy moved away from Psychic (Fairy changed, since Psychic was already approved). Revised in `DESIGN.md` §2.2 | Done |
 | OD-6 | App name, Android package id (e.g. `com.<name>.pokedex`), icon | Not discussed | Ask once before the first EAS build |
 | OD-7 | GitHub repo name and README approach | Not discussed | Ask at the release phase |
 
@@ -130,13 +130,16 @@ Do these in order. Stop and ask where marked.
 ## 7. Phase checklists (acceptance criteria)
 
 **Phase 3, Foundations**
+*All written 2026-11-04 (session 2). Tick each one once it's checked on the phone, or covered by a test after jest-expo is installed.*
 - [ ] `theme/tokens.ts`, `typography.ts`, `motion.ts`, `color.ts` (`mix()`), `useTheme()` returning light/dark by system setting or override
-- [ ] Fonts load; splash held until fonts + storage are ready
-- [ ] `lib/errors.ts` (`AppError`), `lib/logger.ts`, `lib/haptics.ts`
-- [ ] `data/storage/kv.ts` with zod-validated reads and safe fallbacks; favorites/team/settings modules
+- [ ] Fonts load; splash held until fonts + storage are ready (+ DB opened)
+- [ ] `lib/errors.ts` (`AppError`, `errorCopy()`), `lib/logger.ts`, `lib/haptics.ts`
+- [ ] `data/storage/kv.ts` with zod-validated reads and safe fallbacks; favorites/team/settings modules; `user-data-provider.tsx` (context, optimistic save with rollback)
 - [ ] `data/db/database.ts` + migrations using `PRAGMA user_version`; app still works if DB open fails
-- [ ] `data/queries/queryClient.ts` with the retry rules from `ARCHITECTURE.md` §8.3
-- [ ] Root `ErrorBoundary`
+- [ ] `data/queries/queryClient.ts` with the retry rules from `ARCHITECTURE.md` §8.3, `onlineManager` wired to `expo-network`
+- [ ] Root `ErrorBoundary` (uses `components/ui/error-state.tsx`)
+
+**Device check for Phase 3** (temporary test screen in `src/app/index.tsx`): title in Bricolage, subtitle in Figtree; 18 pills + 18 headers in the right colors; the theme button cycles system → light → dark with a haptic tick; the chosen theme **survives a full app restart**; no red error screens.
 
 **Phase 4, Domain (pure TypeScript, tests first)**
 - [ ] `typeChart.ts`: all 18 types, dual-type product. Tests: Charizard (4× Rock, 0× Ground), Umbreon (0× Psychic), Eevee (no weaknesses in the 9-type draft but Fighting 2× in real chart)
@@ -203,7 +206,12 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - The user's internet is slow on 2026-11-04 and should improve around 03:00–07:00 on 2026-11-05. Until then, keep big downloads to a minimum.
 - Added `design-reference/type-colors.html` (OD-5 swatch page: 9 approved + 9 proposed type colors, light and dark). I noted that Fighting≈Fire and Ground≈Electric (deep colors) look alike. The user asked for changes. Revised Fighting (`#d64236`/`#c03028`), Ground (`#d4a065`/`#9a6b3f`) and Fairy (`#e391d4`/`#a3449a`) in `DESIGN.md` and the swatch page.
 - Tip: the draft can be screenshotted offline with Playwright's headless Chromium (`~/.cache/ms-playwright/chromium_headless_shell-*/…/chrome-headless-shell --screenshot=out.png --window-size=412,915 file://…`).
-- **Next action:** Phase 3 (Foundations). Start with `theme/tokens.ts` from `DESIGN.md`, and show the user the type-color swatch page for OD-5 before building on those colors.
+- OD-5 resolved: the user approved all 18 type colors.
+- **Phase 3 code written:** `src/theme/*`, `src/lib/*`, `src/data/storage/*`, `src/data/db/*`, `src/data/queries/queryClient.ts`, `src/components/ui/error-state.tsx`, new root `_layout.tsx` (providers, font + data + DB splash gate, `ErrorBoundary`, status bar, root background) and a temporary test screen. APIs checked against the installed SDK 58 type definitions, not memory.
+- Choices made while building (small, no decision-log row needed): fonts are imported per weight (`@expo-google-fonts/figtree/400Regular`), so only 5 font files are bundled; `lib/haptics` keeps an on/off flag that the settings provider syncs, so `lib` doesn't import from `data`; the user-data context lives in `data/storage/user-data-provider.tsx`.
+- Checks: `npx tsc --noEmit` ✅, `npx expo lint` ✅, `npx expo export --platform android` ✅ (bundle builds).
+- Test tooling checked (not installed): `jest-expo` ~58.0.14 (SDK pin; peers jest ^29||^30, `@react-native/jest-preset` ^0.88.1), `jest` 30.5.2, `@testing-library/react-native` 14.1.0 (new peer: `test-renderer` ^1.0.0), `@types/jest` 30.0.0.
+- **Next action:** the user runs the Phase 3 device check (§7). Then, with the user's OK, install the test tooling and start Phase 4 (domain logic, tests first). Also worth noting: the splash background in `app.json` is still the template blue `#208AEF`; change it to `#13222b` in Phase 9 with the launch animation. Start with `theme/tokens.ts` from `DESIGN.md`, and show the user the type-color swatch page for OD-5 before building on those colors.
 
 ### Session 1, 2026-11-04 (planning and design)
 - Chose the stack direction: Expo + Expo Router + TypeScript, TanStack Query, SQLite for cached API data, AsyncStorage for favorites/team/settings.
