@@ -2,7 +2,7 @@
 
 > **Any AI assistant or developer picking this project up: read this file top to bottom first.** Then read `ARCHITECTURE.md` (how it is built) and `DESIGN.md` (how it looks and moves). Update this file before you stop working.
 
-Last updated: **2026-11-04** · Session: **1**
+Last updated: **2026-11-04** · Session: **2**
 
 ---
 
@@ -26,6 +26,7 @@ Last updated: **2026-11-04** · Session: **1**
 | Audience | Portfolio reviewers and interviewers; the user must be able to explain every part |
 | Data | PokéAPI (free, no key, fair use = cache locally) |
 | Working name | "Pokédex" (final app name and Android package id not chosen yet, see OD-6) |
+| Project folder | `pokedex-mobile` (git branch `master`) |
 | Developer | Experienced with JavaScript, TypeScript, React, Next.js. New to React Native |
 | Dev machine | Linux Mint PC, VS Code |
 | Test device | Android phone (no iPhone) |
@@ -39,7 +40,7 @@ Last updated: **2026-11-04** · Session: **1**
 |---|---|
 | 0. Product idea, feature list, design draft (HTML) | ✅ Done |
 | 1. Project documents (this folder) | ✅ Done |
-| 2. Environment check, SDK decision, scaffold | ⏳ **Ready to start.** Node v24.19.0 OK, SDK 58 chosen, phone Expo Go shows SDK 58. Project not created yet |
+| 2. Environment check, SDK decision, scaffold | ⏳ **In progress.** Scaffolded, reset to a blank app, docs in place, typecheck passes. Left: ESLint setup + lint, Phase 3 package installs (§6 steps 7–8) |
 | 3. Foundations (theme, fonts, errors, storage, DB, query client) | ⬜ |
 | 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ⬜ |
 | 5. Data layer (API client, schemas, repositories, hooks) | ⬜ |
@@ -98,14 +99,14 @@ Planned (not installed): see `ARCHITECTURE.md` §4 for the full verified list.
 
 Do these in order. Stop and ask where marked.
 
-1. ~~Check the machine.~~ ✅ `node -v` = **v24.19.0** (supported). Still to note: `npm -v` and `git --version`.
+1. ~~Check the machine.~~ ✅ Node **v24.19.0**, npm **11.17.0**, git **2.43.0**.
 2. ~~Resolve OD-1~~ ✅ Done: the user's phone Expo Go shows SDK 58.
-3. **Scaffold** (SDK 58 is chosen): `npx create-expo-app@latest pokedex --template default@sdk-58` (or the SDK 57 equivalent if chosen). Run `cd pokedex && npx expo start` and confirm the template runs on the phone **before changing anything**.
-4. Copy this folder's `ARCHITECTURE.md`, `DESIGN.md`, `PROGRESS.md` and `design-reference/` into the project root. Make the first git commit (`chore: scaffold Expo SDK 58 project`).
-5. Run `npm run reset-project` (choose to move the demo into `app-example/`, then delete it later). Confirm the blank app still runs. Commit.
-6. Open VS Code extensions: ESLint, Prettier, Expo Tools, Error Lens (the template recommends Expo Tools in `.vscode/extensions.json`).
+3. ~~Scaffold~~ ✅ Created as `pokedex-mobile` (create-expo 5.1.7, `expo ~58.0.23`). User confirmed the template ran on the phone.
+4. ~~Docs into the project root~~ ✅ `ARCHITECTURE.md`, `DESIGN.md`, `PROGRESS.md` in the root, draft in `design-reference/`. Commit `chore: add project docs and design reference`.
+5. ~~`npm run reset-project`~~ ✅ Run with the "delete" option (no `app-example/`). Commit `chore: reset template to blank app`.
+6. Install VS Code extensions: ESLint, Prettier, Expo Tools, Error Lens (the template recommends Expo Tools in `.vscode/extensions.json`). *(User's machine; not checked.)*
 7. **Install the Phase 3 packages one group at a time, confirming each group with the user** (§2 policy): storage and DB (`expo-sqlite`, async-storage), data (`@tanstack/react-query`, `zod`), UI (`react-native-svg`, fonts, `expo-haptics`, `expo-network`). Record versions in §5.
-8. Run `npx expo lint` and `npx tsc --noEmit`; both must pass. Update this file. Commit.
+8. Run `npx expo lint` and `npx tsc --noEmit`; both must pass. Update this file. Commit. *(tsc ✅ passes on the blank app. ESLint is not installed yet: the first `npx expo lint` installs `eslint` + `eslint-config-expo`, so it needs the user's OK first.)*
 
 **Definition of done for Phase 2:** project runs on the Android phone, blank screen with the correct fonts or system fonts, git initialised, docs in place, lint and type-check pass, §5 filled in.
 
@@ -174,6 +175,16 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 ---
 
 ## 9. Session log
+
+### Session 2, 2026-11-04 (docs in place, blank app committed)
+- Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).
+- Commits: `chore: add project docs and design reference`, `chore: reset template to blank app`. Added `.claude/settings.local.json` to `.gitignore` (personal settings).
+- The user confirmed the template ran on the Android phone before the reset.
+- `npx tsc --noEmit` passes. Lint not run yet (ESLint not installed).
+- Re-verified the planned package versions on 2026-11-04. All match `ARCHITECTURE.md` §4, and SDK 58 still pins async-storage 2.2.0 (npm latest is 3.1.1). Also found: `eslint-config-expo` 58.0.4, `eslint` 10.14.0.
+- Problem: `npm view` can't reach the registry from the assistant's sandboxed shell (curl works). Installs may need to run outside the sandbox or in the user's own terminal.
+- Nothing installed yet.
+- **Next action:** with the user's OK, set up ESLint, then install the Phase 3 groups one at a time (§6 step 7).
 
 ### Session 1, 2026-11-04 (planning and design)
 - Chose the stack direction: Expo + Expo Router + TypeScript, TanStack Query, SQLite for cached API data, AsyncStorage for favorites/team/settings.

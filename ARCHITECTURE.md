@@ -130,7 +130,7 @@ Versions in the right column are what to expect from `npx expo install` / the SD
 Follows the SDK 58 template: **`src/`** holds all code, and **only route files live in `src/app/`**.
 
 ```
-pokedex/
+pokedex-mobile/
 ├─ ARCHITECTURE.md  DESIGN.md  PROGRESS.md
 ├─ design-reference/pokedex-design.html     # interactive HTML draft (source of truth for look and feel)
 ├─ app.json  package.json  tsconfig.json
