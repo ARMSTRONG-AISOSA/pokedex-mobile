@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -28,7 +28,9 @@ import { useTheme } from '@/theme/useTheme';
 type Props = {
   visible: boolean;
   teamIds: readonly number[];
+  /** Called after the closing slide has finished; the parent then sets `visible` to false. */
   onClose: () => void;
+  /** Save the choice; the sheet closes itself afterwards. */
   onPick: (pokemon: Pokemon) => void;
 };
 
@@ -42,32 +44,38 @@ export function PickerSheet({ visible, teamIds, onClose, onPick }: Props) {
   const insets = useSafeAreaInsets();
   const { colors, text } = useTheme();
   const reduceMotion = useReducedMotion();
-  const [mounted, setMounted] = useState(visible);
   const [query, setQuery] = useState('');
-  const [previousVisible, setPreviousVisible] = useState(visible);
   const progress = useSharedValue(0);
+  // Ignore extra taps while the sheet is already sliding away.
+  const closing = useRef(false);
 
-  // Opening: mount the Modal and clear the old search (state adjusted during render, React's pattern for prop changes).
-  if (visible !== previousVisible) {
-    setPreviousVisible(visible);
-    if (visible) {
-      setMounted(true);
-      setQuery('');
-    }
-  }
-
-  // Slide in, or slide out and only then unmount the Modal.
+  // Opening: the parent shows the Modal; the sheet slides up from below.
   useEffect(() => {
-    if (visible) {
-      progress.set(withTiming(1, { duration: reduceMotion ? duration.reducedFade : duration.sheetOpen, easing: ease.out }));
-    } else {
-      progress.set(
-        withTiming(0, { duration: reduceMotion ? duration.reducedFade : duration.sheetClose, easing: ease.out }, (finished) => {
-          if (finished) scheduleOnRN(setMounted, false);
-        }),
-      );
-    }
+    if (!visible) return;
+    closing.current = false;
+    progress.set(0);
+    progress.set(withTiming(1, { duration: reduceMotion ? duration.reducedFade : duration.sheetOpen, easing: ease.out }));
   }, [visible, progress, reduceMotion]);
+
+  // Closing: slide down first, then tell the parent (which hides the Modal).
+  const finishClose = () => {
+    setQuery('');
+    onClose();
+  };
+  const close = () => {
+    if (closing.current) return;
+    closing.current = true;
+    progress.set(
+      withTiming(0, { duration: reduceMotion ? duration.reducedFade : duration.sheetClose, easing: ease.out }, (finished) => {
+        if (finished) scheduleOnRN(finishClose);
+      }),
+    );
+  };
+  const choose = (pokemon: Pokemon) => {
+    if (closing.current) return;
+    onPick(pokemon);
+    close();
+  };
 
   const sheetHeight = Math.round(height * 0.8);
   const sheetStyle = useAnimatedStyle(() =>
@@ -80,9 +88,9 @@ export function PickerSheet({ visible, teamIds, onClose, onPick }: Props) {
   const list = useDexList({ type: 'all', query, sortKey: 'number', ascending: true });
 
   return (
-    <Modal visible={mounted} transparent animationType="none" statusBarTranslucent navigationBarTranslucent onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="none" statusBarTranslucent navigationBarTranslucent onRequestClose={close}>
       <Animated.View style={[StyleSheet.absoluteFill, styles.scrim, scrimStyle]}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel="Close" accessibilityRole="button" />
+        <Pressable style={StyleSheet.absoluteFill} onPress={close} accessibilityLabel="Close" accessibilityRole="button" />
       </Animated.View>
       <Animated.View
         style={[styles.sheet, { height: sheetHeight, backgroundColor: colors.bg }, sheetStyle]}
@@ -92,7 +100,7 @@ export function PickerSheet({ visible, teamIds, onClose, onPick }: Props) {
           <Text style={[text.h3, { color: colors.ink }]} accessibilityRole="header">
             Add to team
           </Text>
-          <IconButton accessibilityLabel="Close" onPress={onClose}>
+          <IconButton accessibilityLabel="Close" onPress={close}>
             <Icon name="close" size={22} color={colors.ink} strokeWidth={2.2} />
           </IconButton>
         </View>
@@ -111,7 +119,7 @@ export function PickerSheet({ visible, teamIds, onClose, onPick }: Props) {
             initialNumToRender={10}
             onEndReached={list.loadMore}
             renderItem={({ item }) => (
-              <PickRow pokemon={item} onTeam={teamIds.includes(item.id)} onPick={() => onPick(item)} />
+              <PickRow pokemon={item} onTeam={teamIds.includes(item.id)} onPick={() => choose(item)} />
             )}
             ListEmptyComponent={
               list.status === 'ready' ? (

@@ -41,7 +41,6 @@ export function TeamScreen() {
     if (team.length >= TEAM_SIZE || team.includes(pokemon.id)) return;
     haptic('success');
     save([...team, pokemon.id]);
-    setPickerOpen(false);
   };
   const remove = (id: number) => {
     haptic('medium');
