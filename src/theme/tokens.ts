@@ -1,3 +1,5 @@
+import type { TypeName } from '@/domain/types';
+
 /**
  * Color tokens from DESIGN.md §2. React Native has no CSS variables, so the
  * light and dark palettes are plain objects; `useTheme()` picks one.
@@ -45,28 +47,7 @@ export const palettes: Record<ColorScheme, Palette> = {
   },
 };
 
-export const TYPE_NAMES = [
-  'normal',
-  'fire',
-  'water',
-  'electric',
-  'grass',
-  'ice',
-  'fighting',
-  'poison',
-  'ground',
-  'flying',
-  'psychic',
-  'bug',
-  'rock',
-  'ghost',
-  'dragon',
-  'dark',
-  'steel',
-  'fairy',
-] as const;
-
-export type TypeName = (typeof TYPE_NAMES)[number];
+export { TYPE_NAMES, type TypeName } from '@/domain/types';
 
 /**
  * `c` = bright (dots, stat bars, tints).

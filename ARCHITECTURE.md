@@ -218,7 +218,7 @@ API shape (confirmed): `chain` → `{ species, evolution_details[], evolves_to[]
 
 1. Get species from `/pokemon-species/{id}`; read `evolution_chain.url`; fetch the chain.
 2. Recursively map each `ChainLink` into `EvolutionNode { speciesName, id, via: string, children: EvolutionNode[] }`. `id` comes from the species URL's last path segment.
-3. Convert `evolution_details[0]` into a short label (examples: "Level 16", "Water Stone", "Friendship", "Friendship, daytime"). Handle at least: `min_level`, `item`, `min_happiness`, `time_of_day`, `trigger.name` (`trade`, `use-item`, `level-up`), `known_move`, `held_item`. Anything unrecognized falls back to a readable trigger name, never to an empty or "undefined" label.
+3. Pick the entry marked `is_default: true` from `evolution_details` (fall back to `[0]`), then convert it into a short label. *(Changed 2026-11-04, D-017: PokéAPI lists one entry per game, and `[0]` can be an old method, e.g. Leafeon's “level up in Eterna Forest” instead of Leaf Stone.)* Labels (examples: "Level 16", "Water Stone", "Friendship", "Friendship, daytime"). Handle at least: `min_level`, `item`, `min_happiness`, `time_of_day`, `trigger.name` (`trade`, `use-item`, `level-up`), `known_move`, `held_item`. Anything unrecognized falls back to a readable trigger name, never to an empty or "undefined" label.
 4. Use a stable order for siblings (as returned by the API).
 5. Layout: render recursively. A node with several children draws a vertical bracket (see the draft's `.evo-kids.multi`). Wrap the tree in a horizontal `ScrollView` for wide trees.
 6. Test with: **Pichu** (baby start), **Charmander** (3 in a line), **Eevee** (5 branches), and a Pokémon with **no evolutions** (must render "does not evolve", not an empty box).
@@ -461,3 +461,5 @@ Run `npx expo lint` and `npx tsc --noEmit` before every commit. Target: domain l
 | D-014 | `expo-network` for online status (not `@react-native-community/netinfo`) | 🟡 | 2026-11-04 | NetInfo (also bundled by Expo) |
 | D-015 | No global state library, no ORM, no backend | ✅ | 2026-11-04 | Zustand, Drizzle |
 | D-016 | List fill strategy: 20 per page + detail fetches, cached | ❓ OQ-3 | 2026-11-04 | GraphQL beta; bundled seed JSON |
+| D-017 | Evolution label uses the `is_default` entry of `evolution_details`, not `[0]` | ✅ | 2026-11-04 | `[0]` (shows outdated methods for Leafeon, Glaceon, Sylveon) |
+| D-018 | `TypeName` / `TYPE_NAMES` live in `domain/types.ts`; `theme/tokens.ts` re-exports them | ✅ | 2026-11-04 | Keep in theme (would make `domain` import `theme`) |

@@ -41,8 +41,8 @@ Last updated: **2026-11-04** · Session: **2**
 | 0. Product idea, feature list, design draft (HTML) | ✅ Done |
 | 1. Project documents (this folder) | ✅ Done |
 | 2. Environment check, SDK decision, scaffold | ✅ Done (2026-11-04). Blank app, docs, ESLint, Phase 3 packages installed; lint + typecheck pass |
-| 3. Foundations (theme, fonts, errors, storage, DB, query client) | ⏳ Code written; lint, typecheck and Android bundle pass. **Waiting on a device check** (rule 7) |
-| 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ⬜ |
+| 3. Foundations (theme, fonts, errors, storage, DB, query client) | ✅ Done 2026-11-04 (checked on the user's phone) |
+| 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ✅ Done 2026-11-04 (97 tests pass, 99% coverage of `src/domain`) |
 | 5. Data layer (API client, schemas, repositories, hooks) | ⬜ |
 | 6. Pokédex list screen | ⬜ |
 | 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ⬜ |
@@ -101,6 +101,13 @@ Template packages come from the SDK 58 default template (see `package.json`). Ad
 | `expo-haptics` | 58.0.7 | 2026-11-04 | ✅ | |
 | `expo-network` | 58.0.4 | 2026-11-04 | ✅ | |
 
+| `jest-expo` (dev) | 58.0.14 | 2026-11-04 | ✅ | SDK pin. `"jest": { "preset": "jest-expo" }` in package.json, `npm test` |
+| `jest` (dev) | 30.5.2 | 2026-11-04 | ✅ | |
+| `@types/jest` (dev) | 30.0.0 | 2026-11-04 | ✅ | TypeScript 6 needs `"types": ["jest"]` in tsconfig (it no longer loads @types automatically) |
+| `@testing-library/react-native` (dev) | 14.1.0 | 2026-11-04 | ✅ | For component tests later |
+| `@react-native/jest-preset` (dev) | 0.88.1 | 2026-11-04 | ✅ | Peer of jest-expo; matches React Native 0.88.1 |
+| `test-renderer` (dev) | 1.3.0 | 2026-11-04 | ✅ | Peer of Testing Library; same version jest-expo pins |
+
 `npm audit` reports 12 moderate vulnerabilities. Do **not** run `npm audit fix --force`, because it can break SDK pins. Review this at the QA phase.
 
 **Network quirk on the dev machine:** IPv6 to the npm registry hangs, so npm/npx time out (`ETIMEDOUT`). Fix: run them with
@@ -130,21 +137,21 @@ Do these in order. Stop and ask where marked.
 ## 7. Phase checklists (acceptance criteria)
 
 **Phase 3, Foundations**
-*All written 2026-11-04 (session 2). Tick each one once it's checked on the phone, or covered by a test after jest-expo is installed.*
-- [ ] `theme/tokens.ts`, `typography.ts`, `motion.ts`, `color.ts` (`mix()`), `useTheme()` returning light/dark by system setting or override
-- [ ] Fonts load; splash held until fonts + storage are ready (+ DB opened)
-- [ ] `lib/errors.ts` (`AppError`, `errorCopy()`), `lib/logger.ts`, `lib/haptics.ts`
-- [ ] `data/storage/kv.ts` with zod-validated reads and safe fallbacks; favorites/team/settings modules; `user-data-provider.tsx` (context, optimistic save with rollback)
-- [ ] `data/db/database.ts` + migrations using `PRAGMA user_version`; app still works if DB open fails
-- [ ] `data/queries/queryClient.ts` with the retry rules from `ARCHITECTURE.md` §8.3, `onlineManager` wired to `expo-network`
-- [ ] Root `ErrorBoundary` (uses `components/ui/error-state.tsx`)
+*Checked on the user's Android phone 2026-11-04.*
+- [x] `theme/tokens.ts`, `typography.ts`, `motion.ts`, `color.ts` (`mix()`), `useTheme()` returning light/dark by system setting or override
+- [x] Fonts load; splash held until fonts + storage are ready (+ DB opened)
+- [x] `lib/errors.ts` (`AppError`, `errorCopy()`), `lib/logger.ts`, `lib/haptics.ts`
+- [x] `data/storage/kv.ts` with zod-validated reads and safe fallbacks; favorites/team/settings modules; `user-data-provider.tsx` (context, optimistic save with rollback)
+- [x] `data/db/database.ts` + migrations using `PRAGMA user_version`; app still works if DB open fails
+- [x] `data/queries/queryClient.ts` with the retry rules from `ARCHITECTURE.md` §8.3, `onlineManager` wired to `expo-network`
+- [x] Root `ErrorBoundary` (uses `components/ui/error-state.tsx`)
 
 **Device check for Phase 3** (temporary test screen in `src/app/index.tsx`): title in Bricolage, subtitle in Figtree; 18 pills + 18 headers in the right colors; the theme button cycles system → light → dark with a haptic tick; the chosen theme **survives a full app restart**; no red error screens.
 
 **Phase 4, Domain (pure TypeScript, tests first)**
-- [ ] `typeChart.ts`: all 18 types, dual-type product. Tests: Charizard (4× Rock, 0× Ground), Umbreon (0× Psychic), Eevee (no weaknesses in the 9-type draft but Fighting 2× in real chart)
-- [ ] `evolution.ts`: chain → tree; label builder; tests for Pichu line, Charmander line, Eevee, a non-evolving Pokémon
-- [ ] `sorting.ts`
+- [x] `typeChart.ts`: all 18 types, dual-type product, `matchupsFor`, `teamWeakSpots`, `formatMultiplier`. Tests include a cell-by-cell check against a saved copy of PokéAPI's `damage_relations`, plus Charizard, Umbreon, Eevee, Gyarados, Bulbasaur
+- [x] `evolution.ts`: chain → tree; label builder (uses the `is_default` entry, D-017); `evolutionNote`; tests on real saved chains for Pichu, Charmander, Eevee (8 branches), Tauros (no evolution)
+- [x] `sorting.ts` (sort + name/number search) and `names.ts` (display names like “Mr. Mime”, `#025`)
 
 **Phase 5, Data**
 - [ ] `fetchJson` with timeout and error mapping; zod schemas
@@ -211,7 +218,12 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - Choices made while building (small, no decision-log row needed): fonts are imported per weight (`@expo-google-fonts/figtree/400Regular`), so only 5 font files are bundled; `lib/haptics` keeps an on/off flag that the settings provider syncs, so `lib` doesn't import from `data`; the user-data context lives in `data/storage/user-data-provider.tsx`.
 - Checks: `npx tsc --noEmit` ✅, `npx expo lint` ✅, `npx expo export --platform android` ✅ (bundle builds).
 - Test tooling checked (not installed): `jest-expo` ~58.0.14 (SDK pin; peers jest ^29||^30, `@react-native/jest-preset` ^0.88.1), `jest` 30.5.2, `@testing-library/react-native` 14.1.0 (new peer: `test-renderer` ^1.0.0), `@types/jest` 30.0.0.
-- **Next action:** the user runs the Phase 3 device check (§7). Then, with the user's OK, install the test tooling and start Phase 4 (domain logic, tests first). Also worth noting: the splash background in `app.json` is still the template blue `#208AEF`; change it to `#13222b` in Phase 9 with the launch animation. Start with `theme/tokens.ts` from `DESIGN.md`, and show the user the type-color swatch page for OD-5 before building on those colors.
+- The user confirmed the Phase 3 device check passed. **Phase 3 done.**
+- Installed the test tooling (§5). `npx expo install … -- --save-dev` put jest/jest-expo/@types/jest in `dependencies`; moved them to `devDependencies` by hand.
+- **Phase 4 done:** `src/domain/` (`types.ts`, `typeChart.ts`, `evolution.ts`, `sorting.ts`, `names.ts`) with 97 passing tests and 99% coverage. Test data was saved from the real PokéAPI into `src/domain/__tests__/fixtures/`.
+- Decisions: D-017 (evolution label uses the `is_default` entry; `[0]` gave Leafeon “level up in Eterna Forest”), D-018 (`TypeName` moved to `domain/`).
+- **Next action (Phase 5, data layer):** `fetchJson` + zod schemas + repositories + query hooks. Decide OQ-3 (how to fill the list) at the start.
+- *(Old next action, done:)* the user runs the Phase 3 device check (§7). Then, with the user's OK, install the test tooling and start Phase 4 (domain logic, tests first). Also worth noting: the splash background in `app.json` is still the template blue `#208AEF`; change it to `#13222b` in Phase 9 with the launch animation. Start with `theme/tokens.ts` from `DESIGN.md`, and show the user the type-color swatch page for OD-5 before building on those colors.
 
 ### Session 1, 2026-11-04 (planning and design)
 - Chose the stack direction: Expo + Expo Router + TypeScript, TanStack Query, SQLite for cached API data, AsyncStorage for favorites/team/settings.
