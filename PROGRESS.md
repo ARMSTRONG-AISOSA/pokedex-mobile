@@ -43,7 +43,7 @@ Last updated: **2026-11-04** · Session: **2**
 | 2. Environment check, SDK decision, scaffold | ✅ Done (2026-11-04). Blank app, docs, ESLint, Phase 3 packages installed; lint + typecheck pass |
 | 3. Foundations (theme, fonts, errors, storage, DB, query client) | ✅ Done 2026-11-04 (checked on the user's phone) |
 | 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ✅ Done 2026-11-04 (97 tests pass, 99% coverage of `src/domain`) |
-| 5. Data layer (API client, schemas, repositories, hooks) | ⏳ Code + 137 tests pass. **Waiting on a device check** of the SQLite repositories |
+| 5. Data layer (API client, schemas, repositories, hooks) | ✅ Done 2026-11-04 (137 tests; SQLite checked on the user's phone) |
 | 6. Pokédex list screen | ⬜ |
 | 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ⬜ |
 | 8. Team builder, Saved, add-to-team sheet | ⬜ |
@@ -156,8 +156,8 @@ Do these in order. Stop and ask where marked.
 **Phase 5, Data**
 - [x] `fetchJson` with timeout and error mapping, ≤ 5 in flight; zod schemas (tested with saved PokéAPI responses)
 - [x] Read-through cache policy `data/cache.ts` with the 30-day refresh (D-019); tests for the four cache/network combinations + old data + storage failures
-- [ ] Repositories `pokemonRepo.ts`, `evolutionRepo.ts` (SQLite) — **needs the device check below** (SQLite can't run in Jest)
-- [ ] Query hooks (`usePokemon`, `usePokemonPages`, `useEvolutionChain`) + refresh events wired in `queryClient.ts` — device check
+- [x] Repositories `pokemonRepo.ts`, `evolutionRepo.ts` (SQLite), checked on the phone 2026-11-04
+- [x] Query hooks (`usePokemon`, `usePokemonPages`, `useEvolutionChain`) + refresh events wired in `queryClient.ts`
 - [x] Storage tests for `kv.ts` (corrupt data → default; failed save → `STORAGE`)
 
 **Device check for Phase 5** (temporary screen in `src/app/index.tsx`):
