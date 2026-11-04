@@ -61,7 +61,7 @@ Last updated: **2026-11-04** · Session: **2**
 | OD-2 | How to fill the list (details per card) without hammering PokéAPI? | See `ARCHITECTURE.md` §7 "Open data question" | Start with 20 per page + limited concurrency + SQLite cache; revisit if slow |
 | OD-3 | Custom tab bar vs Expo Router `NativeTabs` | Design uses a custom sliding indicator | Custom first (matches the approved design) |
 | OD-4 | Keep AsyncStorage next to SQLite, or use `expo-sqlite/kv-store` for everything small? | One fewer dependency with kv-store | Keep AsyncStorage for now (user agreed to both earlier); revisit |
-| OD-5 | Approve the 9 proposed type colors (fighting, ground, rock, bug, ghost, steel, ice, dragon, fairy) | Contrast-checked. Swatch page: `design-reference/type-colors.html` (shown 2026-11-04). Fighting≈Fire and Ground≈Electric look alike | Waiting on the user's verdict |
+| OD-5 | Approve the 9 proposed type colors (fighting, ground, rock, bug, ghost, steel, ice, dragon, fairy) | Contrast-checked. Swatch page: `design-reference/type-colors.html` (shown 2026-11-04). Round 1: the user asked for Fighting → brick red `#c03028`, Ground → `#9a6b3f`, and Fairy moved away from Psychic (Fairy changed, since Psychic was already approved). Revised in `DESIGN.md` §2.2 | Waiting on the user's final OK |
 | OD-6 | App name, Android package id (e.g. `com.<name>.pokedex`), icon | Not discussed | Ask once before the first EAS build |
 | OD-7 | GitHub repo name and README approach | Not discussed | Ask at the release phase |
 
@@ -201,7 +201,7 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - Fixed the npm problem: it is IPv6, not the sandbox (see the §5 network note). Installed ESLint plus all Phase 3 groups (user approved all four). Recorded in §5. One commit per group.
 - `npx expo lint` and `npx tsc --noEmit` both pass. **Phase 2 done.** The user confirmed the app still loads in Expo Go after the installs.
 - The user's internet is slow on 2026-11-04 and should improve around 03:00–07:00 on 2026-11-05. Until then, keep big downloads to a minimum.
-- Added `design-reference/type-colors.html` (OD-5 swatch page: 9 approved + 9 proposed type colors, light and dark). I noted that Fighting≈Fire and Ground≈Electric (deep colors) look alike. Waiting on the user's answer.
+- Added `design-reference/type-colors.html` (OD-5 swatch page: 9 approved + 9 proposed type colors, light and dark). I noted that Fighting≈Fire and Ground≈Electric (deep colors) look alike. The user asked for changes. Revised Fighting (`#d64236`/`#c03028`), Ground (`#d4a065`/`#9a6b3f`) and Fairy (`#e391d4`/`#a3449a`) in `DESIGN.md` and the swatch page.
 - Tip: the draft can be screenshotted offline with Playwright's headless Chromium (`~/.cache/ms-playwright/chromium_headless_shell-*/…/chrome-headless-shell --screenshot=out.png --window-size=412,915 file://…`).
 - **Next action:** Phase 3 (Foundations). Start with `theme/tokens.ts` from `DESIGN.md`, and show the user the type-color swatch page for OD-5 before building on those colors.
 

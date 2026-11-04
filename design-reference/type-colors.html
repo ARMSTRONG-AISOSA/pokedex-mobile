@@ -49,13 +49,13 @@
     ["normal","#9a9a8a","#636355","6.09"],["psychic","#e85d8f","#b32f66","5.97"],["dark","#6a5a55","#3d3431","12.11"],
   ];
   const proposed = [
-    ["fighting","#d6563b","#a8382a","6.43"],["ground","#c9a45a","#8a6a2a","5.03"],["rock","#a8a07a","#6e6742","5.70"],
+    ["fighting","#d64236","#c03028","5.68","changed"],["ground","#d4a065","#9a6b3f","4.62","changed"],["rock","#a8a07a","#6e6742","5.70"],
     ["bug","#9bbf3a","#5f7d1c","4.73"],["ghost","#7a62a8","#523f80","8.82"],["steel","#8da5b5","#4f6878","5.86"],
-    ["ice","#6fc7d6","#2a7f90","4.63"],["dragon","#5b6ee0","#3a47b0","7.75"],["fairy","#ec8fbd","#b0467f","5.21"],
+    ["ice","#6fc7d6","#2a7f90","4.63"],["dragon","#5b6ee0","#3a47b0","7.75"],["fairy","#e391d4","#a3449a","5.45","changed"],
   ];
-  const tile = ([n,c,d,r]) => `
+  const tile = ([n,c,d,r,changed]) => `
     <div class="type" style="--c:${c};--d:${d}">
-      <div class="hero"><div class="name">${n}</div><div class="ratio">White text ${r}:1</div></div>
+      <div class="hero"><div class="name">${n}</div><div class="ratio">White text ${r}:1${changed ? " · <b>new</b>" : ""}</div></div>
       <div class="body"><span class="pill"><i></i>${n}</span><div class="bar"><span></span></div>
       <div class="hex">c ${c} · d ${d}</div></div>
     </div>`;

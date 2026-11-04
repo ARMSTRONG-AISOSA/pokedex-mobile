@@ -53,16 +53,16 @@ Notes:
 | normal | `#9a9a8a` | `#636355` | 6.09 |
 | psychic | `#e85d8f` | `#b32f66` | 5.97 |
 | dark | `#6a5a55` | `#3d3431` | 12.11 |
-| **proposed for the 9 missing types** (contrast checked 2026-11-04; the user has not reviewed them) | | | |
-| fighting | `#d6563b` | `#a8382a` | 6.43 |
-| ground | `#c9a45a` | `#8a6a2a` | 5.03 |
+| **proposed for the 9 missing types** (contrast checked 2026-11-04. Fighting, ground and fairy were revised after the user's review so they don't look like fire, electric and psychic. Final OK pending, see PROGRESS OD-5) | | | |
+| fighting | `#d64236` | `#c03028` | 5.68 |
+| ground | `#d4a065` | `#9a6b3f` | 4.62 |
 | rock | `#a8a07a` | `#6e6742` | 5.70 |
 | bug | `#9bbf3a` | `#5f7d1c` | 4.73 |
 | ghost | `#7a62a8` | `#523f80` | 8.82 |
 | steel | `#8da5b5` | `#4f6878` | 5.86 |
 | ice | `#6fc7d6` | `#2a7f90` | 4.63 |
 | dragon | `#5b6ee0` | `#3a47b0` | 7.75 |
-| fairy | `#ec8fbd` | `#b0467f` | 5.21 |
+| fairy | `#e391d4` | `#a3449a` | 5.45 |
 
 Dual-typed Pokémon use their **first** type for theming; the second type shows in pills and in the bottom half of the Poké Ball placeholder.
 
