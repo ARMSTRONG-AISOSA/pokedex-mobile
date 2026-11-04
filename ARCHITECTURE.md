@@ -247,7 +247,7 @@ This is the single source of truth for persistence. If you add data, add a row h
 
 **Rules**
 
-- Pokémon data is effectively immutable. TanStack Query uses `staleTime: Infinity`. SQLite rows carry `fetched_at` so a future "refresh data" action can expire them.
+- Pokémon data rarely changes, but it does change (PokéAPI fixes, new Pokémon). **Saved data older than 30 days is shown immediately and refreshed in the background** (`src/data/cache.ts`, D-019). Offline, the old copy stays and no error is shown. TanStack Query keeps `staleTime: Infinity` for its in-memory copy; background refreshes push new data into it through `src/data/events.ts`. A manual “Refresh data” action can be added to settings later.
 - All AsyncStorage access goes through `data/storage/kv.ts`, which validates with zod on read and returns a safe fallback on failure (see §8).
 - Keys are versioned (`pokedex:v1:`). A shape change bumps the version and migrates or resets that key.
 - Favorites/team hydrate **before** the first screen renders (gate behind the splash/animation) to avoid a flash of empty state.
@@ -281,7 +281,11 @@ CREATE TABLE species (id INTEGER PRIMARY KEY, evolution_chain_id INTEGER NOT NUL
 CREATE TABLE evolution_chain (id INTEGER PRIMARY KEY, tree_json TEXT NOT NULL, fetched_at INTEGER NOT NULL);
 ```
 
-### Open data question ❓ (OQ-3): how to fill the list screen
+### Data question (OQ-3): how to fill the list screen — ✅ resolved 2026-11-04: option 1 (D-016)
+
+Chosen by the user: 20 per page, details fetched (≤ 5 in flight) and saved in SQLite. The Pokédex covers **species 1…N** (`/pokemon-species` count, 1025 on 2026-11-04), whose ids have no gaps, so page *k* is ids `20k+1…20k+20` (D-020). Alternate forms (`/pokemon` ids 10001+) are not listed. Names come from the species (“giratina”, not “giratina-altered”). A one-request species name index (`pokemon_index`) makes name search work for Pokémon not opened yet. SQLite migration 2 adds a `meta` table (species count, index date).
+
+*Original notes:*
 
 The list needs name, number, artwork, and types per card, but `/pokemon?limit=N` returns only names and URLs. MVP approach: **page of 20 → fetch the 20 detail records with limited concurrency → store in SQLite → render.** Already-cached pages load instantly and offline. Alternatives to evaluate if this feels slow: GraphQL beta (single query, but rate-limited), or a build-time script that bundles a seed JSON for Gen 1 to make first launch instant. Decide when building the list; record the choice in the Decision Log.
 
@@ -460,6 +464,8 @@ Run `npx expo lint` and `npx tsc --noEmit` before every commit. Target: domain l
 | D-013 | Version policy: verify latest stable and confirm with the user before every install | ✅ | 2026-11-04 | n/a |
 | D-014 | `expo-network` for online status (not `@react-native-community/netinfo`) | 🟡 | 2026-11-04 | NetInfo (also bundled by Expo) |
 | D-015 | No global state library, no ORM, no backend | ✅ | 2026-11-04 | Zustand, Drizzle |
-| D-016 | List fill strategy: 20 per page + detail fetches, cached | ❓ OQ-3 | 2026-11-04 | GraphQL beta; bundled seed JSON |
+| D-016 | List fill strategy: 20 per page + detail fetches (≤ 5 in flight), cached in SQLite | ✅ chosen by the user (OQ-3) | 2026-11-04 | GraphQL beta; bundled seed JSON |
 | D-017 | Evolution label uses the `is_default` entry of `evolution_details`, not `[0]` | ✅ | 2026-11-04 | `[0]` (shows outdated methods for Leafeon, Glaceon, Sylveon) |
 | D-018 | `TypeName` / `TYPE_NAMES` live in `domain/types.ts`; `theme/tokens.ts` re-exports them | ✅ | 2026-11-04 | Keep in theme (would make `domain` import `theme`) |
+| D-019 | Cached data older than 30 days: show it, refresh in the background; keep it if offline | ✅ (user raised stale data) | 2026-11-04 | Never refresh (stale forever); block on refresh (slow); shorter limit (more requests, against fair use) |
+| D-020 | Pokédex = species 1…N (no alternate forms); names from the species | ✅ | 2026-11-04 | All 1351 `/pokemon` entries (forms like “deoxys-attack” would clutter the list and break the id-range paging) |

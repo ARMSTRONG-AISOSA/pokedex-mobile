@@ -33,6 +33,10 @@ const migrations: readonly string[] = [
   CREATE TABLE species (id INTEGER PRIMARY KEY, evolution_chain_id INTEGER NOT NULL, fetched_at INTEGER NOT NULL);
   CREATE TABLE evolution_chain (id INTEGER PRIMARY KEY, tree_json TEXT NOT NULL, fetched_at INTEGER NOT NULL);
   `,
+  // 2: small key/value facts about the cache, e.g. the species count and when the name index was fetched
+  `
+  CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL, fetched_at INTEGER NOT NULL);
+  `,
 ];
 
 export const LATEST_VERSION = migrations.length;

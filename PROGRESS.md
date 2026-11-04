@@ -43,7 +43,7 @@ Last updated: **2026-11-04** · Session: **2**
 | 2. Environment check, SDK decision, scaffold | ✅ Done (2026-11-04). Blank app, docs, ESLint, Phase 3 packages installed; lint + typecheck pass |
 | 3. Foundations (theme, fonts, errors, storage, DB, query client) | ✅ Done 2026-11-04 (checked on the user's phone) |
 | 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ✅ Done 2026-11-04 (97 tests pass, 99% coverage of `src/domain`) |
-| 5. Data layer (API client, schemas, repositories, hooks) | ⬜ |
+| 5. Data layer (API client, schemas, repositories, hooks) | ⏳ Code + 137 tests pass. **Waiting on a device check** of the SQLite repositories |
 | 6. Pokédex list screen | ⬜ |
 | 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ⬜ |
 | 8. Team builder, Saved, add-to-team sheet | ⬜ |
@@ -58,7 +58,7 @@ Last updated: **2026-11-04** · Session: **2**
 | ID | Question | What we know | Recommendation |
 |---|---|---|---|
 | ~~OD-1~~ | **RESOLVED 2026-11-04: use SDK 58, run it with the Play Store Expo Go.** The user confirmed Expo Go on their phone shows SDK 58. *(Original question: which Expo SDK, and how to run it on the Android phone?)* | SDK 58 is the latest stable (React Native 0.88). On 2026-10-15 Expo said the **Play Store Expo Go would still support only SDK 57** for "a few weeks". We could not confirm whether the Play Store Expo Go now supports SDK 58. Also: `npx create-expo-app` may default to SDK 57 or ask which to use. | Nothing more to do. If a later Expo Go update ever stops matching the project, ask the user before changing the SDK. |
-| OD-2 | How to fill the list (details per card) without hammering PokéAPI? | See `ARCHITECTURE.md` §7 "Open data question" | Start with 20 per page + limited concurrency + SQLite cache; revisit if slow |
+| ~~OD-2~~ | **RESOLVED 2026-11-04: option 1** (20 per page, ≤ 5 requests at once, SQLite cache), see D-016. *(Original: how to fill the list without hammering PokéAPI?)* | | Done |
 | OD-3 | Custom tab bar vs Expo Router `NativeTabs` | Design uses a custom sliding indicator | Custom first (matches the approved design) |
 | OD-4 | Keep AsyncStorage next to SQLite, or use `expo-sqlite/kv-store` for everything small? | One fewer dependency with kv-store | Keep AsyncStorage for now (user agreed to both earlier); revisit |
 | ~~OD-5~~ | **RESOLVED 2026-11-04: all 18 type colors approved** (after revising fighting, ground, fairy). In `src/theme/tokens.ts`. *(Original: approve the 9 proposed type colors)* | Contrast-checked. Swatch page: `design-reference/type-colors.html` (shown 2026-11-04). Round 1: the user asked for Fighting → brick red `#c03028`, Ground → `#9a6b3f`, and Fairy moved away from Psychic (Fairy changed, since Psychic was already approved). Revised in `DESIGN.md` §2.2 | Done |
@@ -154,9 +154,18 @@ Do these in order. Stop and ask where marked.
 - [x] `sorting.ts` (sort + name/number search) and `names.ts` (display names like “Mr. Mime”, `#025`)
 
 **Phase 5, Data**
-- [ ] `fetchJson` with timeout and error mapping; zod schemas
-- [ ] Repositories with read-through cache and offline behavior from `ARCHITECTURE.md` §8.2; tests for the four cache/network combinations
-- [ ] Query hooks (`usePokemon`, `usePokemonPages`, `useEvolutionChain`)
+- [x] `fetchJson` with timeout and error mapping, ≤ 5 in flight; zod schemas (tested with saved PokéAPI responses)
+- [x] Read-through cache policy `data/cache.ts` with the 30-day refresh (D-019); tests for the four cache/network combinations + old data + storage failures
+- [ ] Repositories `pokemonRepo.ts`, `evolutionRepo.ts` (SQLite) — **needs the device check below** (SQLite can't run in Jest)
+- [ ] Query hooks (`usePokemon`, `usePokemonPages`, `useEvolutionChain`) + refresh events wired in `queryClient.ts` — device check
+- [x] Storage tests for `kv.ts` (corrupt data → default; failed save → `STORAGE`)
+
+**Device check for Phase 5** (temporary screen in `src/app/index.tsx`):
+1. Online: Eevee’s 8 evolutions appear with labels (Water Stone … Friendship, Fairy move); “Loaded 20 of 1025 Pokémon” with Bulbasaur…Raticate; “Load 20 more” adds 21–40.
+2. Close Expo Go fully, turn on **airplane mode**, reopen: everything loaded before still shows, with no error. (Expo Go itself needs the dev server, so if it can't reload in airplane mode, turn off Wi-Fi *data* only or test by stopping the network on the computer side; note what happened.)
+3. Still offline, tap “Load 20 more” past what was loaded: the “No connection” message appears, no crash.
+
+**Open for Phase 6 (ask the user):** sorting by Name/Power and filtering by type across *all* 1025 Pokémon needs data we haven't downloaded yet (paging only fetches what you scroll to). Options to discuss when Phase 6 starts.
 
 **Phase 6, List**
 - [ ] Cards, search (name or number), type chips, sort row, count, 2-column `FlatList`, infinite scroll, skeletons, empty and error states, offline works for visited pages
@@ -222,7 +231,10 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - Installed the test tooling (§5). `npx expo install … -- --save-dev` put jest/jest-expo/@types/jest in `dependencies`; moved them to `devDependencies` by hand.
 - **Phase 4 done:** `src/domain/` (`types.ts`, `typeChart.ts`, `evolution.ts`, `sorting.ts`, `names.ts`) with 97 passing tests and 99% coverage. Test data was saved from the real PokéAPI into `src/domain/__tests__/fixtures/`.
 - Decisions: D-017 (evolution label uses the `is_default` entry; `[0]` gave Leafeon “level up in Eterna Forest”), D-018 (`TypeName` moved to `domain/`).
-- **Next action (Phase 5, data layer):** `fetchJson` + zod schemas + repositories + query hooks. Decide OQ-3 (how to fill the list) at the start.
+- **Phase 5 code done** (session 2, later): `data/api/` (client, schemas, pokeapi), `data/cache.ts` (30-day refresh, D-019), `data/events.ts`, `data/db/pokemonRepo.ts` + `evolutionRepo.ts`, migration 2 (`meta` table), query hooks, `lib/limit.ts`. OQ-3 resolved as option 1 (D-016); Pokédex = species 1…N (D-020). 137 tests pass; tsc, lint and Android bundle pass. The temporary screen now shows Eevee's tree and the first pages.
+- The user raised a concern about stale data → D-019.
+- **Next action:** device check for Phase 5 (§7), then Phase 6 (list screen). Raise the Phase 6 open question about sort/filter across all Pokémon.
+- *(Earlier next action, done:)* Phase 5 (data layer): `fetchJson` + zod schemas + repositories + query hooks. Decide OQ-3 (how to fill the list) at the start.
 - *(Old next action, done:)* the user runs the Phase 3 device check (§7). Then, with the user's OK, install the test tooling and start Phase 4 (domain logic, tests first). Also worth noting: the splash background in `app.json` is still the template blue `#208AEF`; change it to `#13222b` in Phase 9 with the launch animation. Start with `theme/tokens.ts` from `DESIGN.md`, and show the user the type-color swatch page for OD-5 before building on those colors.
 
 ### Session 1, 2026-11-04 (planning and design)
