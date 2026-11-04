@@ -202,9 +202,9 @@ Do these in order. Stop and ask where marked.
 7. Open a Pokémon you haven't opened before with slow internet: the evolution section shows skeleton blocks until it loads.
 
 **Phase 7b, About section (user request 2026-11-04)**
-*Built 2026-11-04 (session 2). Tick after the device check.*
-- [ ] Category + Baby badge, Pokédex entry (cleaned), Height / Weight / Generation boxes, ability chips (hidden marked), “Evolves from {Name}” link / “First stage of its family.”; skeleton while loading; inline error + Retry
-- [ ] Data: GraphQL per species (D-024), SQLite `pokemon_about` (migration 3), 30-day refresh. Domain helpers + mapping tested (158 tests)
+*Checked on the user's phone 2026-11-04.*
+- [x] Category + Baby badge, Pokédex entry (cleaned), Height / Weight / Generation boxes, ability chips (hidden marked), “Evolves from {Name}” link / “First stage of its family.”; skeleton while loading; inline error + Retry
+- [x] Data: GraphQL per species (D-024), SQLite `pokemon_about` (migration 3), 30-day refresh. Domain helpers + mapping tested (158 tests)
 
 **Device check for the About section:**
 1. Bulbasaur: “Seed Pokémon”, an entry about the seed on its back, 0.7 m, 6.9 kg, Generation I, Overgrow + Chlorophyll (hidden), “First stage of its family.”
