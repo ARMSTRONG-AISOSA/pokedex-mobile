@@ -1,0 +1,195 @@
+# Progress
+
+> **Any AI assistant or developer picking this project up: read this file top to bottom first.** Then read `ARCHITECTURE.md` (how it is built) and `DESIGN.md` (how it looks and moves). Update this file before you stop working.
+
+Last updated: **2026-11-04** · Session: **1**
+
+---
+
+## 0. Rules for whoever continues
+
+1. **Confirm versions before installing anything.** Verify the latest stable version (`npm view <pkg> version`, release notes, peer deps), tell the user what you found, and get a yes before installing. Expo-managed packages go in with `npx expo install` so the SDK picks the compatible version. Record every install in §5. (Policy detail: `ARCHITECTURE.md` §2.)
+2. **Do not change a decision silently.** Add or update a row in the `ARCHITECTURE.md` decision log and mention it in the session log below.
+3. **Update this file at the end of every working session**: tick tasks, add a session-log entry, list new open questions. Keep it short and factual.
+4. **The HTML draft is the visual reference** (`design-reference/pokedex-design.html`). Match it, using the tokens in `DESIGN.md`. If you want to deviate, ask first.
+5. **Explain things simply.** The user asked for simple words and a short analogy when concepts are explained. Do not assume React Native knowledge; do assume solid JavaScript, TypeScript, React and Next.js knowledge.
+6. **No AI attribution** in commits, the README, or code comments (user preference).
+7. Do not mark something done unless it has been run on a real device or emulator, or (for pure logic) covered by a passing test.
+
+---
+
+## 1. Project snapshot
+
+| | |
+|---|---|
+| Goal | A portfolio-quality Pokédex in React Native with a standout **evolution chain viewer**, a **team builder**, and **offline support** |
+| Audience | Portfolio reviewers and interviewers; the user must be able to explain every part |
+| Data | PokéAPI (free, no key, fair use = cache locally) |
+| Working name | "Pokédex" (final app name and Android package id not chosen yet, see OD-6) |
+| Developer | Experienced with JavaScript, TypeScript, React, Next.js. New to React Native |
+| Dev machine | Linux Mint PC, VS Code |
+| Test device | Android phone (no iPhone) |
+| Design reference | `design-reference/pokedex-design.html`; also published as a (possibly private) claude.ai artifact: https://claude.ai/artifact/DmV2kx56owwDXjZDaJgvnd |
+
+---
+
+## 2. Status at a glance
+
+| Phase | Status |
+|---|---|
+| 0. Product idea, feature list, design draft (HTML) | ✅ Done |
+| 1. Project documents (this folder) | ✅ Done |
+| 2. Environment check, SDK decision, scaffold | ⏳ **Ready to start.** Node v24.19.0 OK, SDK 58 chosen, phone Expo Go shows SDK 58. Project not created yet |
+| 3. Foundations (theme, fonts, errors, storage, DB, query client) | ⬜ |
+| 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ⬜ |
+| 5. Data layer (API client, schemas, repositories, hooks) | ⬜ |
+| 6. Pokédex list screen | ⬜ |
+| 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ⬜ |
+| 8. Team builder, Saved, add-to-team sheet | ⬜ |
+| 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ⬜ |
+| 10. Offline and error QA, accessibility, dark mode pass | ⬜ |
+| 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ⬜ |
+
+---
+
+## 3. Open decisions (ask the user before acting on these)
+
+| ID | Question | What we know | Recommendation |
+|---|---|---|---|
+| ~~OD-1~~ | **RESOLVED 2026-11-04: use SDK 58, run it with the Play Store Expo Go.** The user confirmed Expo Go on their phone shows SDK 58. *(Original question: which Expo SDK, and how to run it on the Android phone?)* | SDK 58 is the latest stable (React Native 0.88). On 2026-10-15 Expo said the **Play Store Expo Go would still support only SDK 57** for "a few weeks". We could not confirm whether the Play Store Expo Go now supports SDK 58. Also: `npx create-expo-app` may default to SDK 57 or ask which to use. | Nothing more to do. If a later Expo Go update ever stops matching the project, ask the user before changing the SDK. |
+| OD-2 | How to fill the list (details per card) without hammering PokéAPI? | See `ARCHITECTURE.md` §7 "Open data question" | Start with 20 per page + limited concurrency + SQLite cache; revisit if slow |
+| OD-3 | Custom tab bar vs Expo Router `NativeTabs` | Design uses a custom sliding indicator | Custom first (matches the approved design) |
+| OD-4 | Keep AsyncStorage next to SQLite, or use `expo-sqlite/kv-store` for everything small? | One fewer dependency with kv-store | Keep AsyncStorage for now (user agreed to both earlier); revisit |
+| OD-5 | Approve the 9 proposed type colors (fighting, ground, rock, bug, ghost, steel, ice, dragon, fairy) | Contrast-checked, not visually reviewed | Show the user a swatch page before building |
+| OD-6 | App name, Android package id (e.g. `com.<name>.pokedex`), icon | Not discussed | Ask once before the first EAS build |
+| OD-7 | GitHub repo name and README approach | Not discussed | Ask at the release phase |
+
+---
+
+## 4. Environment facts (verified 2026-11-04 from the npm registry and Expo's published release notes)
+
+| Item | Finding |
+|---|---|
+| Expo SDK 58 | `expo@58.0.0` published 2026-09-29, announced 2026-10-15, **latest patch 58.0.23 (2026-11-03)**. SDK 57's last patch seen: 57.0.31 (2026-10-21) |
+| React Native | 0.88.1 (bundled). Strict TypeScript API is default |
+| Node required | **22.13+, 24.3+, or 26+** (even versions only). *Correction:* earlier advice in this project said "Node 20 or newer". That is **wrong for SDK 58**. **User's Node: v24.19.0 ✅ (checked 2026-11-04)** |
+| Default template | `expo-template-default@58.0.32`: uses `src/app` and `src/` layout, `@/*` path alias, TypeScript `~6.0.3`, `reactCompiler` and `typedRoutes` enabled, includes Reanimated 4.7.1 + worklets 0.13.0, gesture-handler ~3.3.0, expo-image, expo-font, expo-router ~58.0.30 |
+| Scaffold command (from Expo's SDK 58 changelog) | `npx create-expo-app@latest pokedex --template default@sdk-58` |
+| `reset-project` | `npm run reset-project` moves the template's `src` and `scripts` to `app-example/` (or deletes them) and creates a minimal `src/app/index.tsx` + `_layout.tsx` |
+| Not to use despite being npm `latest` | `typescript@7.0.2`, `@react-native-async-storage/async-storage@3.1.1`, `react-native-gesture-handler@3.4.0`, `react@19.3.1` (the SDK pins older ones; see `ARCHITECTURE.md` §2) |
+| PokéAPI artwork URLs | `…/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{id}.png` and `…/official-artwork/shiny/{id}.png` return PNG (checked for id 25) |
+| PokéAPI fair use | Cache resources locally; abusive clients can be banned |
+
+---
+
+## 5. Installed packages
+
+**None yet.** No project has been created. When you install something, add a row:
+
+| Package | Version installed | Date | Confirmed by user | Notes |
+|---|---|---|---|---|
+| | | | | |
+
+Planned (not installed): see `ARCHITECTURE.md` §4 for the full verified list.
+
+---
+
+## 6. What the first working session should do (Phase 2)
+
+Do these in order. Stop and ask where marked.
+
+1. ~~Check the machine.~~ ✅ `node -v` = **v24.19.0** (supported). Still to note: `npm -v` and `git --version`.
+2. ~~Resolve OD-1~~ ✅ Done: the user's phone Expo Go shows SDK 58.
+3. **Scaffold** (SDK 58 is chosen): `npx create-expo-app@latest pokedex --template default@sdk-58` (or the SDK 57 equivalent if chosen). Run `cd pokedex && npx expo start` and confirm the template runs on the phone **before changing anything**.
+4. Copy this folder's `ARCHITECTURE.md`, `DESIGN.md`, `PROGRESS.md` and `design-reference/` into the project root. Make the first git commit (`chore: scaffold Expo SDK 58 project`).
+5. Run `npm run reset-project` (choose to move the demo into `app-example/`, then delete it later). Confirm the blank app still runs. Commit.
+6. Open VS Code extensions: ESLint, Prettier, Expo Tools, Error Lens (the template recommends Expo Tools in `.vscode/extensions.json`).
+7. **Install the Phase 3 packages one group at a time, confirming each group with the user** (§2 policy): storage and DB (`expo-sqlite`, async-storage), data (`@tanstack/react-query`, `zod`), UI (`react-native-svg`, fonts, `expo-haptics`, `expo-network`). Record versions in §5.
+8. Run `npx expo lint` and `npx tsc --noEmit`; both must pass. Update this file. Commit.
+
+**Definition of done for Phase 2:** project runs on the Android phone, blank screen with the correct fonts or system fonts, git initialised, docs in place, lint and type-check pass, §5 filled in.
+
+---
+
+## 7. Phase checklists (acceptance criteria)
+
+**Phase 3, Foundations**
+- [ ] `theme/tokens.ts`, `typography.ts`, `motion.ts`, `color.ts` (`mix()`), `useTheme()` returning light/dark by system setting or override
+- [ ] Fonts load; splash held until fonts + storage are ready
+- [ ] `lib/errors.ts` (`AppError`), `lib/logger.ts`, `lib/haptics.ts`
+- [ ] `data/storage/kv.ts` with zod-validated reads and safe fallbacks; favorites/team/settings modules
+- [ ] `data/db/database.ts` + migrations using `PRAGMA user_version`; app still works if DB open fails
+- [ ] `data/queries/queryClient.ts` with the retry rules from `ARCHITECTURE.md` §8.3
+- [ ] Root `ErrorBoundary`
+
+**Phase 4, Domain (pure TypeScript, tests first)**
+- [ ] `typeChart.ts`: all 18 types, dual-type product. Tests: Charizard (4× Rock, 0× Ground), Umbreon (0× Psychic), Eevee (no weaknesses in the 9-type draft but Fighting 2× in real chart)
+- [ ] `evolution.ts`: chain → tree; label builder; tests for Pichu line, Charmander line, Eevee, a non-evolving Pokémon
+- [ ] `sorting.ts`
+
+**Phase 5, Data**
+- [ ] `fetchJson` with timeout and error mapping; zod schemas
+- [ ] Repositories with read-through cache and offline behavior from `ARCHITECTURE.md` §8.2; tests for the four cache/network combinations
+- [ ] Query hooks (`usePokemon`, `usePokemonPages`, `useEvolutionChain`)
+
+**Phase 6, List**
+- [ ] Cards, search (name or number), type chips, sort row, count, 2-column `FlatList`, infinite scroll, skeletons, empty and error states, offline works for visited pages
+
+**Phase 7, Detail**
+- [ ] Hero + back/shiny/heart; stats; matchups (18 types); evolution tree (branching, tap to navigate); skeletons per section; entrance motion
+
+**Phase 8, Team / Saved / Picker**
+- [ ] Six slots, picker sheet, remove, clear, weak-spot table, average stats; Saved grid; persistence across app restarts; disabled add when full
+
+**Phase 9, Motion and haptics**
+- [ ] Tab slide + indicator, detail parallax and a *visible* close animation, slot pop, shiny swap and sparkles, launch animation (once per cold start, skippable), haptics map, reduced-motion behavior
+
+**Phase 10, QA**
+- [ ] Airplane-mode test: visited Pokémon and their evolution chains open offline
+- [ ] Force failures: 404, 429, bad JSON, corrupt AsyncStorage value, DB open failure, each shows the right state
+- [ ] Dark mode and light mode on every screen
+- [ ] TalkBack pass on the main flow; font scaling at 130%
+- [ ] No console errors or warnings
+
+**Phase 11, Release**
+- [ ] README with a GIF/screenshots, feature list, architecture summary, "what I learned"
+- [ ] Android build via EAS; APK linked in the README
+- [ ] Clean commit history
+
+---
+
+## 8. State of the design draft (what was approved)
+
+The HTML draft implements (and the user approved): list with search, type chips, sort (Number/Name/Power + direction), 2-column cards with favorites; detail with hero, shiny toggle, stats, type matchups, evolution tree (Bulbasaur, Charmander, Squirtle, Pichu and Eevee families); Team tab with six slots, add-to-team sheet, weak-spot table, average stats; Saved tab; dark mode; launch animation; tab, detail and sheet transitions; haptics cue; skeleton visuals.
+
+Late changes made on request:
+- Light mode background is **white**; inputs, chips and round buttons use `#e9f0ee`.
+- Selected **All** chip in dark mode fixed (white text on a dark slate background).
+- Launch animation plays **once per launch** only; replay button removed.
+- Artificial loading delays **removed**.
+- Compare screen **cancelled**.
+
+Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ball artwork.
+
+---
+
+## 9. Session log
+
+### Session 1, 2026-11-04 (planning and design)
+- Chose the stack direction: Expo + Expo Router + TypeScript, TanStack Query, SQLite for cached API data, AsyncStorage for favorites/team/settings.
+- Chose the project: Pokédex with an **evolution chain viewer** as the signature feature, plus Team builder.
+- Built and iterated the HTML design draft (see §8).
+- Wrote `ARCHITECTURE.md`, `DESIGN.md`, `PROGRESS.md`.
+- Verified current versions against the npm registry and Expo's release notes (§4). Found that **Expo Go on the Play Store may not yet support SDK 58** and that the **Node requirement is 22.13+** (earlier note of "Node 20+" was wrong). Nothing was installed or scaffolded.
+- **Decision:** the user chose **Expo SDK 58**. Checks passed: Node v24.19.0, and Expo Go on their Android phone shows SDK 58 (OD-1 resolved).
+- **Next action:** Phase 2 step 3: scaffold with `npx create-expo-app@latest pokedex --template default@sdk-58`, run it on the phone before changing anything.
+
+<!-- Add new sessions above this line, newest first. Template:
+
+### Session N, YYYY-MM-DD (short title)
+- What changed (files, features)
+- Decisions made (and the ARCHITECTURE decision-log IDs)
+- Packages installed (and the §5 rows)
+- Problems hit and fixes
+- Next action
+-->
