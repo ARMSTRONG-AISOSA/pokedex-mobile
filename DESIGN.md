@@ -146,7 +146,8 @@ Title "Pokédex" + subtitle "Find a Pokémon, then follow its evolutions." → s
 - Empty result: **"Nothing matches"** / "Try another name, or clear the type filter."
 
 ### 5.2 Detail
-Hero (type `d` color): back button, shiny button, heart button, name, dex number, type pills, large artwork lower right, faint Poké Ball outline behind. Sheet below, in order: **Add to team** button → **Evolution chain** → **Base stats** → **Type matchups**.
+Hero (type `d` color): back button, shiny button, heart button, name, dex number, type pills, large artwork lower right, faint Poké Ball outline behind. Sheet below, in order: **Add to team** button → **About** → **Evolution chain** → **Base stats** → **Type matchups**.
+- **About** (added by the user 2026-11-04, see the draft): category (“Seed Pokémon”) with a **Baby** badge for baby Pokémon (type-tinted, like a pill); the newest English Pokédex entry; three fact boxes (`field` background, radius 16): **Height** (m), **Weight** (kg), **Generation** (Roman numeral); **Abilities** chips, hidden ones marked “hidden”; then “Evolves from {Name}” as an underlined link that opens that Pokémon, or “First stage of its family.” Fades in (300 ms, rises 6 px). Each Pokémon has its own, so it changes when you open another stage.
 - Evolution note text: branching families say "{Name} can become N different Pokémon. Tap one to open it."; others say "N stages. Tap any Pokémon to open it."
 - Stats: six bars scaled to 150 max, plus Total.
 - Matchups: groups **Weak to**, **Resists**, **Immune to** (only shown if any). Pills show multipliers `4×`, `2×`, `½×`, `¼×`. The draft shows "None in this draft" for empty groups; in the app use "None".

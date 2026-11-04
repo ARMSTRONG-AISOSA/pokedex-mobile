@@ -164,3 +164,13 @@ export function evolutionNote(root: EvolutionNode, currentId: number): string {
   }
   return `${stageCount(root)} stages. Tap any Pokémon to open it.`;
 }
+
+/** The Pokémon that evolves into `id`, or undefined for the first stage. */
+export function parentOf(root: EvolutionNode, id: number): EvolutionNode | undefined {
+  for (const child of root.children) {
+    if (child.id === id) return root;
+    const found = parentOf(child, id);
+    if (found) return found;
+  }
+  return undefined;
+}

@@ -60,6 +60,34 @@ export const summarySchema = z.object({
   errors: z.array(z.object({ message: z.string() })).optional(),
 });
 
+/** GraphQL "About" data for one species (about 500 bytes). */
+export const aboutSchema = z.object({
+  data: z
+    .object({
+      species: z.array(
+        z.object({
+          id: z.number().int().positive(),
+          name: z.string(),
+          is_baby: z.boolean(),
+          generation: z.object({ name: z.string() }).nullable(),
+          names: z.array(z.object({ genus: z.string() })),
+          entries: z.array(z.object({ flavor_text: z.string() })),
+          pokemons: z.array(
+            z.object({
+              height: z.number().nullable(),
+              weight: z.number().nullable(),
+              pokemonabilities: z.array(
+                z.object({ is_hidden: z.boolean(), ability: z.object({ name: z.string() }).nullable() }),
+              ),
+            }),
+          ),
+        }),
+      ),
+    })
+    .nullish(),
+  errors: z.array(z.object({ message: z.string() })).optional(),
+});
+
 /** `/pokemon-species/{id}` */
 export const speciesSchema = z.object({
   id: z.number().int().positive(),

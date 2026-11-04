@@ -1,8 +1,10 @@
-import { artworkUrls, fetchSummary, toPokemon } from '@/data/api/pokeapi';
+import { artworkUrls, fetchSummary, toAbout, toPokemon } from '@/data/api/pokeapi';
 import { evolutionChainSchema, pokemonSchema } from '@/data/api/schemas';
 import { buildEvolutionTree } from '@/domain/evolution';
 
 import eeveeChain from '@/domain/__tests__/fixtures/evolution-chain-eevee.json';
+import graphqlAbout1 from './fixtures/graphql-about-1.json';
+import graphqlAbout172 from './fixtures/graphql-about-172.json';
 import graphqlSummary from './fixtures/graphql-summary.json';
 import pecharunt from './fixtures/pokemon-1025.json';
 import pikachu from './fixtures/pokemon-25.json';
@@ -108,5 +110,43 @@ describe('fetchSummary (GraphQL)', () => {
   it('an empty list → PARSE', async () => {
     reply({ data: { pokemon: [] } });
     await expect(fetchSummary()).rejects.toMatchObject({ code: 'PARSE' });
+  });
+});
+
+describe('toAbout (GraphQL)', () => {
+  it('maps Bulbasaur: units converted, text cleaned, hidden ability marked', () => {
+    expect(toAbout(graphqlAbout1)).toEqual({
+      genus: 'Seed Pokémon',
+      flavorText:
+        'While it is young, it uses the nutrients that are stored in the seed on its back in order to grow.',
+      generation: 'I',
+      isBaby: false,
+      heightM: 0.7,
+      weightKg: 6.9,
+      abilities: [
+        { name: 'Overgrow', hidden: false },
+        { name: 'Chlorophyll', hidden: true },
+      ],
+    });
+  });
+
+  it('marks Pichu as a baby from Generation II', () => {
+    const about = toAbout(graphqlAbout172);
+    expect(about).toMatchObject({ isBaby: true, generation: 'II', genus: 'Tiny Mouse Pokémon' });
+    expect(about.abilities.map((a) => a.name)).toEqual(['Static', 'Lightning Rod']);
+  });
+
+  it('an unknown id → NOT_FOUND', () => {
+    expect(() => toAbout({ data: { species: [] } })).toThrow(expect.objectContaining({ code: 'NOT_FOUND' }));
+  });
+
+  it('a GraphQL error → SERVER, retryable', () => {
+    expect(() => toAbout({ errors: [{ message: 'boom' }] })).toThrow(
+      expect.objectContaining({ code: 'SERVER', retryable: true }),
+    );
+  });
+
+  it('a wrong shape → PARSE', () => {
+    expect(() => toAbout({ data: { species: [{ id: 'x' }] } })).toThrow(expect.objectContaining({ code: 'PARSE' }));
   });
 });

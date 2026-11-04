@@ -37,6 +37,10 @@ const migrations: readonly string[] = [
   `
   CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL, fetched_at INTEGER NOT NULL);
   `,
+  // 3: the detail screen's About section (one JSON row per species)
+  `
+  CREATE TABLE pokemon_about (id INTEGER PRIMARY KEY, about_json TEXT NOT NULL, fetched_at INTEGER NOT NULL);
+  `,
 ];
 
 export const LATEST_VERSION = migrations.length;

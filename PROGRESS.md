@@ -201,6 +201,17 @@ Do these in order. Stop and ask where marked.
 6. Charizard's matchups: Weak to Rock 4×, Water 2×, Electric 2×; Immune to Ground.
 7. Open a Pokémon you haven't opened before with slow internet: the evolution section shows skeleton blocks until it loads.
 
+**Phase 7b, About section (user request 2026-11-04)**
+*Built 2026-11-04 (session 2). Tick after the device check.*
+- [ ] Category + Baby badge, Pokédex entry (cleaned), Height / Weight / Generation boxes, ability chips (hidden marked), “Evolves from {Name}” link / “First stage of its family.”; skeleton while loading; inline error + Retry
+- [ ] Data: GraphQL per species (D-024), SQLite `pokemon_about` (migration 3), 30-day refresh. Domain helpers + mapping tested (158 tests)
+
+**Device check for the About section:**
+1. Bulbasaur: “Seed Pokémon”, an entry about the seed on its back, 0.7 m, 6.9 kg, Generation I, Overgrow + Chlorophyll (hidden), “First stage of its family.”
+2. Tap Ivysaur in the tree: the About text, height and weight change; it says “Evolves from Bulbasaur”. Tap that link: back to Bulbasaur in place.
+3. Pichu shows a **Baby** badge and Generation II. Eevee lists three abilities.
+4. A Pokémon you've never opened shows grey skeleton lines first, then the text fades in.
+
 **Phase 8, Team / Saved / Picker**
 - [ ] Six slots, picker sheet, remove, clear, weak-spot table, average stats; Saved grid; persistence across app restarts; disabled add when full
 
@@ -267,7 +278,10 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - The user confirmed the Phase 6 device check passed. **Phase 6 done.** The user noticed there's no startup animation yet; it's planned for Phase 9 (launch animation). Expo Go never shows the app's own splash; that needs a real build.
 - **Phase 7 built** (session 2, later): `features/detail/*` (detail-screen, detail-hero + HeroArtwork overlay, evolution-tree, stat-bars, matchup-groups, team-button, sparkles), real `pokemon/[id]` route with its own ErrorBoundary. `TypePill` got `onColor`/`large`/`suffix`; `IconButton` got `tone="onColor"`; new sparkle icon. Team/favorite toggles work from the detail screen already (Phase 8 builds the Team and Saved tabs).
 - No component tests yet (provider/mocking setup is still to do); covered by the device check.
-- **Next action:** Phase 7 device check (§7), then Phase 8 (Team, Saved, add-to-team sheet).
+- The user confirmed the Phase 7 device check passed. **Phase 7 done.**
+- **New feature (user request):** an **About** section on the detail screen. The user added it to the HTML draft (committed as `design: add About section…`). Built: `domain/about.ts` (+ `parentOf` in evolution.ts), GraphQL `fetchAbout`/`toAbout`, `data/db/aboutRepo.ts`, migration 3 (`pokemon_about`), `useAbout`, `features/detail/about-section.tsx`. DESIGN.md §5.2 and ARCHITECTURE.md §7 updated; D-024.
+- **Next action:** device check for the About section (§7 “Phase 7b”), then Phase 8 (Team, Saved, add-to-team sheet).
+- *(Earlier:)* Phase 7 device check (§7), then Phase 8 (Team, Saved, add-to-team sheet).
 - *(Earlier:)* Phase 7 (detail screen), unless the user wants the launch animation pulled forward.
 - *(Earlier:)* Phase 6 device check (§7), then Phase 7 (detail screen).
 - *(Earlier next action, done:)* device check for Phase 5 (§7), then Phase 6 (list screen). Raise the Phase 6 open question about sort/filter across all Pokémon.

@@ -236,6 +236,8 @@ This is the single source of truth for persistence. If you add data, add a row h
 | Pokémon list index (id, name) | **SQLite** `pokemon_index` | `(id, name)` | Search by name offline |
 | Species → chain id | **SQLite** `species` | `(id, evolution_chain_id, fetched_at)` | Avoid the extra species call |
 | Evolution chains | **SQLite** `evolution_chain` | `(id, tree_json, fetched_at)` | Normalized tree stored once, reused by every member of the family |
+| About (category, Pokédex entry, height, weight, generation, abilities) | **SQLite** `pokemon_about` (migration 3) | `(id, about_json, fetched_at)` | One small GraphQL request per species (~500 bytes), 30-day refresh (D-024) |
+| Cache facts (species count, summary/name-index dates) | **SQLite** `meta` (migration 2) | `(key, value, fetched_at)` | |
 | Schema version | SQLite `PRAGMA user_version` | integer | Migrations (see §8) |
 | **Favorites** | **AsyncStorage** `pokedex:v1:favorites` | `number[]` | Tiny, read all at once, needed at startup |
 | **Team** (≤ 6) | **AsyncStorage** `pokedex:v1:team` | `number[]` | Tiny. Move to SQLite only if multiple named teams are added (see D-010) |
@@ -472,3 +474,4 @@ Run `npx expo lint` and `npx tsc --noEmit` before every commit. Target: domain l
 | D-021 | List data = one GraphQL summary request (`graphql.pokeapi.co/v1beta2`) for all species (name, types, stats; ~25 KB compressed), saved in SQLite, 30-day refresh. Artwork URLs built from the id. If it fails, fall back to REST paging (sort/filter then cover only loaded Pokémon, with a note) | ✅ chosen by the user | 2026-11-04 | Bundle the summary in the app (build script); sort/filter only what's loaded (misleading); REST for all 1025 (~200 MB, because `/pokemon/{id}` includes every move) |
 | D-022 | Tabs from `expo-router/js-tabs` (the `expo-router` `Tabs` export is deprecated in SDK 58); custom bar uses the new `navigateToTab` + `emitter` props | ✅ | 2026-11-04 | Deprecated import |
 | D-023 | Reanimated shared values are written with `.set()` (React Compiler lint rule `react-hooks/immutability` rejects `.value =`) | ✅ | 2026-11-04 | n/a |
+| D-024 | Detail “About” data from one GraphQL request per species (~500 bytes), cached in `pokemon_about` with the 30-day rule; on failure only the About section shows an error + Retry | ✅ (feature requested by the user) | 2026-11-04 | REST `/pokemon/{id}` + `/pokemon-species/{id}` (~300 KB per Pokémon because of the move list) |

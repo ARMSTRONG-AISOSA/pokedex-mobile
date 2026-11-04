@@ -64,6 +64,9 @@ onDataRefreshed((event) => {
       queryClient.setQueryData(queryKeys.allPokemon, event.list);
       for (const pokemon of event.list) queryClient.setQueryData(queryKeys.pokemon(pokemon.id), pokemon);
       break;
+    case 'about':
+      queryClient.setQueryData(queryKeys.about(event.speciesId), event.about);
+      break;
     case 'evolution':
       // Every member of the family shares the tree, so refresh them all (from SQLite, no network).
       queryClient.invalidateQueries({ queryKey: ['evolution'] });

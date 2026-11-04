@@ -1,5 +1,9 @@
+import { cleanFlavorText, generationLabel, type PokemonAbout } from '@/domain/about';
 import { buildEvolutionTree, idFromUrl } from '@/domain/evolution';
+import { titleCase } from '@/domain/names';
 import { isTypeName, type EvolutionNode, type Pokemon, type Stats } from '@/domain/types';
+import { z } from 'zod';
+
 import { AppError } from '@/lib/errors';
 
 import { fetchJson, postJson } from './client';
@@ -8,6 +12,7 @@ import {
   pokemonSchema,
   speciesListSchema,
   speciesSchema,
+  aboutSchema,
   summarySchema,
   type PokemonResponse,
 } from './schemas';
@@ -136,4 +141,51 @@ export async function fetchEvolutionChainId(speciesId: number): Promise<number |
 export async function fetchEvolutionTree(chainId: number): Promise<EvolutionNode> {
   const data = await fetchJson(`/evolution-chain/${chainId}`, evolutionChainSchema);
   return buildEvolutionTree(data.chain);
+}
+
+const ABOUT_QUERY = `query About($id: Int!) {
+  species: pokemonspecies(where: {id: {_eq: $id}}) {
+    id
+    name
+    is_baby
+    generation { name }
+    names: pokemonspeciesnames(where: {language: {name: {_eq: "en"}}}) { genus }
+    entries: pokemonspeciesflavortexts(where: {language: {name: {_eq: "en"}}}, order_by: {version_id: desc}, limit: 1) { flavor_text }
+    pokemons(where: {is_default: {_eq: true}}) {
+      height
+      weight
+      pokemonabilities(order_by: {slot: asc}) { is_hidden ability { name } }
+    }
+  }
+}`;
+
+/** API shape → app shape for the About section. Height is in decimetres, weight in hectograms. */
+export function toAbout(body: unknown): PokemonAbout {
+  const parsed = aboutSchema.safeParse(body);
+  if (!parsed.success) throw new AppError('PARSE', 'Unexpected About response', { retryable: false, cause: parsed.error });
+  const { data, errors } = parsed.data;
+  if (!data || errors?.length) {
+    throw new AppError('SERVER', `GraphQL error: ${errors?.[0]?.message ?? 'no data'}`, { retryable: true });
+  }
+  const species = data.species[0];
+  if (!species) throw new AppError('NOT_FOUND', 'No such species');
+  const form = species.pokemons[0];
+  return {
+    genus: species.names[0]?.genus ?? null,
+    flavorText: species.entries[0] ? cleanFlavorText(species.entries[0].flavor_text) : null,
+    generation: species.generation ? generationLabel(species.generation.name) : null,
+    isBaby: species.is_baby,
+    heightM: form?.height != null ? form.height / 10 : null,
+    weightKg: form?.weight != null ? form.weight / 10 : null,
+    abilities: (form?.pokemonabilities ?? []).flatMap((a) =>
+      a.ability ? [{ name: titleCase(a.ability.name), hidden: a.is_hidden }] : [],
+    ),
+  };
+}
+
+/** Category, Pokédex entry, height, weight, generation and abilities for one species. */
+export async function fetchAbout(speciesId: number): Promise<PokemonAbout> {
+  // The schema is permissive here; `toAbout` does the real check and error mapping.
+  const body = await postJson(GRAPHQL_URL, { query: ABOUT_QUERY, variables: { id: speciesId } }, z.unknown());
+  return toAbout(body);
 }

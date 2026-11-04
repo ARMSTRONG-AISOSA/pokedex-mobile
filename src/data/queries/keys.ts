@@ -4,6 +4,7 @@ export const queryKeys = {
   allPokemon: ['pokemon-all'] as const,
   pokemonPages: ['pokemon-pages'] as const,
   evolution: (speciesId: number) => ['evolution', speciesId] as const,
+  about: (speciesId: number) => ['about', speciesId] as const,
   search: (query: string) => ['search', query] as const,
 };
 

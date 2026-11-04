@@ -15,6 +15,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { Icon } from '@/components/ui/icon';
 import { IconButton } from '@/components/ui/icon-button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAbout } from '@/data/queries/useAbout';
 import { useEvolutionChain } from '@/data/queries/useEvolutionChain';
 import { usePokemon } from '@/data/queries/usePokemon';
 import { TEAM_SIZE } from '@/data/storage/team';
@@ -27,6 +28,7 @@ import { ease } from '@/theme/motion';
 import { layout } from '@/theme/tokens';
 import { useTheme } from '@/theme/useTheme';
 
+import { AboutSection, AboutSkeleton } from './about-section';
 import { ART_BOTTOM, ART_SIZE, DetailHero, HeroArtwork } from './detail-hero';
 import { EvolutionTree, EvolutionTreeSkeleton } from './evolution-tree';
 import { MatchupGroups } from './matchup-groups';
@@ -42,6 +44,7 @@ export function DetailScreen({ id }: { id: number }) {
   const { colors, typeColors, text, scheme } = useTheme();
   const pokemon = usePokemon(id);
   const evolution = useEvolutionChain(id);
+  const about = useAbout(id);
   const { favorites, setFavorites, team, setTeam } = useUserData();
   const [shiny, setShiny] = useState(false);
   const [heroHeight, setHeroHeight] = useState(0);
@@ -125,6 +128,22 @@ export function DetailScreen({ id }: { id: number }) {
               {saveError}
             </Text>
           ) : null}
+
+          <Section title="About">
+            {about.data ? (
+              <AboutSection
+                about={about.data}
+                pokemonId={p.id}
+                type={p.types[0]}
+                tree={evolution.data}
+                onOpen={openFromTree}
+              />
+            ) : about.isError ? (
+              <ErrorState {...errorCopy(about.error)} colors={colors} onRetry={() => void about.refetch()} />
+            ) : (
+              <AboutSkeleton />
+            )}
+          </Section>
 
           <Section title="Evolution chain">
             {evolution.data ? (
