@@ -45,7 +45,7 @@ Last updated: **2026-11-04** · Session: **2**
 | 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ✅ Done 2026-11-04 (97 tests pass, 99% coverage of `src/domain`) |
 | 5. Data layer (API client, schemas, repositories, hooks) | ✅ Done 2026-11-04 (137 tests; SQLite checked on the user's phone) |
 | 6. Pokédex list screen | ✅ Done 2026-11-04 (checked on the user's phone) |
-| 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ⬜ |
+| 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ⏳ Built; tsc, lint, tests, Android bundle pass. **Waiting on a device check** |
 | 8. Team builder, Saved, add-to-team sheet | ⬜ |
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ⬜ |
 | 10. Offline and error QA, accessibility, dark mode pass | ⬜ |
@@ -184,7 +184,22 @@ Do these in order. Stop and ask where marked.
 6. Reload the app (`r`): the list appears quickly with no skeletons (read from SQLite).
 
 **Phase 7, Detail**
-- [ ] Hero + back/shiny/heart; stats; matchups (18 types); evolution tree (branching, tap to navigate); skeletons per section; entrance motion
+*Built 2026-11-04 (session 2). Tick after the device check.*
+- [ ] Hero (type color, faint ball ring, back/shiny/heart, name, number, pills) + large artwork drawn as an overlay so it overlaps the sheet like the draft
+- [ ] “Add to team” / “Remove from team” / disabled “Team is full (6 of 6)” (works now; uses the saved team) + heart saves favorites; a failed save shows “Couldn’t save…”
+- [ ] Evolution tree: recursive, branching bracket, labeled arrows, current node highlighted, tap a node to open it in place (`router.setParams`), sideways scroll for wide trees, skeleton while loading, inline error + Retry
+- [ ] Stats (bars scaled to 150, grow 0→value in 700 ms) + Total; Type matchups (Weak to / Resists / Immune to, all 18 types)
+- [ ] Entrance motion (art rolls in, name rises, sheet rises), shiny swap pop + 3 staggered sparkles; reduced motion skips them
+- [ ] Route-level `ErrorBoundary` for the detail screen
+
+**Device check for Phase 7:**
+1. Open Bulbasaur: green header, artwork rolls in from the right, name rises, sheet slides up. The artwork overlaps the sheet's top edge slightly.
+2. Evolution chain: Bulbasaur → (Level 16) Ivysaur → (Level 32) Venusaur, Bulbasaur highlighted. Tap Venusaur: the screen switches to Venusaur in place. Back returns to the list (not to Bulbasaur).
+3. Open Eevee: 8 branches stacked with a bracket line; labels such as “Friendship, night” and “Leaf Stone”. Open Tauros: “Tauros does not evolve.”
+4. Shiny button: artwork pops with 3 sparkles; tap again for normal colors. Open another Pokémon: shiny is off again.
+5. Heart: fills, vibrates; back on the list the card shows a heart. Add to team: the button flips to “Remove from team”. Add 6 different Pokémon, then a 7th shows “Team is full (6 of 6)” (disabled).
+6. Charizard's matchups: Weak to Rock 4×, Water 2×, Electric 2×; Immune to Ground.
+7. Open a Pokémon you haven't opened before with slow internet: the evolution section shows skeleton blocks until it loads.
 
 **Phase 8, Team / Saved / Picker**
 - [ ] Six slots, picker sheet, remove, clear, weak-spot table, average stats; Saved grid; persistence across app restarts; disabled add when full
@@ -250,7 +265,10 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - Resilience fixes found while trying a web preview: the database open now gives up after 8 s (a *hung* open would have kept the splash up forever), and the network listener is skipped during web server rendering. The web preview itself never rendered in headless Chrome (web isn't a target; it was only for screenshots), so it was abandoned and all temporary changes reverted.
 - 143 tests pass; tsc, lint, Android bundle pass.
 - The user confirmed the Phase 6 device check passed. **Phase 6 done.** The user noticed there's no startup animation yet; it's planned for Phase 9 (launch animation). Expo Go never shows the app's own splash; that needs a real build.
-- **Next action:** Phase 7 (detail screen), unless the user wants the launch animation pulled forward.
+- **Phase 7 built** (session 2, later): `features/detail/*` (detail-screen, detail-hero + HeroArtwork overlay, evolution-tree, stat-bars, matchup-groups, team-button, sparkles), real `pokemon/[id]` route with its own ErrorBoundary. `TypePill` got `onColor`/`large`/`suffix`; `IconButton` got `tone="onColor"`; new sparkle icon. Team/favorite toggles work from the detail screen already (Phase 8 builds the Team and Saved tabs).
+- No component tests yet (provider/mocking setup is still to do); covered by the device check.
+- **Next action:** Phase 7 device check (§7), then Phase 8 (Team, Saved, add-to-team sheet).
+- *(Earlier:)* Phase 7 (detail screen), unless the user wants the launch animation pulled forward.
 - *(Earlier:)* Phase 6 device check (§7), then Phase 7 (detail screen).
 - *(Earlier next action, done:)* device check for Phase 5 (§7), then Phase 6 (list screen). Raise the Phase 6 open question about sort/filter across all Pokémon.
 - *(Earlier next action, done:)* Phase 5 (data layer): `fetchJson` + zod schemas + repositories + query hooks. Decide OQ-3 (how to fill the list) at the start.

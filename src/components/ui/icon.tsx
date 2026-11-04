@@ -11,7 +11,9 @@ export type IconName =
   | 'grid'
   | 'shield'
   | 'close'
-  | 'back';
+  | 'back'
+  | 'sparkle'
+  | 'sparkle-filled';
 
 type Props = { name: IconName; size?: number; color: string; strokeWidth?: number };
 
@@ -54,6 +56,13 @@ export function Icon({ name, size = 24, color, strokeWidth = 2 }: Props) {
       {name === 'shield' ? <Path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z" {...stroke} /> : null}
       {name === 'close' ? <Path d="M6 6l12 12M18 6L6 18" {...stroke} /> : null}
       {name === 'back' ? <Path d="M15 5l-7 7 7 7" {...stroke} /> : null}
+      {name === 'sparkle' || name === 'sparkle-filled' ? (
+        <Path
+          d="M12 3l2.2 6.3L21 12l-6.8 2.7L12 21l-2.2-6.3L3 12l6.8-2.7z"
+          {...stroke}
+          fill={name === 'sparkle-filled' ? color : 'none'}
+        />
+      ) : null}
     </Svg>
   );
 }

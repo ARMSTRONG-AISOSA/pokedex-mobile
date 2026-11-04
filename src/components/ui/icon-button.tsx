@@ -11,11 +11,21 @@ type Props = {
   /** Round by default; the sort-direction button uses a rounded square. */
   shape?: 'circle' | 'square';
   selected?: boolean;
+  /** "onColor" = translucent white, for the colored detail header. */
+  tone?: 'default' | 'onColor';
   style?: StyleProp<ViewStyle>;
 };
 
 /** 44×44 button with the soft `field` background (DESIGN.md §4). */
-export function IconButton({ accessibilityLabel, onPress, children, shape = 'circle', selected, style }: Props) {
+export function IconButton({
+  accessibilityLabel,
+  onPress,
+  children,
+  shape = 'circle',
+  selected,
+  tone = 'default',
+  style,
+}: Props) {
   const { colors } = useTheme();
   return (
     <Pressable
@@ -28,8 +38,9 @@ export function IconButton({ accessibilityLabel, onPress, children, shape = 'cir
         styles.base,
         {
           borderRadius: shape === 'circle' ? 22 : 14,
-          backgroundColor: colors.field,
-          borderColor: colors.line,
+          backgroundColor:
+            tone === 'onColor' ? (selected ? 'rgba(255,255,255,0.34)' : 'rgba(255,255,255,0.16)') : colors.field,
+          borderColor: tone === 'onColor' ? 'transparent' : colors.line,
           opacity: pressed ? 0.75 : 1,
         },
         style,
