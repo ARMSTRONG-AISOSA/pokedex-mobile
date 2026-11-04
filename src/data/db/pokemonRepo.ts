@@ -182,3 +182,11 @@ export async function searchPokemonIds(query: string): Promise<number[]> {
   const index = await getNameIndex();
   return index.filter((entry) => matchesQuery(entry, query)).map((entry) => entry.id);
 }
+
+/** How many Pokémon are saved on this phone, or null if the database is unavailable. */
+export async function countSavedPokemon(): Promise<number | null> {
+  const db = await getDatabase();
+  if (!db) return null;
+  const row = await db.getFirstAsync<{ n: number }>('SELECT COUNT(*) AS n FROM pokemon');
+  return row?.n ?? 0;
+}

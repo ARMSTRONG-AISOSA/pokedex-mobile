@@ -1,7 +1,9 @@
+import { useQuery } from '@tanstack/react-query';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ErrorState } from '@/components/ui/error-state';
+import { countSavedPokemon } from '@/data/db/pokemonRepo';
 import { useEvolutionChain } from '@/data/queries/useEvolutionChain';
 import { usePokemonPages } from '@/data/queries/usePokemonPages';
 import { useSettings } from '@/data/storage/user-data-provider';
@@ -26,6 +28,11 @@ export default function Index() {
   const [settings, setSettings] = useSettings();
   const pages = usePokemonPages();
   const eevee = useEvolutionChain(EEVEE);
+  // Re-counted each time a page arrives, so the number grows as you load more.
+  const saved = useQuery({
+    queryKey: ['debug-saved-count', pages.data?.pages.length ?? 0],
+    queryFn: countSavedPokemon,
+  });
 
   const nextTheme = THEME_ORDER[(THEME_ORDER.indexOf(settings.theme) + 1) % THEME_ORDER.length];
   const cycleTheme = () => {
@@ -47,6 +54,11 @@ export default function Index() {
         <View style={styles.headerText}>
           <Text style={[text.h1, { color: colors.ink }]}>Pokédex</Text>
           <Text style={[text.subtitle, { color: colors.muted }]}>Data layer check (temporary screen)</Text>
+          <Text style={[text.subtitle, { color: colors.muted }]}>
+            {saved.data === null
+              ? 'Offline cache unavailable'
+              : `Saved on this phone: ${saved.data ?? '…'} Pokémon`}
+          </Text>
         </View>
         <Pressable
           onPress={cycleTheme}

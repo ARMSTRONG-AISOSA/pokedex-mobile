@@ -161,9 +161,11 @@ Do these in order. Stop and ask where marked.
 - [x] Storage tests for `kv.ts` (corrupt data → default; failed save → `STORAGE`)
 
 **Device check for Phase 5** (temporary screen in `src/app/index.tsx`):
-1. Online: Eevee’s 8 evolutions appear with labels (Water Stone … Friendship, Fairy move); “Loaded 20 of 1025 Pokémon” with Bulbasaur…Raticate; “Load 20 more” adds 21–40.
-2. Close Expo Go fully, turn on **airplane mode**, reopen: everything loaded before still shows, with no error. (Expo Go itself needs the dev server, so if it can't reload in airplane mode, turn off Wi-Fi *data* only or test by stopping the network on the computer side; note what happened.)
-3. Still offline, tap “Load 20 more” past what was loaded: the “No connection” message appears, no crash.
+1. Online: Eevee's 8 evolutions appear with labels (Water Stone … Friendship, Fairy move). “Loaded 20 of 1025 Pokémon” shows Bulbasaur…Raticate, and “Saved on this phone” reaches 20.
+2. “Load 20 more” adds #021–#040, and the saved count grows to 40.
+3. Reload the app (`r` in the terminal). The saved count stays at 40 and the list comes back quickly (read from SQLite).
+4. With the app open, turn on airplane mode and tap “Load 20 more”. The “No connection” message appears and nothing crashes. Turn airplane mode off and tap again: it loads.
+*A cold start with no internet can't be tested in Expo Go, because Expo Go loads the code from the computer. Do that test with the APK in Phase 10/11.*
 
 **Open for Phase 6 (ask the user):** sorting by Name/Power and filtering by type across *all* 1025 Pokémon needs data we haven't downloaded yet (paging only fetches what you scroll to). Options to discuss when Phase 6 starts.
 
