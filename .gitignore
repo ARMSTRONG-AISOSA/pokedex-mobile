@@ -44,3 +44,6 @@ example
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# test coverage
+coverage/
