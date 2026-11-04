@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Type Color Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Figtree", system-ui, sans-serif;
+  }
+  .light { --bg:#ffffff; --surface:#ffffff; --field:#e9f0ee; --ink:#13222b; --muted:#55666e; --line:#d3dfdc; }
+  .dark  { --bg:#0e1618; --surface:#162226; --field:#162226; --ink:#e8f1f0; --muted:#94a7ac; --line:#263a3f; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: var(--body); background: #f3f6f5; color: #13222b; padding: 24px 16px 48px; }
+  h1 { font-family: var(--display); font-weight: 800; font-size: 32px; letter-spacing: -0.03em; }
+  .intro { color: #55666e; max-width: 62ch; margin: 8px 0 24px; line-height: 1.45; }
+  .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+  .mode { background: var(--bg); color: var(--ink); border-radius: 20px; padding: 18px 16px; border: 1px solid var(--line); }
+  .mode > h2 { font-family: var(--display); font-weight: 700; font-size: 20px; margin-bottom: 4px; }
+  .group-label { font-size: 13px; font-weight: 600; color: var(--muted); margin: 18px 0 10px; }
+  .group-label b { color: var(--ink); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .type { border-radius: 18px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--c) 30%, var(--line)); background: color-mix(in srgb, var(--c) 16%, var(--surface)); }
+  .hero { background: var(--d); color: #fff; padding: 10px 12px 12px; }
+  .hero .name { font-family: var(--display); font-weight: 800; font-size: 20px; letter-spacing: -0.02em; text-transform: capitalize; }
+  .hero .ratio { font-size: 11px; opacity: .85; }
+  .body { padding: 10px 12px 12px; display: grid; gap: 8px; }
+  .pill { justify-self: start; display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border-radius: 12px; font-size: 12px; font-weight: 600; background: color-mix(in srgb, var(--c) 24%, var(--surface)); text-transform: capitalize; }
+  .pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+  .bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .bar span { display: block; height: 100%; width: 68%; background: var(--c); border-radius: 3px; }
+  .hex { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .proposed .type { outline: 2px dashed color-mix(in srgb, var(--c) 60%, transparent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+  <h1>Type colors for review</h1>
+  <p class="intro">The <b>first 9</b> are already approved in the draft and are here for comparison. The <b>last 9</b> (dashed outline) are proposed and need your OK. Each tile shows the detail header (deep color, white text, contrast ratio), the card tint, a type pill and a stat bar.</p>
+  <div class="modes">
+    <section class="mode light"><h2>Light mode</h2><div class="slot"></div></section>
+    <section class="mode dark"><h2>Dark mode</h2><div class="slot"></div></section>
+  </div>
+<script>
+  const approved = [
+    ["grass","#4caf6a","#2f7d4a","5.06"],["poison","#9b59b6","#6f3a86","8.00"],["fire","#ee6b3a","#b8431a","5.45"],
+    ["flying","#7b9de0","#4a6cb8","5.09"],["water","#3b8fe0","#1f68b8","5.63"],["electric","#f2c230","#8a6500","5.33"],
+    ["normal","#9a9a8a","#636355","6.09"],["psychic","#e85d8f","#b32f66","5.97"],["dark","#6a5a55","#3d3431","12.11"],
+  ];
+  const proposed = [
+    ["fighting","#d6563b","#a8382a","6.43"],["ground","#c9a45a","#8a6a2a","5.03"],["rock","#a8a07a","#6e6742","5.70"],
+    ["bug","#9bbf3a","#5f7d1c","4.73"],["ghost","#7a62a8","#523f80","8.82"],["steel","#8da5b5","#4f6878","5.86"],
+    ["ice","#6fc7d6","#2a7f90","4.63"],["dragon","#5b6ee0","#3a47b0","7.75"],["fairy","#ec8fbd","#b0467f","5.21"],
+  ];
+  const tile = ([n,c,d,r]) => `
+    <div class="type" style="--c:${c};--d:${d}">
+      <div class="hero"><div class="name">${n}</div><div class="ratio">White text ${r}:1</div></div>
+      <div class="body"><span class="pill"><i></i>${n}</span><div class="bar"><span></span></div>
+      <div class="hex">c ${c} · d ${d}</div></div>
+    </div>`;
+  const html = `
+    <p class="group-label"><b>Approved</b> · already in the draft</p><div class="grid">${approved.map(tile).join("")}</div>
+    <div class="proposed"><p class="group-label"><b>Proposed</b> · needs your OK</p><div class="grid">${proposed.map(tile).join("")}</div></div>`;
+  document.querySelectorAll(".slot").forEach(s => s.innerHTML = html);
+</script>
+</body>
+</html>
