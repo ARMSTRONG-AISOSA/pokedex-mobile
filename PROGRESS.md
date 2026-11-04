@@ -45,7 +45,7 @@ Last updated: **2026-11-04** · Session: **2**
 | 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ✅ Done 2026-11-04 (97 tests pass, 99% coverage of `src/domain`) |
 | 5. Data layer (API client, schemas, repositories, hooks) | ✅ Done 2026-11-04 (137 tests; SQLite checked on the user's phone) |
 | 6. Pokédex list screen | ✅ Done 2026-11-04 (checked on the user's phone) |
-| 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ⏳ Built; tsc, lint, tests, Android bundle pass. **Waiting on a device check** |
+| 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ✅ Done 2026-11-04 (checked on the user's phone). Extra: **About** section (see below) |
 | 8. Team builder, Saved, add-to-team sheet | ⬜ |
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ⬜ |
 | 10. Offline and error QA, accessibility, dark mode pass | ⬜ |
@@ -184,13 +184,13 @@ Do these in order. Stop and ask where marked.
 6. Reload the app (`r`): the list appears quickly with no skeletons (read from SQLite).
 
 **Phase 7, Detail**
-*Built 2026-11-04 (session 2). Tick after the device check.*
-- [ ] Hero (type color, faint ball ring, back/shiny/heart, name, number, pills) + large artwork drawn as an overlay so it overlaps the sheet like the draft
-- [ ] “Add to team” / “Remove from team” / disabled “Team is full (6 of 6)” (works now; uses the saved team) + heart saves favorites; a failed save shows “Couldn’t save…”
-- [ ] Evolution tree: recursive, branching bracket, labeled arrows, current node highlighted, tap a node to open it in place (`router.setParams`), sideways scroll for wide trees, skeleton while loading, inline error + Retry
-- [ ] Stats (bars scaled to 150, grow 0→value in 700 ms) + Total; Type matchups (Weak to / Resists / Immune to, all 18 types)
-- [ ] Entrance motion (art rolls in, name rises, sheet rises), shiny swap pop + 3 staggered sparkles; reduced motion skips them
-- [ ] Route-level `ErrorBoundary` for the detail screen
+*Checked on the user's phone 2026-11-04.*
+- [x] Hero (type color, faint ball ring, back/shiny/heart, name, number, pills) + large artwork drawn as an overlay so it overlaps the sheet like the draft
+- [x] “Add to team” / “Remove from team” / disabled “Team is full (6 of 6)” (works now; uses the saved team) + heart saves favorites; a failed save shows “Couldn’t save…”
+- [x] Evolution tree: recursive, branching bracket, labeled arrows, current node highlighted, tap a node to open it in place (`router.setParams`), sideways scroll for wide trees, skeleton while loading, inline error + Retry
+- [x] Stats (bars scaled to 150, grow 0→value in 700 ms) + Total; Type matchups (Weak to / Resists / Immune to, all 18 types)
+- [x] Entrance motion (art rolls in, name rises, sheet rises), shiny swap pop + 3 staggered sparkles; reduced motion skips them
+- [x] Route-level `ErrorBoundary` for the detail screen
 
 **Device check for Phase 7:**
 1. Open Bulbasaur: green header, artwork rolls in from the right, name rises, sheet slides up. The artwork overlaps the sheet's top edge slightly.

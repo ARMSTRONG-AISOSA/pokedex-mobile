@@ -274,6 +274,23 @@
   .sk-pills .sk { width: 76px; height: 28px; border-radius: 14px; }
   .sk-label { width: 70px; height: 12px; margin-top: 14px; }
 
+  /* ---------- Detail: About ---------- */
+  .about { animation: fadeText .3s ease both; }
+  @keyframes fadeText { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .genus { margin: 0 0 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-weight: 600; font-size: 15px; }
+  .badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: color-mix(in srgb, var(--t) 24%, var(--surface)); }
+  .desc { margin: 0 0 16px; line-height: 1.5; }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }
+  .facts > div { padding: 10px 12px; border-radius: 16px; background: var(--field); border: 1px solid var(--line); }
+  .facts dt { font-size: 12.5px; color: var(--muted); }
+  .facts dd { margin: 2px 0 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .abil { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
+  .abil > span:first-child { font-size: 13.5px; color: var(--muted); margin-right: 2px; }
+  .ab-chip { padding: 6px 12px; border-radius: 14px; font-size: 13px; font-weight: 500; background: var(--field); border: 1px solid var(--line); }
+  .ab-chip em { font-style: normal; font-size: 12px; color: var(--muted); margin-left: 4px; }
+  .from { margin: 14px 0 0; font-size: 14px; color: var(--muted); }
+  .linkbtn { font-weight: 600; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; padding: 8px 2px; }
+
   /* ---------- Haptics cue (draft only: shows where a phone would buzz) ---------- */
   .haptic-cue { position: absolute; top: 12px; left: 50%; translate: -50% 0; z-index: 70; padding: 7px 14px; border-radius: 16px; background: #13222b; color: #fff; font-size: 12.5px; font-weight: 600; opacity: 0; transform: translateY(-8px); transition: opacity .2s ease, transform .2s ease; pointer-events: none; white-space: nowrap; }
   .haptic-cue.show { opacity: .95; transform: none; }
@@ -308,7 +325,7 @@
     .detail, .fill, .card { transition: none; }
     .splash { display: none; }
     .picker-sheet, .picker .scrim, #listScreen, #teamScreen, .tab-ind, .tab svg { transition: none; }
-    .sk, .spark, .big-art svg.swap, .dir svg, .haptic-cue { animation: none; transition: none; }
+    .sk, .spark, .big-art svg.swap, .dir svg, .haptic-cue, .about { animation: none; transition: none; }
     .enter-r, .enter-l, .detail.open .big-art, .detail.open .hero h2, .detail.open .hero .dexnum, .detail.open .sheet, .slot.pop { animation: none; }
   }
 </style>
@@ -952,6 +969,57 @@
     return '<div aria-busy="true"><span class="sr">Loading</span>' + row + row + '</div>';
   }
 
+  /* ---------- About ---------- */
+  // Placeholder text written for this draft. The real app shows the Pokédex entries returned by PokéAPI.
+  // Each Pokémon has its own entry, so the text changes when you tap another stage in the evolution tree.
+  var ABOUT = {
+    bulbasaur:  { genus: 'Seed Pokémon', gen: 'I', h: '0.7 m', w: '6.9 kg', ab: [['Overgrow'], ['Chlorophyll', 1]], text: 'A small plant bulb grows on its back from the day it is born. It soaks up sunlight to keep growing.' },
+    ivysaur:    { genus: 'Seed Pokémon', gen: 'I', h: '1.0 m', w: '13.0 kg', ab: [['Overgrow'], ['Chlorophyll', 1]], text: 'The bulb on its back has swelled into a bud. Its legs get stronger to carry the extra weight.' },
+    venusaur:   { genus: 'Seed Pokémon', gen: 'I', h: '2.0 m', w: '100.0 kg', ab: [['Overgrow'], ['Chlorophyll', 1]], text: 'A large flower blooms on its back. It draws warmth from the sun to power its heavy body.' },
+    charmander: { genus: 'Lizard Pokémon', gen: 'I', h: '0.6 m', w: '8.5 kg', ab: [['Blaze'], ['Solar Power', 1]], text: 'The flame on its tail tip shows how healthy it is. It likes warm, dry places.' },
+    charmeleon: { genus: 'Flame Pokémon', gen: 'I', h: '1.1 m', w: '19.0 kg', ab: [['Blaze'], ['Solar Power', 1]], text: 'Its tail flame burns hotter now, and it has a short temper. It swings its tail to win fights.' },
+    charizard:  { genus: 'Flame Pokémon', gen: 'I', h: '1.7 m', w: '90.5 kg', ab: [['Blaze'], ['Solar Power', 1]], text: 'It spreads its wings and soars high above the mountains. Its fiery breath is hot enough to scorch rock.' },
+    squirtle:   { genus: 'Tiny Turtle Pokémon', gen: 'I', h: '0.5 m', w: '9.0 kg', ab: [['Torrent'], ['Rain Dish', 1]], text: 'It pulls into its shell to dodge danger, then fires back with a jet of water.' },
+    wartortle:  { genus: 'Turtle Pokémon', gen: 'I', h: '1.0 m', w: '22.5 kg', ab: [['Torrent'], ['Rain Dish', 1]], text: 'Fluffy ears and a furry tail help it steer while swimming. Its shell is thicker than before.' },
+    blastoise:  { genus: 'Shellfish Pokémon', gen: 'I', h: '1.6 m', w: '85.5 kg', ab: [['Torrent'], ['Rain Dish', 1]], text: 'Water cannons on its shell can blast with enough force to dent steel.' },
+    pichu:      { genus: 'Tiny Mouse Pokémon', gen: 'II', h: '0.3 m', w: '2.0 kg', ab: [['Static'], ['Lightning Rod', 1]], text: 'Still too young to control its power, it sometimes startles itself with sparks.' },
+    pikachu:    { genus: 'Mouse Pokémon', gen: 'I', h: '0.4 m', w: '6.0 kg', ab: [['Static'], ['Lightning Rod', 1]], text: 'Its cheeks store electricity. Groups often gather where the air tingles before a storm.' },
+    raichu:     { genus: 'Mouse Pokémon', gen: 'I', h: '0.8 m', w: '30.0 kg', ab: [['Static'], ['Lightning Rod', 1]], text: 'So much electricity builds up in its body that it lets it out through its tail to stay safe.' },
+    eevee:      { genus: 'Evolution Pokémon', gen: 'I', h: '0.3 m', w: '6.5 kg', ab: [['Run Away'], ['Adaptability'], ['Anticipation', 1]], text: 'Its body can adapt to many environments. This flexibility lets it change into several different forms.' },
+    vaporeon:   { genus: 'Bubble Jet Pokémon', gen: 'I', h: '1.0 m', w: '29.0 kg', ab: [['Water Absorb'], ['Hydration', 1]], text: 'Its body blends into water. It lives near clear lakes and rivers and rarely leaves them.' },
+    jolteon:    { genus: 'Lightning Pokémon', gen: 'I', h: '0.8 m', w: '24.5 kg', ab: [['Volt Absorb'], ['Quick Feet', 1]], text: 'Its fur bristles with static. It gathers charge from the air and can shoot sharp needles.' },
+    flareon:    { genus: 'Flame Pokémon', gen: 'I', h: '0.9 m', w: '25.0 kg', ab: [['Flash Fire'], ['Guts', 1]], text: 'Its fluffy fur hides a body that runs very hot. It breathes out flames when it gets angry.' },
+    espeon:     { genus: 'Sun Pokémon', gen: 'II', h: '0.9 m', w: '26.5 kg', ab: [['Synchronize'], ['Magic Bounce', 1]], text: 'Its fur senses tiny changes in the air. It can tell trouble is coming before it arrives.' },
+    umbreon:    { genus: 'Moonlight Pokémon', gen: 'II', h: '1.0 m', w: '27.0 kg', ab: [['Synchronize'], ['Inner Focus', 1]], text: 'The rings on its body glow in the dark. It hides in shadow and waits for the right moment.' }
+  };
+  function parentOf(node, k) {
+    for (var i = 0; i < node.kids.length; i++) {
+      var c = node.kids[i];
+      if (c.k === k) return node.k;
+      var r = parentOf(c, k);
+      if (r) return r;
+    }
+    return null;
+  }
+  function aboutSection(p) {
+    var a = ABOUT[p.k];
+    var from = parentOf(chainFor(p.k), p.k);
+    var sec = document.createElement('section');
+    sec.className = 'about';
+    var abil = a.ab.map(function (x) {
+      return '<span class="ab-chip">' + x[0] + (x[1] ? '<em>hidden</em>' : '') + '</span>';
+    }).join('');
+    sec.innerHTML = '<h3>About</h3>' +
+      '<p class="genus">' + a.genus + (p.k === 'pichu' ? '<span class="badge">Baby</span>' : '') + '</p>' +
+      '<p class="desc">' + a.text + '</p>' +
+      '<dl class="facts"><div><dt>Height</dt><dd>' + a.h + '</dd></div><div><dt>Weight</dt><dd>' + a.w + '</dd></div><div><dt>Generation</dt><dd>' + a.gen + '</dd></div></dl>' +
+      '<div class="abil"><span>Abilities</span>' + abil + '</div>' +
+      (from
+        ? '<p class="from">Evolves from <button class="linkbtn" data-open="' + BY[from].id + '">' + BY[from].name + '</button></p>'
+        : '<p class="from">First stage of its family.</p>');
+    return sec;
+  }
+
   function enhanceDetail(p) {
     state.shiny = false;
     var token = ++detailToken;
@@ -971,6 +1039,7 @@
     // Type matchups go after the stats
     var secs = detailEl.querySelectorAll('.sheet > section');
     var evo = secs[0], stats = secs[1];
+    evo.parentNode.insertBefore(aboutSection(p), evo);
     var match = document.createElement('section');
     var matchHtml = '<h3>Type matchups</h3><p class="note">How much damage each attack type does to ' + p.name + '.</p>' + matchupsHtml(p);
     match.innerHTML = matchHtml;
