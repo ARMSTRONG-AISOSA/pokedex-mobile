@@ -2,7 +2,7 @@
 
 > **Any AI assistant or developer picking this project up: read this file top to bottom first.** Then read `ARCHITECTURE.md` (how it is built) and `DESIGN.md` (how it looks and moves). Update this file before you stop working.
 
-Last updated: **2026-11-04** · Session: **2**
+Last updated: **2026-11-05** · Session: **3**
 
 ---
 
@@ -29,7 +29,7 @@ Last updated: **2026-11-04** · Session: **2**
 | Project folder | `pokedex-mobile` (git branch `master`) |
 | Developer | Experienced with JavaScript, TypeScript, React, Next.js. New to React Native |
 | Dev machine | Linux Mint PC, VS Code |
-| Test device | Android phone (no iPhone) |
+| Test devices | Samsung Galaxy A07 (SM-A075F, Android 16, 720×1600) and Maxwest MX-A10R (Android 12, 800×1280). Connected to the laptop over **Wi-Fi adb** (see §9 Session 3) |
 | Design reference | `design-reference/pokedex-design.html`; also published as a (possibly private) claude.ai artifact: https://claude.ai/artifact/DmV2kx56owwDXjZDaJgvnd |
 
 ---
@@ -46,7 +46,7 @@ Last updated: **2026-11-04** · Session: **2**
 | 5. Data layer (API client, schemas, repositories, hooks) | ✅ Done 2026-11-04 (137 tests; SQLite checked on the user's phone) |
 | 6. Pokédex list screen | ✅ Done 2026-11-04 (checked on the user's phone) |
 | 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ✅ Done 2026-11-04 (checked on the user's phone). Extra: **About** section (see below) |
-| 8. Team builder, Saved, add-to-team sheet | ⏳ Built; tsc, lint, 163 tests, Android bundle pass. **Waiting on a device check** |
+| 8. Team builder, Saved, add-to-team sheet | ⏳ Built. Bug fixed 2026-11-05 (sheet closed itself after a fresh start). **Waiting on the user's full device check** |
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ⬜ |
 | 10. Offline and error QA, accessibility, dark mode pass | ⬜ |
 | 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ⬜ |
@@ -262,6 +262,14 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 ---
 
 ## 9. Session log
+
+### Session 3, 2026-11-05 (adb device access, add-to-team bug)
+- The user reported: (1) tab switches aren't smooth (planned for Phase 9), (2) tapping “Add Pokémon” on the Team tab did nothing after an app refresh, on both devices.
+- An attempt to reproduce (2) with Testing Library screen tests went badly (Reanimated 4 / Worklets Jest mocks wouldn't load; a hand-made mock hung). The user stopped it and asked for a cheaper way to see the app.
+- **Set up Wi-Fi adb** (`sudo apt install adb`, 34.0.4; phone: Developer options → Wireless debugging → pair with code → `adb connect IP:PORT`). Ports change after a phone restart; re-run `adb connect` with the new port. Now possible: `adb exec-out screencap -p` (screenshots), `adb shell input tap/text/keyevent` (drive the app), `adb logcat -s ReactNativeJS:V` (JS logs), `am start -d exp://LAPTOP-IP:8081` / `am force-stop host.exp.exponent` (open / fresh-restart Expo Go). Decision D-026.
+- **Bug (2) found and fixed with logs on the phone:** the picker kept its own “mounted” state alongside the parent's `visible`; after a fresh start it flipped back to unmounted ~0.2 s after opening (likely the render-time state pattern under React Compiler). Rewritten so the parent alone controls `visible`; the sheet animates in on open, and on close slides out first, then calls `onClose`. Verified on the Samsung: open after a fresh restart, Android back closes it, reopen, add, and the team survives a restart.
+- Removed the unfinished screen-test setup (`jest.setup.js`, test file, `package.json` Jest change). 163 unit tests still pass.
+- **Next action:** the user re-checks Phase 8 (§7) on both devices, then Phase 9 (smooth tab transitions first, then the rest of the motion list and the launch animation). Check each change on the phone with adb screenshots.
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
 - Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).
