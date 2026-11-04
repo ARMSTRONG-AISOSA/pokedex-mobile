@@ -20,14 +20,46 @@ export function fetchJson<T>(path: string, schema: z.ZodType<T>): Promise<T> {
   return limit(() => request(path, schema));
 }
 
-async function request<T>(path: string, schema: z.ZodType<T>): Promise<T> {
+/** POST a JSON body (used for PokéAPI's GraphQL endpoint). Same error mapping as `fetchJson`. */
+export function postJson<T>(
+  url: string,
+  body: unknown,
+  schema: z.ZodType<T>,
+  { timeoutMs = REQUEST_TIMEOUT_MS }: { timeoutMs?: number } = {},
+): Promise<T> {
+  return limit(() =>
+    request(url, schema, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      timeoutMs,
+    }),
+  );
+}
+
+type RequestOptions = {
+  method?: string;
+  headers?: Record<string, string>;
+  body?: string;
+  timeoutMs?: number;
+};
+
+async function request<T>(
+  path: string,
+  schema: z.ZodType<T>,
+  { timeoutMs = REQUEST_TIMEOUT_MS, ...init }: RequestOptions = {},
+): Promise<T> {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   let response: Response;
   try {
-    response = await fetch(url, { signal: controller.signal, headers: { Accept: 'application/json' } });
+    response = await fetch(url, {
+      ...init,
+      signal: controller.signal,
+      headers: { Accept: 'application/json', ...init.headers },
+    });
   } catch (error) {
     const timedOut = controller.signal.aborted;
     throw new AppError('NETWORK', timedOut ? `Timed out: ${path}` : `Network failure: ${path}`, {

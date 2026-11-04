@@ -1,5 +1,5 @@
 import { displayName } from './names';
-import { statTotal, type Pokemon } from './types';
+import { statTotal, type Pokemon, type TypeName } from './types';
 
 export type SortKey = 'number' | 'name' | 'power';
 
@@ -41,4 +41,11 @@ export function matchesQuery(pokemon: Pick<Pokemon, 'id' | 'name'>, query: strin
     pokemon.name.includes(q.replace(/\s+/g, '-')) ||
     displayName(pokemon.name).toLowerCase().includes(q)
   );
+}
+
+export type DexFilter = { type: TypeName | 'all'; query: string };
+
+/** The list after the type chip and the search box are applied. */
+export function filterPokemon(list: readonly Pokemon[], { type, query }: DexFilter): Pokemon[] {
+  return list.filter((p) => (type === 'all' || p.types.includes(type)) && matchesQuery(p, query));
 }

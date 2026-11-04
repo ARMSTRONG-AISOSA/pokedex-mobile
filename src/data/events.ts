@@ -6,6 +6,7 @@ import type { EvolutionNode, Pokemon } from '@/domain/types';
  */
 type DataEvent =
   | { kind: 'pokemon'; pokemon: Pokemon }
+  | { kind: 'all'; list: Pokemon[] }
   | { kind: 'evolution'; speciesId: number; tree: EvolutionNode }
   | { kind: 'speciesCount'; count: number };
 

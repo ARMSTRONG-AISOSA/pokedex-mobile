@@ -1,8 +1,8 @@
-import { fetchPokemon, fetchSpeciesCount, fetchSpeciesIndex } from '@/data/api/pokeapi';
+import { fetchPokemon, fetchSpeciesCount, fetchSpeciesIndex, fetchSummary } from '@/data/api/pokeapi';
 import { readThrough, type Cached } from '@/data/cache';
 import { emitDataRefreshed } from '@/data/events';
 import { matchesQuery } from '@/domain/sorting';
-import { isTypeName, type Pokemon } from '@/domain/types';
+import { isTypeName, statTotal, type Pokemon } from '@/domain/types';
 
 import { getDatabase } from './database';
 
@@ -37,34 +37,36 @@ async function readPokemon(id: number): Promise<Cached<Pokemon> | null> {
   );
   const types = typeRows.map((t) => t.type).filter(isTypeName);
   if (types.length === 0) return null; // incomplete row: treat as a miss
+  return { fetchedAt: row.fetched_at, value: rowToPokemon(row, types) };
+}
+
+function rowToPokemon(row: PokemonRow, types: Pokemon['types']): Pokemon {
   return {
-    fetchedAt: row.fetched_at,
-    value: {
-      id: row.id,
-      name: row.name,
-      types,
-      stats: {
-        hp: row.hp,
-        attack: row.attack,
-        defense: row.defense,
-        spAtk: row.sp_atk,
-        spDef: row.sp_def,
-        speed: row.speed,
-      },
-      artworkUrl: row.artwork_url,
-      artworkShinyUrl: row.artwork_shiny_url,
+    id: row.id,
+    name: row.name,
+    types,
+    stats: {
+      hp: row.hp,
+      attack: row.attack,
+      defense: row.defense,
+      spAtk: row.sp_atk,
+      spDef: row.sp_def,
+      speed: row.speed,
     },
+    artworkUrl: row.artwork_url,
+    artworkShinyUrl: row.artwork_shiny_url,
   };
 }
 
-async function writePokemon(p: Pokemon, fetchedAt: number): Promise<void> {
+/**
+ * Save Pokémon in one exclusive transaction (so parallel saves can't interleave).
+ * Prepared statements are compiled once and reused, which matters for 1025 rows.
+ */
+async function writePokemonList(list: readonly Pokemon[], fetchedAt: number): Promise<void> {
   const db = await getDatabase();
   if (!db) return;
-  const s = p.stats;
-  const total = s.hp + s.attack + s.defense + s.spAtk + s.spDef + s.speed;
-  // Exclusive, so five parallel saves can't interleave inside each other's transactions.
   await db.withExclusiveTransactionAsync(async (txn) => {
-    await txn.runAsync(
+    const upsert = await txn.prepareAsync(
       `INSERT INTO pokemon (id, name, hp, attack, defense, sp_atk, sp_def, speed, total, artwork_url, artwork_shiny_url, fetched_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(id) DO UPDATE SET
@@ -72,17 +74,27 @@ async function writePokemon(p: Pokemon, fetchedAt: number): Promise<void> {
          sp_atk = excluded.sp_atk, sp_def = excluded.sp_def, speed = excluded.speed, total = excluded.total,
          artwork_url = excluded.artwork_url, artwork_shiny_url = excluded.artwork_shiny_url,
          fetched_at = excluded.fetched_at`,
-      p.id, p.name, s.hp, s.attack, s.defense, s.spAtk, s.spDef, s.speed, total,
-      p.artworkUrl, p.artworkShinyUrl, fetchedAt,
     );
-    await txn.runAsync('DELETE FROM pokemon_types WHERE pokemon_id = ?', p.id);
-    for (const [index, type] of p.types.entries()) {
-      await txn.runAsync(
-        'INSERT INTO pokemon_types (pokemon_id, slot, type) VALUES (?, ?, ?)',
-        p.id, index + 1, type,
-      );
+    const clearTypes = await txn.prepareAsync('DELETE FROM pokemon_types WHERE pokemon_id = ?');
+    const addType = await txn.prepareAsync(
+      'INSERT INTO pokemon_types (pokemon_id, slot, type) VALUES (?, ?, ?)',
+    );
+    const addName = await txn.prepareAsync('INSERT OR REPLACE INTO pokemon_index (id, name) VALUES (?, ?)');
+    try {
+      for (const p of list) {
+        await upsert.executeAsync(
+          p.id, p.name, p.stats.hp, p.stats.attack, p.stats.defense, p.stats.spAtk,
+          p.stats.spDef, p.stats.speed, statTotal(p.stats), p.artworkUrl, p.artworkShinyUrl, fetchedAt,
+        );
+        await clearTypes.executeAsync(p.id);
+        for (const [index, type] of p.types.entries()) {
+          await addType.executeAsync(p.id, index + 1, type);
+        }
+        await addName.executeAsync(p.id, p.name);
+      }
+    } finally {
+      await Promise.all([upsert, clearTypes, addType, addName].map((st) => st.finalizeAsync()));
     }
-    await txn.runAsync('INSERT OR REPLACE INTO pokemon_index (id, name) VALUES (?, ?)', p.id, p.name);
   });
 }
 
@@ -91,7 +103,7 @@ export function getPokemon(id: number): Promise<Pokemon> {
     key: `pokemon:${id}`,
     read: () => readPokemon(id),
     fetch: () => fetchPokemon(id),
-    write: writePokemon,
+    write: (pokemon, fetchedAt) => writePokemonList([pokemon], fetchedAt),
     onRefreshed: (pokemon) => emitDataRefreshed({ kind: 'pokemon', pokemon }),
   });
 }
@@ -123,6 +135,50 @@ export function getSpeciesCount(): Promise<number> {
     fetch: fetchSpeciesCount,
     write: (count, fetchedAt) => writeMeta('species_count', String(count), fetchedAt),
     onRefreshed: (count) => emitDataRefreshed({ kind: 'speciesCount', count }),
+  });
+}
+
+/** All saved Pokémon, in number order. */
+async function readAllPokemon(): Promise<Pokemon[]> {
+  const db = await getDatabase();
+  if (!db) return [];
+  const rows = await db.getAllAsync<PokemonRow>('SELECT * FROM pokemon ORDER BY id');
+  const typeRows = await db.getAllAsync<{ pokemon_id: number; type: string }>(
+    'SELECT pokemon_id, type FROM pokemon_types ORDER BY pokemon_id, slot',
+  );
+  const typesById = new Map<number, Pokemon['types']>();
+  for (const t of typeRows) {
+    if (!isTypeName(t.type)) continue;
+    const list = typesById.get(t.pokemon_id) ?? [];
+    list.push(t.type);
+    typesById.set(t.pokemon_id, list);
+  }
+  return rows.flatMap((row) => {
+    const types = typesById.get(row.id);
+    return types?.length ? [rowToPokemon(row, types)] : [];
+  });
+}
+
+/**
+ * Every Pokémon (name, types, stats, artwork), so sort, filter and search
+ * cover the whole Pokédex (D-021). One GraphQL request the first time, then
+ * SQLite; refreshed in the background after 30 days.
+ */
+export function getAllPokemon(): Promise<Pokemon[]> {
+  return readThrough({
+    key: 'meta:summary',
+    read: async () => {
+      const meta = await readMeta('summary');
+      if (!meta) return null;
+      return { value: await readAllPokemon(), fetchedAt: meta.fetchedAt };
+    },
+    fetch: fetchSummary,
+    write: async (list, fetchedAt) => {
+      await writePokemonList(list, fetchedAt);
+      await writeMeta('species_count', String(list.length), fetchedAt);
+      await writeMeta('summary', String(list.length), fetchedAt);
+    },
+    onRefreshed: (list) => emitDataRefreshed({ kind: 'all', list }),
   });
 }
 
@@ -183,10 +239,3 @@ export async function searchPokemonIds(query: string): Promise<number[]> {
   return index.filter((entry) => matchesQuery(entry, query)).map((entry) => entry.id);
 }
 
-/** How many Pokémon are saved on this phone, or null if the database is unavailable. */
-export async function countSavedPokemon(): Promise<number | null> {
-  const db = await getDatabase();
-  if (!db) return null;
-  const row = await db.getFirstAsync<{ n: number }>('SELECT COUNT(*) AS n FROM pokemon');
-  return row?.n ?? 0;
-}

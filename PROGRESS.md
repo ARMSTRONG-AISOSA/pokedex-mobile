@@ -44,7 +44,7 @@ Last updated: **2026-11-04** · Session: **2**
 | 3. Foundations (theme, fonts, errors, storage, DB, query client) | ✅ Done 2026-11-04 (checked on the user's phone) |
 | 4. Domain logic with tests (type chart ×18, evolution mapping, sorting) | ✅ Done 2026-11-04 (97 tests pass, 99% coverage of `src/domain`) |
 | 5. Data layer (API client, schemas, repositories, hooks) | ✅ Done 2026-11-04 (137 tests; SQLite checked on the user's phone) |
-| 6. Pokédex list screen | ⬜ |
+| 6. Pokédex list screen | ⏳ Built; tests, tsc, lint, Android bundle pass. **Waiting on a device check** |
 | 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ⬜ |
 | 8. Team builder, Saved, add-to-team sheet | ⬜ |
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ⬜ |
@@ -170,7 +170,18 @@ Do these in order. Stop and ask where marked.
 **Open for Phase 6 (ask the user):** sorting by Name/Power and filtering by type across *all* 1025 Pokémon needs data we haven't downloaded yet (paging only fetches what you scroll to). Options to discuss when Phase 6 starts.
 
 **Phase 6, List**
-- [ ] Cards, search (name or number), type chips, sort row, count, 2-column `FlatList`, infinite scroll, skeletons, empty and error states, offline works for visited pages
+*Built 2026-11-04 (session 2). Tick after the device check.*
+- [ ] Cards (artwork via expo-image disk cache, Poké Ball while loading/failed, heart if saved, press scale), search (name or number), type chips, sort row (persisted in settings; arrow flips), count (live region), 2-column `FlatList` over all 1025 (virtualized), skeletons, empty and error states, light/dark toggle in the header
+- [ ] Data: one GraphQL summary (D-021), falls back to 20-per-page paging with a note if it fails
+- [ ] Tabs with a custom bar (D-022); Team/Saved are placeholders until Phase 8; tapping a card opens a temporary detail screen (Phase 7)
+
+**Device check for Phase 6:**
+1. First launch after this update: 6 shimmering skeleton cards, then “1025 Pokémon” and the grid. (The summary is one request; on slow internet allow up to ~45 s.)
+2. Scroll fast to the bottom (#1025 Pecharunt). Artwork loads as you go; any that fail show the tinted Poké Ball.
+3. Search “pika”, “25”, “#025”, “mr mime”. Tap a type chip (e.g. Fire), then combine it with a search. A search with no results shows “Nothing matches”.
+4. Sort by Name (A first), Power (Eternatus/Arceus first, high→low), tap the arrow to reverse. Close and reopen the app: the sort choice is remembered.
+5. Moon/sun button switches light/dark. Tabs switch with a small vibration. Tapping a card opens the temporary detail screen; Back returns.
+6. Reload the app (`r`): the list appears quickly with no skeletons (read from SQLite).
 
 **Phase 7, Detail**
 - [ ] Hero + back/shiny/heart; stats; matchups (18 types); evolution tree (branching, tap to navigate); skeletons per section; entrance motion
@@ -235,7 +246,11 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - Decisions: D-017 (evolution label uses the `is_default` entry; `[0]` gave Leafeon “level up in Eterna Forest”), D-018 (`TypeName` moved to `domain/`).
 - **Phase 5 code done** (session 2, later): `data/api/` (client, schemas, pokeapi), `data/cache.ts` (30-day refresh, D-019), `data/events.ts`, `data/db/pokemonRepo.ts` + `evolutionRepo.ts`, migration 2 (`meta` table), query hooks, `lib/limit.ts`. OQ-3 resolved as option 1 (D-016); Pokédex = species 1…N (D-020). 137 tests pass; tsc, lint and Android bundle pass. The temporary screen now shows Eevee's tree and the first pages.
 - The user raised a concern about stale data → D-019.
-- **Next action:** device check for Phase 5 (§7), then Phase 6 (list screen). Raise the Phase 6 open question about sort/filter across all Pokémon.
+- **Phase 6 built** (session 2, later). The user chose **one GraphQL summary request** for all Pokémon (D-021) so sort/filter/search cover everything. New: `components/ui/*` (icon, icon-button, type-pill, type-chip, segmented-control, poke-ball, skeleton, empty-state), `features/pokedex/*`, `features/navigation/tab-bar.tsx`, routes `(tabs)/index|team|saved`, temporary `pokemon/[id]`. Tabs come from `expo-router/js-tabs` (D-022); shared values use `.set()` (D-023).
+- Resilience fixes found while trying a web preview: the database open now gives up after 8 s (a *hung* open would have kept the splash up forever), and the network listener is skipped during web server rendering. The web preview itself never rendered in headless Chrome (web isn't a target; it was only for screenshots), so it was abandoned and all temporary changes reverted.
+- 143 tests pass; tsc, lint, Android bundle pass.
+- **Next action:** Phase 6 device check (§7), then Phase 7 (detail screen).
+- *(Earlier next action, done:)* device check for Phase 5 (§7), then Phase 6 (list screen). Raise the Phase 6 open question about sort/filter across all Pokémon.
 - *(Earlier next action, done:)* Phase 5 (data layer): `fetchJson` + zod schemas + repositories + query hooks. Decide OQ-3 (how to fill the list) at the start.
 - *(Old next action, done:)* the user runs the Phase 3 device check (§7). Then, with the user's OK, install the test tooling and start Phase 4 (domain logic, tests first). Also worth noting: the splash background in `app.json` is still the template blue `#208AEF`; change it to `#13222b` in Phase 9 with the launch animation. Start with `theme/tokens.ts` from `DESIGN.md`, and show the user the type-color swatch page for OD-5 before building on those colors.
 

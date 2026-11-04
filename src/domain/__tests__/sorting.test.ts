@@ -1,5 +1,5 @@
 import { displayName, formatDexNumber } from '@/domain/names';
-import { defaultAscending, matchesQuery, sortPokemon } from '@/domain/sorting';
+import { defaultAscending, filterPokemon, matchesQuery, sortPokemon } from '@/domain/sorting';
 import { isTypeName, statTotal, type Pokemon, type Stats } from '@/domain/types';
 
 describe('types helpers', () => {
@@ -100,5 +100,28 @@ describe('names', () => {
   it('pads dex numbers to three digits', () => {
     expect(formatDexNumber(25)).toBe('#025');
     expect(formatDexNumber(1025)).toBe('#1025');
+  });
+});
+
+describe('filterPokemon', () => {
+  const dex = [
+    { ...mon(1, 'bulbasaur', 318), types: ['grass', 'poison'] as Pokemon['types'] },
+    { ...mon(4, 'charmander', 309), types: ['fire'] as Pokemon['types'] },
+    { ...mon(6, 'charizard', 534), types: ['fire', 'flying'] as Pokemon['types'] },
+  ];
+
+  it('"all" with no search keeps everything', () => {
+    expect(ids(filterPokemon(dex, { type: 'all', query: '' }))).toEqual([1, 4, 6]);
+  });
+
+  it('filters by either type slot', () => {
+    expect(ids(filterPokemon(dex, { type: 'fire', query: '' }))).toEqual([4, 6]);
+    expect(ids(filterPokemon(dex, { type: 'poison', query: '' }))).toEqual([1]);
+  });
+
+  it('combines type and search', () => {
+    expect(ids(filterPokemon(dex, { type: 'fire', query: 'char' }))).toEqual([4, 6]);
+    expect(ids(filterPokemon(dex, { type: 'fire', query: 'zard' }))).toEqual([6]);
+    expect(ids(filterPokemon(dex, { type: 'grass', query: 'char' }))).toEqual([]);
   });
 });

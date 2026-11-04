@@ -10,6 +10,9 @@ import type { ChainLinkInput, EvolutionDetailInput } from '@/domain/evolution';
 
 const namedRef = z.object({ name: z.string(), url: z.string() });
 
+const typeSlot = z.object({ slot: z.number().int(), type: z.object({ name: z.string() }) });
+const baseStat = z.object({ base_stat: z.number().int(), stat: z.object({ name: z.string() }) });
+
 /** `/pokemon-species?limit=N` */
 export const speciesListSchema = z.object({
   count: z.number().int().nonnegative(),
@@ -21,10 +24,8 @@ export const pokemonSchema = z.object({
   id: z.number().int().positive(),
   name: z.string(),
   species: namedRef,
-  types: z
-    .array(z.object({ slot: z.number().int(), type: z.object({ name: z.string() }) }))
-    .min(1),
-  stats: z.array(z.object({ base_stat: z.number().int(), stat: z.object({ name: z.string() }) })),
+  types: z.array(typeSlot).min(1),
+  stats: z.array(baseStat),
   sprites: z.object({
     other: z
       .object({
@@ -39,6 +40,25 @@ export const pokemonSchema = z.object({
   }),
 });
 export type PokemonResponse = z.infer<typeof pokemonSchema>;
+
+/**
+ * GraphQL summary of every species: name, default form's types and stats.
+ * GraphQL reports errors with HTTP 200 and an `errors` list, so both are optional here.
+ */
+export const summarySchema = z.object({
+  data: z
+    .object({
+      pokemon: z.array(
+        z.object({
+          id: z.number().int().positive(),
+          name: z.string(),
+          pokemons: z.array(z.object({ pokemontypes: z.array(typeSlot), pokemonstats: z.array(baseStat) })),
+        }),
+      ),
+    })
+    .nullish(),
+  errors: z.array(z.object({ message: z.string() })).optional(),
+});
 
 /** `/pokemon-species/{id}` */
 export const speciesSchema = z.object({

@@ -1,8 +1,9 @@
-import { toPokemon } from '@/data/api/pokeapi';
+import { artworkUrls, fetchSummary, toPokemon } from '@/data/api/pokeapi';
 import { evolutionChainSchema, pokemonSchema } from '@/data/api/schemas';
 import { buildEvolutionTree } from '@/domain/evolution';
 
 import eeveeChain from '@/domain/__tests__/fixtures/evolution-chain-eevee.json';
+import graphqlSummary from './fixtures/graphql-summary.json';
 import pecharunt from './fixtures/pokemon-1025.json';
 import pikachu from './fixtures/pokemon-25.json';
 import charizard from './fixtures/pokemon-6.json';
@@ -75,5 +76,37 @@ describe('evolutionChainSchema', () => {
 
   it('rejects a chain with a missing species', () => {
     expect(evolutionChainSchema.safeParse({ id: 1, chain: { evolves_to: [] } }).success).toBe(false);
+  });
+});
+
+describe('fetchSummary (GraphQL)', () => {
+  const realFetch = globalThis.fetch;
+  afterEach(() => {
+    globalThis.fetch = realFetch;
+  });
+
+  const reply = (body: unknown) => {
+    globalThis.fetch = jest.fn(async () => ({ ok: true, status: 200, json: async () => body })) as unknown as typeof fetch;
+  };
+
+  it('maps a real response, using species names and built artwork URLs', async () => {
+    reply(graphqlSummary);
+    const list = await fetchSummary();
+    expect(list.map((p) => p.name)).toEqual(['bulbasaur', 'charizard', 'pikachu', 'giratina', 'pecharunt']);
+    expect(list[1]).toMatchObject({ id: 6, types: ['fire', 'flying'] });
+    expect(list[2].stats).toEqual({ hp: 35, attack: 55, defense: 40, spAtk: 50, spDef: 50, speed: 90 });
+    expect(list[2].artworkUrl).toBe(artworkUrls(25).artworkUrl);
+    expect(artworkUrls(25).artworkUrl).toBe(pikachu.sprites.other['official-artwork'].front_default);
+    expect(artworkUrls(25).artworkShinyUrl).toBe(pikachu.sprites.other['official-artwork'].front_shiny);
+  });
+
+  it('a GraphQL error (sent with HTTP 200) → SERVER, retryable', async () => {
+    reply({ errors: [{ message: 'rate limit' }] });
+    await expect(fetchSummary()).rejects.toMatchObject({ code: 'SERVER', retryable: true });
+  });
+
+  it('an empty list → PARSE', async () => {
+    reply({ data: { pokemon: [] } });
+    await expect(fetchSummary()).rejects.toMatchObject({ code: 'PARSE' });
   });
 });

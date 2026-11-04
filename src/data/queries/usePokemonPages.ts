@@ -4,8 +4,11 @@ import { getPokemonPage } from '@/data/db/pokemonRepo';
 
 import { PAGE_SIZE, queryKeys } from './keys';
 
-/** The Pokédex list, 20 at a time, for infinite scroll. */
-export function usePokemonPages() {
+/**
+ * The Pokédex 20 at a time. Since D-021 this is only the fallback for when the
+ * one-request summary fails (e.g. the GraphQL beta is down).
+ */
+export function usePokemonPages({ enabled = true }: { enabled?: boolean } = {}) {
   const queryClient = useQueryClient();
   return useInfiniteQuery({
     queryKey: queryKeys.pokemonPages,
@@ -19,5 +22,6 @@ export function usePokemonPages() {
       return page;
     },
     getNextPageParam: (lastPage) => lastPage.nextOffset ?? undefined,
+    enabled,
   });
 }

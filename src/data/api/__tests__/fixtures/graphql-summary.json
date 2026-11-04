@@ -1,0 +1,300 @@
+{
+ "data": {
+  "pokemon": [
+   {
+    "id": 1,
+    "name": "bulbasaur",
+    "pokemons": [
+     {
+      "pokemontypes": [
+       {
+        "slot": 1,
+        "type": {
+         "name": "grass"
+        }
+       },
+       {
+        "slot": 2,
+        "type": {
+         "name": "poison"
+        }
+       }
+      ],
+      "pokemonstats": [
+       {
+        "base_stat": 45,
+        "stat": {
+         "name": "hp"
+        }
+       },
+       {
+        "base_stat": 49,
+        "stat": {
+         "name": "attack"
+        }
+       },
+       {
+        "base_stat": 49,
+        "stat": {
+         "name": "defense"
+        }
+       },
+       {
+        "base_stat": 65,
+        "stat": {
+         "name": "special-attack"
+        }
+       },
+       {
+        "base_stat": 65,
+        "stat": {
+         "name": "special-defense"
+        }
+       },
+       {
+        "base_stat": 45,
+        "stat": {
+         "name": "speed"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 6,
+    "name": "charizard",
+    "pokemons": [
+     {
+      "pokemontypes": [
+       {
+        "slot": 1,
+        "type": {
+         "name": "fire"
+        }
+       },
+       {
+        "slot": 2,
+        "type": {
+         "name": "flying"
+        }
+       }
+      ],
+      "pokemonstats": [
+       {
+        "base_stat": 78,
+        "stat": {
+         "name": "hp"
+        }
+       },
+       {
+        "base_stat": 84,
+        "stat": {
+         "name": "attack"
+        }
+       },
+       {
+        "base_stat": 78,
+        "stat": {
+         "name": "defense"
+        }
+       },
+       {
+        "base_stat": 109,
+        "stat": {
+         "name": "special-attack"
+        }
+       },
+       {
+        "base_stat": 85,
+        "stat": {
+         "name": "special-defense"
+        }
+       },
+       {
+        "base_stat": 100,
+        "stat": {
+         "name": "speed"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 25,
+    "name": "pikachu",
+    "pokemons": [
+     {
+      "pokemontypes": [
+       {
+        "slot": 1,
+        "type": {
+         "name": "electric"
+        }
+       }
+      ],
+      "pokemonstats": [
+       {
+        "base_stat": 35,
+        "stat": {
+         "name": "hp"
+        }
+       },
+       {
+        "base_stat": 55,
+        "stat": {
+         "name": "attack"
+        }
+       },
+       {
+        "base_stat": 40,
+        "stat": {
+         "name": "defense"
+        }
+       },
+       {
+        "base_stat": 50,
+        "stat": {
+         "name": "special-attack"
+        }
+       },
+       {
+        "base_stat": 50,
+        "stat": {
+         "name": "special-defense"
+        }
+       },
+       {
+        "base_stat": 90,
+        "stat": {
+         "name": "speed"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 487,
+    "name": "giratina",
+    "pokemons": [
+     {
+      "pokemontypes": [
+       {
+        "slot": 1,
+        "type": {
+         "name": "ghost"
+        }
+       },
+       {
+        "slot": 2,
+        "type": {
+         "name": "dragon"
+        }
+       }
+      ],
+      "pokemonstats": [
+       {
+        "base_stat": 150,
+        "stat": {
+         "name": "hp"
+        }
+       },
+       {
+        "base_stat": 100,
+        "stat": {
+         "name": "attack"
+        }
+       },
+       {
+        "base_stat": 120,
+        "stat": {
+         "name": "defense"
+        }
+       },
+       {
+        "base_stat": 100,
+        "stat": {
+         "name": "special-attack"
+        }
+       },
+       {
+        "base_stat": 120,
+        "stat": {
+         "name": "special-defense"
+        }
+       },
+       {
+        "base_stat": 90,
+        "stat": {
+         "name": "speed"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": 1025,
+    "name": "pecharunt",
+    "pokemons": [
+     {
+      "pokemontypes": [
+       {
+        "slot": 1,
+        "type": {
+         "name": "poison"
+        }
+       },
+       {
+        "slot": 2,
+        "type": {
+         "name": "ghost"
+        }
+       }
+      ],
+      "pokemonstats": [
+       {
+        "base_stat": 88,
+        "stat": {
+         "name": "hp"
+        }
+       },
+       {
+        "base_stat": 88,
+        "stat": {
+         "name": "attack"
+        }
+       },
+       {
+        "base_stat": 160,
+        "stat": {
+         "name": "defense"
+        }
+       },
+       {
+        "base_stat": 88,
+        "stat": {
+         "name": "special-attack"
+        }
+       },
+       {
+        "base_stat": 88,
+        "stat": {
+         "name": "special-defense"
+        }
+       },
+       {
+        "base_stat": 88,
+        "stat": {
+         "name": "speed"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}

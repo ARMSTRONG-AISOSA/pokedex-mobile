@@ -2,6 +2,7 @@ import { onlineManager, QueryClient, type InfiniteData } from '@tanstack/react-q
 import * as Network from 'expo-network';
 
 import type { PokemonPage } from '@/data/db/pokemonRepo';
+import type { Pokemon } from '@/domain/types';
 import { onDataRefreshed } from '@/data/events';
 import { isAppError } from '@/lib/errors';
 
@@ -24,12 +25,15 @@ export const queryClient = new QueryClient({
  * `isInternetReachable` can be undefined while unknown; treat that as online
  * and let the request itself fail if it must.
  */
-onlineManager.setEventListener((setOnline) => {
-  const subscription = Network.addNetworkStateListener((state) => {
-    setOnline(state.isConnected !== false && state.isInternetReachable !== false);
+// Skipped during web server rendering, where there is no network to watch.
+if (typeof window !== 'undefined') {
+  onlineManager.setEventListener((setOnline) => {
+    const subscription = Network.addNetworkStateListener((state) => {
+      setOnline(state.isConnected !== false && state.isInternetReachable !== false);
+    });
+    return () => subscription.remove();
   });
-  return () => subscription.remove();
-});
+}
 
 /**
  * Data older than 30 days is shown right away and refreshed in the background
@@ -40,6 +44,9 @@ onDataRefreshed((event) => {
     case 'pokemon': {
       const { pokemon } = event;
       queryClient.setQueryData(queryKeys.pokemon(pokemon.id), pokemon);
+      queryClient.setQueryData<Pokemon[]>(queryKeys.allPokemon, (list) =>
+        list?.map((p) => (p.id === pokemon.id ? pokemon : p)),
+      );
       queryClient.setQueryData<InfiniteData<PokemonPage>>(queryKeys.pokemonPages, (data) =>
         data
           ? {
@@ -53,6 +60,10 @@ onDataRefreshed((event) => {
       );
       break;
     }
+    case 'all':
+      queryClient.setQueryData(queryKeys.allPokemon, event.list);
+      for (const pokemon of event.list) queryClient.setQueryData(queryKeys.pokemon(pokemon.id), pokemon);
+      break;
     case 'evolution':
       // Every member of the family shares the tree, so refresh them all (from SQLite, no network).
       queryClient.invalidateQueries({ queryKey: ['evolution'] });
