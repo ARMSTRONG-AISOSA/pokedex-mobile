@@ -48,7 +48,7 @@ Last updated: **2026-11-05** · Session: **3**
 | 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ✅ Done 2026-11-04 (checked on the user's phone). Extra: **About** section (see below) |
 | 8. Team builder, Saved, add-to-team sheet | ✅ Done 2026-11-05 (checked on both devices after the sheet fix) |
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ✅ Done 2026-11-05 (checked by the user) |
-| 10. Offline and error QA, accessibility, dark mode pass | ⏳ Done over adb on the tablet 2026-11-05. **Waiting on the user's airplane-mode and TalkBack checks** |
+| 10. Offline and error QA, accessibility, dark mode pass | ✅ Done 2026-11-05 (adb QA on the tablet + the user's airplane-mode and TalkBack checks on the release APK) |
 | 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ✅ Released 2026-11-05: v1.0.0 APK on GitHub Releases, website live on GitHub Pages |
 
 ---
@@ -249,11 +249,11 @@ Do these in order. Stop and ask where marked.
 6. Haptics: tab switch, filters and sort tick lightly; save/add to team/shiny on give a “success” buzz; remove from team a firmer tap.
 
 **Phase 10, QA**
-*Done 2026-11-05 (session 3) on the Maxwest tablet over adb, except the two checks only the user can do.*
-- [ ] Airplane-mode test: visited Pokémon and their evolution chains open offline (user check below; adb runs over Wi-Fi, so it can't drive airplane mode)
+*Done 2026-11-05 (session 3). adb QA on the Maxwest tablet; the user ran the airplane-mode and TalkBack checks on the 1.0.0 APK.*
+- [x] Airplane-mode test: visited Pokémon and their evolution chains open offline (user, on the release APK)
 - [x] Forced failures with temporary code (not committed): 429 → “Too many requests”, 500 → “Server not responding”, bad JSON → “Data couldn’t be read”, no connection → “No connection”, each with Try again, and only in the failing section (stats/matchups still show). A real unknown id → “Pokémon not found” (Try again now hidden there). Corrupt saved settings → defaults, no crash. Database open failure → app works network-only and shows the new “Offline cache unavailable” notice (it was promised in ARCHITECTURE §8.2 but missing)
 - [x] Dark mode and light mode on every screen (list, detail top/tree/stats, Team, weak spots, add sheet, Saved)
-- [ ] TalkBack pass on the main flow (user check below). Done: every tappable element has a label (checked in the view tree)
+- [x] TalkBack pass on the main flow (user); every tappable element has a label (checked in the view tree)
 - [x] Touch targets ≥ 44 dp: type chips (38) and sort segments (36) got invisible touch margins; the team “×” already had one
 - [x] Font size 130%: evolution-tree names no longer break mid-word (Umbreon broke even at 100%), arrow labels and the stat label column grow with the text (`theme/useTextGrowth.ts`)
 - [x] No JS warnings or errors in logcat during the passes (only the expected ones from the forced failures)
@@ -314,7 +314,8 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - App icon: concept B “explorer lens” (D-029). EAS: logged in with device login (`eas login --device`, no password used), project `b999a6d2-…` under **armstrong-aisosas-team**, keystore generated and stored by Expo. Build `091a74f6` finished in ~20 min; APK 114 MB (universal: all four CPU types; could be split later). Installed and launched on the tablet: native splash with the new icon, launch animation, list loads, no crashes.
 - Installed **GitHub CLI 2.103.3** in `~/.local/bin` (checksum verified; user approved) and logged in with the browser code flow. Tagged `v1.0.0` and created the GitHub Release with `dexplorer-1.0.0.apk`. Enabled Pages (source: Actions) via `gh api`; the workflow deployed the site. Clean screenshots taken from the APK.
 - The user changed their Expo password after sharing it in chat (it was not used).
-- **Next action:** the user's airplane-mode and TalkBack checks (§7 Phase 10). Possible next steps: smaller per-CPU APKs, Play Store listing (would need a non-trademark icon/name review), README GIF.
+- The user confirmed the airplane-mode and TalkBack checks. **Phase 10 done. All planned phases (0–11) are complete.**
+- **Possible next steps:** smaller per-CPU APKs, Play Store listing (would need a non-trademark icon/name review), README GIF.
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
 - Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).
