@@ -114,4 +114,10 @@ npx tsc --noEmit    # type check
 - Pokémon data from [PokéAPI](https://pokeapi.co); artwork from the [PokeAPI sprites](https://github.com/PokeAPI/sprites) repository.
 - Fonts: [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) and [Figtree](https://fonts.google.com/specimen/Figtree).
 
+## License
+
+The code is released under the [MIT License](LICENSE). Pokémon data, names and artwork are not covered by this license; they belong to their owners (see below).
+
+## Disclaimer
+
 Dexplorer is an unofficial fan project. It is not affiliated with or endorsed by Nintendo, Game Freak, Creatures or The Pokémon Company. Pokémon and Pokémon character names are trademarks of Nintendo.
