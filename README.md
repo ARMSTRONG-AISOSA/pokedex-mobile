@@ -2,7 +2,9 @@
 
 An offline-first Pokédex for Android, built with Expo and React Native. Browse all 1,025 Pokémon, follow their evolution lines, build a team of six and see where it's weak. Anything you've opened keeps working without an internet connection.
 
-**[Download the APK](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest)** (Android 7.0 or newer) · **[Website](https://armstrong-aisosa.github.io/pokedex-mobile/)**
+**Download** (Android 7.0 or newer): **[most phones (arm64)](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-arm64.apk)** · [older 32-bit phones (armv7)](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-armv7.apk) · [universal, works on any phone](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-universal.apk) · [all releases](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases)
+
+**[Website](https://armstrong-aisosa.github.io/pokedex-mobile/)**
 
 <p align="center">
   <img src="website/assets/screens/list-light.webp" width="200" alt="The Pokédex list with search, type filters and sorting">
@@ -99,6 +101,21 @@ npm test            # unit tests
 npm run lint        # ESLint
 npx tsc --noEmit    # type check
 ```
+
+## Releasing a new version
+
+Builds run on Expo's servers with [EAS Build](https://docs.expo.dev/build/introduction/); the signing key is stored by Expo.
+
+1. Raise `version` (for example `1.0.2`) and `android.versionCode` (by at least 1) in `app.json`, and commit.
+2. Build the three APKs (profiles in `eas.json`):
+   ```bash
+   npx eas-cli build --platform android --profile apk-arm64   # 64-bit phones, the main download
+   npx eas-cli build --platform android --profile apk-armv7   # older 32-bit phones
+   npx eas-cli build --platform android --profile apk         # universal fallback, every CPU type
+   ```
+3. Download them, rename them to `dexplorer-arm64.apk`, `dexplorer-armv7.apk` and `dexplorer-universal.apk`, tag the build commit (`git tag -a v1.0.2`), and publish a GitHub Release with the three files.
+
+Keep those three file names: the website and this README link to `releases/latest/download/<file name>`, which always serves the newest release.
 
 ## Testing
 

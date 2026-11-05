@@ -122,6 +122,7 @@ The site uses the app's curves (`theme/motion.ts`): `--ease-out` = `cubic-bezier
 
 - A "Skip to content" link appears on the first Tab press, and the visible focus ring is a 3px `--ink` outline, the same as the draft.
 - The page uses semantic landmarks (`header`, `nav`, `main`, `footer`), one `h1`, and headings in order. Each section is labelled by its heading.
+- Download links and “View the code” open in a new tab (`target="_blank" rel="noopener"`), so the page stays open behind them. Each carries hidden text, “(opens in a new tab)”, for screen readers.
 - Every screenshot has alt text describing what it shows. Decorative SVGs are `aria-hidden`. The theme button's label says what it will do ("Switch to dark mode").
 - Text contrast is at least 4.5:1 in both themes and on the brand background. The type pills always show the type name, so type is never shown by color alone.
 - Text uses relative sizing and the layout reflows down to 320px wide; the gallery scrolls sideways and can be reached with the keyboard.
@@ -132,7 +133,8 @@ The site uses the app's curves (`theme/motion.ts`): `--ease-out` = `cubic-bezier
 |---|---|
 | Headline | "Every Pokémon, even offline." |
 | Lede | "Dexplorer is a fast, free Pokédex for Android. Search all 1,025 Pokémon, follow their evolution trees, and build a team that covers its weak spots." |
-| Main button | "Download for Android" (hero), "Download the APK" (download section) |
+| Main button | "Download for Android" (hero), "Download the APK" (download section); both download the arm64 APK directly |
+| Other downloads | "Older 32-bit phone? Get the armv7 version", "Not sure? The universal version works on every phone", "All versions and checksums" |
 | Requirements | "Android 7.0 or newer · No account · No ads" |
 
 Android 7.0 is the minimum version React Native 0.88 and Expo SDK 58 support (`minSdk` 24). Use typographic quotes and apostrophes (“ ” ’), as in the app.
@@ -178,9 +180,19 @@ website/
 
 ### 2.5 Download link
 
-Both download buttons point to `https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest`. GitHub redirects that address to the newest release, so the site never needs editing for a new version: publish a GitHub Release with the APK attached and the buttons point to it.
+From 1.0.1 on, every release carries **three APKs with fixed names** (no version number in the file name):
 
-Until the first release exists, the link opens an empty Releases page. **Don't share the site before the first release is up** (§2.9).
+| File | For | Linked from |
+|---|---|---|
+| `dexplorer-arm64.apk` | Almost every phone from about 2017 on (64-bit ARM) | Both main buttons (“Download for Android”, “Download the APK”) |
+| `dexplorer-armv7.apk` | Older or very cheap 32-bit phones | “Older 32-bit phone?” link |
+| `dexplorer-universal.apk` | Any phone; the fallback when someone isn't sure (all four CPU types, about 3× larger) | “Not sure?” link |
+
+The links use GitHub's permanent pattern `…/releases/latest/download/<file name>`, which always serves that file from the newest release. So the site never needs editing for a new version, **as long as each release keeps these three file names**. A fourth link, “All versions and checksums”, opens the Releases page.
+
+All download links and “View the code” open in a new tab (§1.8).
+
+Release 1.0.0 had a single universal file, `dexplorer-1.0.0.apk`; it stays on the Releases page.
 
 ### 2.6 Hosting
 
@@ -215,7 +227,7 @@ Check before every publish:
   - The page still reads with JavaScript disabled.
   - Keyboard: Tab reaches the skip link, the nav, both buttons and the gallery, with a visible focus ring on each.
   - With reduced motion turned on, nothing animates.
-- **Links:** both download buttons reach the latest release (the APK is attached), and the GitHub links work.
+- **Links:** both download buttons download `dexplorer-arm64.apk`, the armv7 and universal links download their files, “All versions” opens the Releases page, and all of them open in a new tab. The GitHub links work.
 - **Sharing:** paste the URL into a chat app and the preview image and title appear.
 
 ### 2.9 Shipping checklist (first release)
@@ -232,6 +244,8 @@ Check before every publish:
 | W-1 | Static HTML/CSS/JS, no build | One page; fastest to load and simplest to maintain | React or Astro: a build step for no visible gain |
 | W-2 | Lives in `website/` in the app repo | One place for code, docs and site; the site's screenshots come from the app | A separate repo: two places to keep in sync |
 | W-3 | Deploy with an Actions workflow | Lets the folder be called `website/` | Pages from `/docs`: the name suggests documentation |
-| W-4 | Download through `releases/latest` | The site never needs changing for a new version | A direct APK file link: breaks with every release |
+| W-4 | Download through `releases/latest/download/<fixed file name>` (was `releases/latest` for 1.0.0) | One tap downloads the right file, and the site never needs changing for a new version | A versioned file link: breaks with every release; the Releases page: an extra step and three files to choose from |
+| W-7 | Download and code links open in a new tab, announced to screen readers | The visitor keeps the page open (user request) | Same tab |
+| W-8 | arm64 as the main download, armv7 and universal as alternatives | Smallest file for almost everyone; nobody is left out (user asked to keep the universal APK as a fallback) | One universal APK only (114 MB) |
 | W-5 | Shortened launch animation (the ball doesn't split open) | The ball stays on screen as a logo; a full split would leave an empty space | The full app animation |
 | W-6 | Download button `#c03028`, not the ball red | Passes 4.5:1 contrast with white text | `#e8453c`: about 3.9:1, fails |

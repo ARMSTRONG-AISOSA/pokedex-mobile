@@ -80,13 +80,13 @@
           <h1>Every Pokémon,<br>even offline.</h1>
           <p class="lede">Dexplorer is a fast, free Pokédex for Android. Search all 1,025 Pokémon, follow their evolution trees, and build a team that covers its weak spots.</p>
           <div class="cta-row">
-            <a class="btn btn-primary" href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest">
+            <a class="btn btn-primary" href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-arm64.apk" target="_blank" rel="noopener">
               <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>
-              Download for Android
+              Download for Android<span class="sr-only"> (opens in a new tab)</span>
             </a>
-            <a class="btn btn-ghost" href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile">
+            <a class="btn btn-ghost" href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile" target="_blank" rel="noopener">
               <svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>
-              View the code
+              View the code<span class="sr-only"> (opens in a new tab)</span>
             </a>
           </div>
           <p class="fine">Android 7.0 or newer · No account · No ads</p>
@@ -206,6 +206,10 @@
       </div>
     </section>
 
+    <!-- Downloads use GitHub's permanent ".../releases/latest/download/<file>" links, so they always
+         serve the newest release. Every release must keep these three file names:
+         dexplorer-arm64.apk (main button), dexplorer-armv7.apk, dexplorer-universal.apk.
+         See pokedex-mobile-website.md §2.5. Download and code links open in a new tab. -->
     <section class="section download" id="download" aria-labelledby="download-title">
       <div class="wrap">
         <div class="download-card reveal">
@@ -213,14 +217,19 @@
             <p class="kicker kicker-on-dark">Get Dexplorer</p>
             <h2 id="download-title">Download it for Android.</h2>
             <p>Free, no account, no ads. Dexplorer isn't on the Play Store yet, so you install it directly.</p>
-            <a class="btn btn-primary" href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest">
+            <a class="btn btn-primary" href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-arm64.apk" target="_blank" rel="noopener">
               <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>
-              Download the APK
+              Download the APK<span class="sr-only"> (opens in a new tab)</span>
             </a>
-            <p class="fine">Android 7.0 or newer.</p>
+            <p class="fine">For most phones (Android 7.0 or newer) · SIZE_ARM64</p>
+            <ul class="alt-downloads">
+              <li><a href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-armv7.apk" target="_blank" rel="noopener">Older 32-bit phone?<span class="sr-only"> (opens in a new tab)</span></a> Get the armv7 version · SIZE_ARMV7</li>
+              <li><a href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-universal.apk" target="_blank" rel="noopener">Not sure?<span class="sr-only"> (opens in a new tab)</span></a> The universal version works on every phone · SIZE_UNIVERSAL</li>
+              <li><a href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases" target="_blank" rel="noopener">All versions and checksums<span class="sr-only"> (opens in a new tab)</span></a></li>
+            </ul>
           </div>
           <ol class="steps">
-            <li><strong>Download the APK</strong><span>Open the download link on your Android phone and tap the <code>.apk</code> file.</span></li>
+            <li><strong>Download the APK</strong><span>Open this page on your Android phone, tap the download button, then open the <code>.apk</code> file.</span></li>
             <li><strong>Allow the install</strong><span>If Android asks, allow your browser to install unknown apps. You only need to do this once.</span></li>
             <li><strong>Open Dexplorer</strong><span>It loads the Pokédex once, then works offline for everything you've opened.</span></li>
           </ol>

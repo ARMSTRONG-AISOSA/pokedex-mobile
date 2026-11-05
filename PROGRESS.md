@@ -271,6 +271,7 @@ Do these in order. Stop and ask where marked.
 - [x] README with screenshots, feature list, architecture summary, "what I learned", download and website links
 - [x] Android build via EAS (profile `apk`, keystore stored by Expo); APK in [release v1.0.0](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/tag/v1.0.0), linked in the README
 - [x] Promo website live: https://armstrong-aisosa.github.io/pokedex-mobile/ (`website/`, see `website/pokedex-mobile-website.md`)
+- [ ] Release 1.0.1: three APKs per release (arm64 main download, armv7 for 32-bit phones, universal fallback) with fixed file names (D-030); website and README link to them directly
 - [x] Clean commit history (all commits by the user, no AI attribution)
 
 ---
@@ -315,6 +316,8 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - Installed **GitHub CLI 2.103.3** in `~/.local/bin` (checksum verified; user approved) and logged in with the browser code flow. Tagged `v1.0.0` and created the GitHub Release with `dexplorer-1.0.0.apk`. Enabled Pages (source: Actions) via `gh api`; the workflow deployed the site. Clean screenshots taken from the APK.
 - The user changed their Expo password after sharing it in chat (it was not used).
 - The user confirmed the airplane-mode and TalkBack checks. **Phase 10 done. All planned phases (0–11) are complete.**
+- **1.0.1 (per-CPU APKs):** the 1.0.0 APK is 114 MB because it holds native code for four CPU types; arm64 alone is about 38 MB. The user chose separate APKs (arm64 + armv7) and asked to keep the universal APK as a fallback. Added EAS profiles `apk-arm64` and `apk-armv7` (`gradleCommand … -PreactNativeArchitectures=…`), bumped to version 1.0.1 / versionCode 2, started all three builds. Files get fixed names (`dexplorer-arm64.apk`, `dexplorer-armv7.apk`, `dexplorer-universal.apk`) so `releases/latest/download/<name>` links never change (D-030).
+- Website: “Download for Android” / “Download the APK” now download the arm64 APK directly, with links to the armv7 and universal versions and all releases; download and code links open in a new tab (user request), announced to screen readers. README gained the three download links and a “Releasing a new version” section. **Push only after the 1.0.1 release is published**, or the new download links would point at files that don't exist yet.
 - **Possible next steps:** smaller per-CPU APKs, Play Store listing (would need a non-trademark icon/name review), README GIF.
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
