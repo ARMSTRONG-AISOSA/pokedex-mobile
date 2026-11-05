@@ -2,7 +2,7 @@
 
 An offline-first Pokédex for Android, built with Expo and React Native. Browse all 1,025 Pokémon, follow their evolution lines, build a team of six and see where it's weak. Anything you've opened keeps working without an internet connection.
 
-**Download** (Android 7.0 or newer): **[most phones (arm64)](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-arm64.apk)** · [older 32-bit phones (armv7)](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-armv7.apk) · [universal, works on any phone](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-universal.apk) · [all releases](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases)
+**Download** (Android 7.0 or newer): **[most phones, arm64 (39 MB)](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-arm64.apk)** · [older 32-bit phones, armv7 (31 MB)](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-armv7.apk) · [universal, any phone (114 MB)](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-universal.apk) · [all releases](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases)
 
 **[Website](https://armstrong-aisosa.github.io/pokedex-mobile/)**
 

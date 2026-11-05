@@ -183,13 +183,13 @@ website/
 
 ### 2.5 Download link
 
-From 1.0.1 on, every release carries **three APKs with fixed names** (no version number in the file name):
+From [1.0.1](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/tag/v1.0.1) on, every release carries **three APKs with fixed names** (no version number in the file name):
 
 | File | For | Linked from |
 |---|---|---|
-| `dexplorer-arm64.apk` | Almost every phone from about 2017 on (64-bit ARM) | Both main buttons (“Download for Android”, “Download the APK”) |
-| `dexplorer-armv7.apk` | Older or very cheap 32-bit phones | “Older 32-bit phone?” link |
-| `dexplorer-universal.apk` | Any phone; the fallback when someone isn't sure (all four CPU types, about 3× larger) | “Not sure?” link |
+| `dexplorer-arm64.apk` (39 MB) | Almost every phone from about 2017 on (64-bit ARM) | Both main buttons (“Download for Android”, “Download the APK”) |
+| `dexplorer-armv7.apk` (31 MB) | Older or very cheap 32-bit phones | “Older 32-bit phone?” link |
+| `dexplorer-universal.apk` (114 MB) | Any phone; the fallback when someone isn't sure (all four CPU types) | “Not sure?” link |
 
 The links use GitHub's permanent pattern `…/releases/latest/download/<file name>`, which always serves that file from the newest release. So the site never needs editing for a new version, **as long as each release keeps these three file names**. A fourth link, “All versions and checksums”, opens the Releases page.
 
