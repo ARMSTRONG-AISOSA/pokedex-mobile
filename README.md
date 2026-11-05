@@ -1,56 +1,117 @@
-# Welcome to your Expo app 👋
+# Dexplorer
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+An offline-first Pokédex for Android, built with Expo and React Native. Browse all 1,025 Pokémon, follow their evolution lines, build a team of six and see where it's weak. Anything you've opened keeps working without an internet connection.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **The full Pokédex.** All 1,025 Pokémon in one list. Search by name or number, filter by any of the 18 types, and sort by number, name or total base stats.
+- **Detail screens.** Official artwork with a shiny toggle, base stats, and type matchups: what each Pokémon is weak to, resists and is immune to.
+- **About section.** Pokédex entry, category, height, weight, generation and abilities. Hidden abilities and baby Pokémon are marked. The section updates as you move along an evolution line.
+- **Evolution trees.** Branching lines are drawn as a tree (Eevee has eight branches), with how each evolution happens: "Level 16", "Thunder Stone", "Friendship, night". Tap any Pokémon in the tree to jump to it.
+- **Team builder.** Six slots, a weak-spot table that checks your team against all 18 attack types and flags the ones nobody covers, and the team's average stats.
+- **Saved.** Tap the heart on any Pokémon to keep it in your Saved tab.
+- **Works offline.** Pokémon data is cached in SQLite and artwork on disk. Cached data is shown instantly and refreshed quietly in the background once it's 30 days old.
+- **Polish.** Light and dark mode, a launch animation, sliding tab and screen transitions, and haptic feedback. Animations respect the system's "remove animations" setting.
+- **Accessibility.** Every button has a TalkBack label, touch targets are at least 44 dp, and layouts adapt to larger system text.
 
-   ```bash
-   npm install
-   ```
+## Tech stack
 
-2. Start the app
+| Area | Choice |
+|---|---|
+| Framework | Expo SDK 58, React Native 0.88, React 19, TypeScript |
+| Navigation | Expo Router (file-based routes, typed) |
+| Server state | TanStack Query |
+| Offline cache | expo-sqlite (Pokémon, species, evolution chains, About text) |
+| Small user data | AsyncStorage (team, favorites, settings) |
+| Validation | zod, applied to every API response and every stored value |
+| Animation | Reanimated 4 |
+| Images | expo-image with a memory and disk cache |
+| Graphics | react-native-svg |
+| Data | [PokéAPI](https://pokeapi.co): REST and GraphQL |
+| Quality | Jest (169 unit tests), ESLint, React Compiler |
 
-   ```bash
-   npx expo start
-   ```
+## How it works
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+Screens (src/app, src/features)
+   │  read through
+Query hooks (TanStack Query)
+   │  call
+Repositories: read-through cache
+   ├── SQLite: cached copy, shown first
+   └── PokéAPI: fetched on a cache miss, or refreshed after 30 days
+Domain logic (src/domain): pure TypeScript, unit tested
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+A few decisions that shaped the app:
 
-### Other setup steps
+- **One request for the whole list.** PokéAPI's REST list endpoint returns only names, so showing types and stats for 1,025 cards would take 1,025 requests. Instead, one GraphQL query fetches a compact summary of every Pokémon (about 25 KB compressed) and caches it. That's why sorting and filtering cover every Pokémon, not just the ones loaded so far. If that request fails, the list falls back to paging through the REST API, 20 at a time.
+- **Show cached data first.** The repositories read SQLite before the network. Saved data appears instantly. Data older than 30 days is still shown, then refreshed in the background. Without a connection, the saved copy is simply kept.
+- **Failures are typed.** Every failure becomes an `AppError` with a code: no connection, not found, rate limited, server error, or unreadable data. Each code has its own message and a retry button where retrying can help. A failure in one section, such as the evolution chain, doesn't take down the rest of the screen.
+- **Nothing is trusted.** API responses and stored values are checked with zod schemas. Corrupt or outdated stored data falls back to safe defaults instead of crashing. If the database can't open at all, the app keeps working online and says so.
+- **Logic lives outside the UI.** Type effectiveness, evolution tree parsing, sorting and team analysis are plain functions in `src/domain`, tested against real PokéAPI responses.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+The full reasoning is in [ARCHITECTURE.md](ARCHITECTURE.md), including a log of every decision and the alternatives considered. The visual and motion spec is in [DESIGN.md](DESIGN.md).
 
-## Learn more
+## Project structure
 
-To learn more about developing your project with Expo, look at the following resources:
+```
+src/
+├── app/            Routes (Expo Router): tabs, the detail screen, root layout
+├── features/       Screens and their parts: pokedex, detail, team, navigation, launch
+├── components/ui/  Shared building blocks: type pills, chips, stat bars, skeletons…
+├── domain/         Pure logic: type chart, evolution trees, sorting, team analysis
+├── data/
+│   ├── api/        PokéAPI client, zod schemas, response mapping
+│   ├── db/         SQLite setup, migrations, repositories
+│   ├── queries/    TanStack Query hooks
+│   └── storage/    AsyncStorage helpers for team, favorites and settings
+├── lib/            Errors, logging, haptics, request limiting
+└── theme/          Colors (18 type colors, light and dark), type scale, motion curves
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Running it locally
 
-## Join the community
+You'll need [Node.js](https://nodejs.org) (LTS) and the **Expo Go** app on an Android phone (it must support SDK 58).
 
-Join our community of developers creating universal apps.
+```bash
+git clone https://github.com/ARMSTRONG-AISOSA/pokedex-mobile.git
+cd pokedex-mobile
+npm install
+npx expo start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Scan the QR code with Expo Go. Your phone and computer need to be on the same Wi-Fi network.
+
+Checks:
+
+```bash
+npm test            # unit tests
+npm run lint        # ESLint
+npx tsc --noEmit    # type check
+```
+
+## Testing
+
+- **169 unit tests** cover the parts most likely to be subtly wrong:
+  - the 18×18 type chart and dual-type multipliers
+  - evolution tree parsing, including branching lines and choosing the right evolution method
+  - sorting, filtering and team analysis
+  - API error mapping and the cache freshness rules
+  - storage fallbacks for corrupt data
+- Test data comes from real PokéAPI responses saved as fixtures.
+- Screens were checked on two real Android devices, a phone and a tablet, over wireless adb. Those checks covered failure cases forced on purpose, light and dark mode, 130% text size, and touch target sizes.
+
+## What I learned
+
+- **Designing around an API's shape.** The obvious approach (a list request, then one request per card) would have hammered PokéAPI and made sorting by stats impossible. Moving the list to a single GraphQL summary made the app faster and simpler.
+- **Offline-first is mostly about deciding what's "fresh".** Caching was easy. Deciding when cached data is too old, and refreshing it without making the user wait, took more thought.
+- **Real data has edge cases.** Evolution chains are recursive trees, some Pokémon evolve in several ways, and the first evolution method listed isn't always the main one. Leafeon showed a location-based method from an old game until I picked the right entry.
+- **Test on real devices.** Some bugs only showed up on a phone. A sheet closed itself right after a fresh start, and the tab you'd just left kept catching taps for a moment during the slide animation. Screenshots and logs pulled over adb found both.
+
+## Credits
+
+- Pokémon data from [PokéAPI](https://pokeapi.co); artwork from the [PokeAPI sprites](https://github.com/PokeAPI/sprites) repository.
+- Fonts: [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) and [Figtree](https://fonts.google.com/specimen/Figtree).
+
+Dexplorer is an unofficial fan project. It is not affiliated with or endorsed by Nintendo, Game Freak, Creatures or The Pokémon Company. Pokémon and Pokémon character names are trademarks of Nintendo.

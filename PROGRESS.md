@@ -62,8 +62,8 @@ Last updated: **2026-11-05** · Session: **3**
 | OD-3 | Custom tab bar vs Expo Router `NativeTabs` | Design uses a custom sliding indicator | Custom first (matches the approved design) |
 | OD-4 | Keep AsyncStorage next to SQLite, or use `expo-sqlite/kv-store` for everything small? | One fewer dependency with kv-store | Keep AsyncStorage for now (user agreed to both earlier); revisit |
 | ~~OD-5~~ | **RESOLVED 2026-11-04: all 18 type colors approved** (after revising fighting, ground, fairy). In `src/theme/tokens.ts`. *(Original: approve the 9 proposed type colors)* | Contrast-checked. Swatch page: `design-reference/type-colors.html` (shown 2026-11-04). Round 1: the user asked for Fighting → brick red `#c03028`, Ground → `#9a6b3f`, and Fairy moved away from Psychic (Fairy changed, since Psychic was already approved). Revised in `DESIGN.md` §2.2 | Done |
-| OD-6 | App name, Android package id (e.g. `com.<name>.pokedex`), icon | Not discussed | Ask once before the first EAS build |
-| OD-7 | GitHub repo name and README approach | Not discussed | Ask at the release phase |
+| ~~OD-6~~ | **RESOLVED 2026-11-05 (name + package id): app name “Dexplorer”, package id `com.armstrongaisosa.dexplorer`** (Android `package`, iOS `bundleIdentifier`, scheme `dexplorer`). Screens and the launch wordmark still say “Pokédex”. Slug stays `pokedex-mobile` (Expo Go keys saved data by slug). See D-028. **Still open: the app icon** (still the Expo template) | | Design an icon before the first EAS build |
+| ~~OD-7~~ | **RESOLVED 2026-11-05: repo `https://github.com/ARMSTRONG-AISOSA/pokedex-mobile`** (empty on GitHub; nothing pushed yet). README written for recruiters and developers. **Open: license** (the `LICENSE` file is Expo's template, copyright 650 Industries) and when to push | | Ask the user |
 
 ---
 
@@ -306,7 +306,8 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - My animation-speed test left the user's Samsung at 10× slow animations (`settings delete` didn't take effect); the user reset it in Developer options. **From now on test only on the Maxwest tablet**, and restore any system setting to its recorded value with `settings put`, then verify.
 - **Phase 10 (QA) done over adb on the tablet** (see §7): forced failures, dark/light, touch targets, 130% font, logcat. Fixes: “Offline cache unavailable” notice (`isDatabaseAvailable()`), no Try again on “Pokémon not found”, bigger touch areas for chips and sort segments, text-holding widths grow with font size, evolution names on one line. Font size was set to 130% and restored to 1.0 (verified).
 - While tapping the theme button I hit Expo Go's floating “Tools” button (it overlaps the top-right of the app on the tablet) and probably switched Expo Go's Fast Refresh off; switched it back on (verified green).
-- **Next action:** the user's airplane-mode and TalkBack checks (§7 Phase 10). Then Phase 11 (README, EAS build, release), starting with OD-6 (app name / package id) and OD-7 (repo/README).
+- The user picked the name **Dexplorer** and package id `com.armstrongaisosa.dexplorer` (D-028); repo `ARMSTRONG-AISOSA/pokedex-mobile`. Wrote `README.md` (features, stack, how it works, structure, running, testing, what I learned, credits/disclaimer). Removed the dead `reset-project` script from `package.json`.
+- **Next action:** the user's airplane-mode and TalkBack checks (§7 Phase 10); the user reviews the README (“What I learned” is in their voice) and decides the license and when to push. Then the app icon, the EAS build, and screenshots/APK link in the README.
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
 - Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).
