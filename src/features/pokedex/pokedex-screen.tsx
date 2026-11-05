@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Icon } from '@/components/ui/icon';
 import { IconButton } from '@/components/ui/icon-button';
+import { isDatabaseAvailable } from '@/data/db/database';
 import { useUserData } from '@/data/storage/user-data-provider';
 import { defaultAscending, type SortKey } from '@/domain/sorting';
 import type { Pokemon, TypeName } from '@/domain/types';
@@ -96,6 +97,13 @@ export function PokedexScreen({ mode = 'all' }: { mode?: 'all' | 'saved' }) {
           <Icon name={scheme === 'dark' ? 'sun' : 'moon'} size={22} color={colors.ink} />
         </IconButton>
       </View>
+      {isDatabaseAvailable() === false ? (
+        <View style={[styles.notice, { backgroundColor: colors.field, borderColor: colors.line }]}>
+          <Text style={[text.subtitle, styles.noticeText, { color: colors.ink }]}>
+            Offline cache unavailable. Pokémon you open won’t be kept for offline use.
+          </Text>
+        </View>
+      ) : null}
       <View style={[styles.padded, styles.search]}>
         <SearchField value={query} onChangeText={setQuery} />
       </View>
@@ -191,8 +199,18 @@ const styles = StyleSheet.create({
   titles: { flex: 1 },
   subtitle: { marginTop: 6, fontSize: 14.5 },
   search: { marginTop: 16 },
-  chips: { marginTop: 14 },
-  sort: { marginTop: 12 },
+  notice: {
+    marginTop: 14,
+    marginHorizontal: layout.screenPadding,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  noticeText: { fontSize: 13.5 },
+  // 3 less than the design's 14/12: the chip row has 3 of padding for touch targets.
+  chips: { marginTop: 11 },
+  sort: { marginTop: 9 },
   count: { marginTop: 12, fontSize: 13.5 },
   columns: { gap: layout.gridGap, paddingHorizontal: layout.screenPadding },
   message: { marginTop: 32 },

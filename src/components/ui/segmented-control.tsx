@@ -25,6 +25,8 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
           <Pressable
             key={option.value}
             onPress={() => onChange(option.value)}
+            // 36 tall to match the design; reaches 44 dp into the control's padding.
+            hitSlop={{ top: 4, bottom: 4 }}
             accessibilityRole="radio"
             accessibilityState={{ selected }}
             style={[styles.segment, selected && { backgroundColor: colors.ink }]}>

@@ -8,6 +8,7 @@ import type { EvolutionNode } from '@/domain/types';
 import { Artwork } from '@/features/pokedex/pokemon-card';
 import { mix } from '@/theme/color';
 import { layout } from '@/theme/tokens';
+import { useTextGrowth } from '@/theme/useTextGrowth';
 import { useTheme } from '@/theme/useTheme';
 
 /** Sizes from DESIGN.md §4. */
@@ -61,6 +62,7 @@ function Branch({ node, currentId, onOpen }: { node: EvolutionNode } & Omit<Prop
 
 function NodeCard({ node, current, onOpen }: { node: EvolutionNode; current: boolean; onOpen: (id: number) => void }) {
   const { colors, typeColors, text } = useTheme();
+  const grow = useTextGrowth();
   // Usually instant: the list's summary already holds every Pokémon.
   const { data: pokemon } = usePokemon(node.id);
   const name = displayName(node.speciesName);
@@ -75,13 +77,19 @@ function NodeCard({ node, current, onOpen }: { node: EvolutionNode; current: boo
       accessibilityState={{ selected: current }}
       style={({ pressed }) => [
         styles.node,
+        { width: NODE_W * grow },
         current && type
           ? { backgroundColor: mix(typeColors[type].c, colors.surface, 20), borderColor: typeColors[type].d, borderWidth: 2 }
           : { backgroundColor: colors.surface, borderColor: colors.line, borderWidth: 1 },
         { opacity: pressed ? 0.8 : 1 },
       ]}>
       {pokemon ? <Artwork pokemon={pokemon} size={40} /> : <Skeleton width={40} height={40} radius={20} />}
-      <Text style={[text.cardName, styles.nodeName, { color: colors.ink }]} numberOfLines={2}>
+      <Text
+        style={[text.cardName, styles.nodeName, { color: colors.ink }]}
+        numberOfLines={1}
+        // Long names (Umbreon, Crabominable) shrink a little instead of breaking mid-word.
+        adjustsFontSizeToFit
+        minimumFontScale={0.7}>
         {name}
       </Text>
       <Text style={[text.dexNumber, styles.nodeNumber, { color: colors.muted }]}>{formatDexNumber(node.id)}</Text>
@@ -92,8 +100,9 @@ function NodeCard({ node, current, onOpen }: { node: EvolutionNode; current: boo
 /** Arrow with the "how it evolves" label above it. */
 function Edge({ label }: { label: string }) {
   const { colors, text } = useTheme();
+  const grow = useTextGrowth();
   return (
-    <View style={styles.edge} accessible={false}>
+    <View style={[styles.edge, { width: EDGE_W * grow }]} accessible={false}>
       <View style={styles.edgeLabelArea}>
         <Text style={[text.subtitle, styles.edgeLabel, { color: colors.muted }]} numberOfLines={3}>
           {label}

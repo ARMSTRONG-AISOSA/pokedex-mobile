@@ -7,6 +7,8 @@ import { migrate } from './migrations';
 const DATABASE_NAME = 'pokedex.db';
 
 let opening: Promise<SQLiteDatabase | null> | null = null;
+/** Known once the first open has settled; the app waits for that before showing screens. */
+let available: boolean | undefined;
 
 /** Opening and migrating normally takes milliseconds; past this we stop waiting. */
 const OPEN_TIMEOUT_MS = 8000;
@@ -41,6 +43,17 @@ async function open(): Promise<SQLiteDatabase | null> {
  * Resolves to `null` (never rejects) if the database could not be opened.
  */
 export function getDatabase(): Promise<SQLiteDatabase | null> {
-  opening ??= open();
+  opening ??= open().then((db) => {
+    available = db !== null;
+    return db;
+  });
   return opening;
+}
+
+/**
+ * False if the database failed to open: the app is running network-only and
+ * should say so ("Offline cache unavailable"). Undefined until the open settles.
+ */
+export function isDatabaseAvailable(): boolean | undefined {
+  return available;
 }

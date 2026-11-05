@@ -21,6 +21,8 @@ export function TypeChip({ type, selected, onPress }: Props) {
   return (
     <Pressable
       onPress={onPress}
+      // 38 tall to match the design; the extra 3 above and below makes a 44 dp touch target.
+      hitSlop={{ top: 3, bottom: 3 }}
       accessibilityRole="button"
       accessibilityState={{ selected }}
       accessibilityLabel={isAll ? 'All types' : `${label} type`}

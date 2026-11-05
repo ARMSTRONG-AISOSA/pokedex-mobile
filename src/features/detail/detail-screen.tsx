@@ -22,7 +22,7 @@ import { TEAM_SIZE } from '@/data/storage/team';
 import { useUserData } from '@/data/storage/user-data-provider';
 import { evolutionNote } from '@/domain/evolution';
 import { displayName } from '@/domain/names';
-import { errorCopy } from '@/lib/errors';
+import { errorCopy, isAppError } from '@/lib/errors';
 import { haptic } from '@/lib/haptics';
 import { ease } from '@/theme/motion';
 import { layout } from '@/theme/tokens';
@@ -68,7 +68,8 @@ export function DetailScreen({ id }: { id: number }) {
         <ErrorState
           {...errorCopy(pokemon.error)}
           colors={colors}
-          onRetry={() => void pokemon.refetch()}
+          // Retrying can't find a Pokémon that doesn't exist; the copy says to go back instead.
+          onRetry={isAppError(pokemon.error) && pokemon.error.code === 'NOT_FOUND' ? undefined : () => void pokemon.refetch()}
         />
         <View style={styles.backFromError}>
           <IconButton accessibilityLabel="Back to list" onPress={goBack}>

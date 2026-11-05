@@ -26,5 +26,6 @@ export function TypeChipRow({ value, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  row: { gap: 8, paddingHorizontal: layout.screenPadding },
+  // The vertical padding leaves room for each chip's 44 dp touch area (hitSlop).
+  row: { gap: 8, paddingHorizontal: layout.screenPadding, paddingVertical: 3 },
 });

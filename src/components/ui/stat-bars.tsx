@@ -10,6 +10,7 @@ import Animated, {
 import { Skeleton } from '@/components/ui/skeleton';
 import { statTotal, type Stats } from '@/domain/types';
 import { duration, ease } from '@/theme/motion';
+import { useTextGrowth } from '@/theme/useTextGrowth';
 import { useTheme } from '@/theme/useTheme';
 
 const ROWS: { key: keyof Stats; label: string }[] = [
@@ -24,16 +25,23 @@ const ROWS: { key: keyof Stats; label: string }[] = [
 /** Bars are scaled so 150 fills the track (DESIGN.md §5.2). */
 const SCALE_MAX = 150;
 
+/** Label and value column widths at the default font size; they grow with larger text. */
+const LABEL_W = 62;
+const VALUE_W = 34;
+
 /** Six stat bars plus the total. Bars grow from 0 when they appear (DESIGN.md §7). */
 export function StatBars({ stats, color, showTotal = true }: { stats: Stats; color: string; showTotal?: boolean }) {
   const { colors, text } = useTheme();
+  const grow = useTextGrowth();
   return (
     <View>
       <View style={styles.list}>
         {ROWS.map(({ key, label }) => (
           <View key={key} style={styles.row} accessible accessibilityLabel={`${label} ${stats[key]}`}>
-            <Text style={[text.label, styles.label, { color: colors.muted }]}>{label}</Text>
-            <Text style={[text.labelStrong, styles.value, { color: colors.ink }]}>{stats[key]}</Text>
+            <Text style={[text.label, { width: LABEL_W * grow, color: colors.muted }]} numberOfLines={1}>
+              {label}
+            </Text>
+            <Text style={[text.labelStrong, styles.value, { width: VALUE_W * grow, color: colors.ink }]}>{stats[key]}</Text>
             <Bar fraction={Math.min(1, stats[key] / SCALE_MAX)} color={color} track={colors.line} />
           </View>
         ))}
@@ -86,8 +94,7 @@ export function StatBarsSkeleton() {
 const styles = StyleSheet.create({
   list: { gap: 11, marginTop: 14 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  label: { width: 62 },
-  value: { width: 34, textAlign: 'right', fontSize: 14, fontVariant: ['tabular-nums'] },
+  value: { textAlign: 'right', fontSize: 14, fontVariant: ['tabular-nums'] },
   track: { flex: 1, height: 9, borderRadius: 5, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: 5 },
   total: {
