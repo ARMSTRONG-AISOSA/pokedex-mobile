@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dexplorer: a free, offline Pokédex for Android</title>
+  <meta name="description" content="Dexplorer is a free Pokédex app for Android. Search all 1,025 Pokémon, follow branching evolution trees, check type matchups and build a balanced team. Works offline.">
+  <meta name="theme-color" content="#13222b">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Dexplorer: every Pokémon, even offline">
+  <meta property="og:description" content="A free Pokédex app for Android. Search, evolution trees, type matchups and a team builder.">
+  <meta property="og:url" content="https://armstrong-aisosa.github.io/pokedex-mobile/">
+  <meta property="og:image" content="https://armstrong-aisosa.github.io/pokedex-mobile/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Apply the saved theme before first paint so the page never flashes the wrong colors. -->
+  <script>
+    try { var t = localStorage.getItem('dexplorer-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <!-- Icons from the app (24×24, stroke style), shared with <use>. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.7-8-10.6A4.4 4.4 0 0 1 12 7.5a4.4 4.4 0 0 1 8 2.4c0 5.9-8 10.6-8 10.6z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l2.2 6.3L21 12l-6.8 2.7L12 21l-2.2-6.3L3 12l6.8-2.7z"/></symbol>
+    <symbol id="i-tree" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="5" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M7.5 12H11M11 5v14M11 5h5.5M11 19h5.5"/></symbol>
+    <symbol id="i-offline" viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 6-3.2M12 5a15 15 0 0 1 10 3.5M5 12a10 10 0 0 1 4-2.2M15.5 10.2A10 10 0 0 1 19 12M8.5 15.5a5 5 0 0 1 7 0M12 19.5h.01M3 3l18 18"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></symbol>
+  </svg>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="#top" aria-label="Dexplorer, back to top">
+        <svg class="brand-ball" viewBox="0 0 100 100" aria-hidden="true">
+          <path d="M4 50a46 46 0 0 1 92 0z" fill="#e8453c"/><path d="M4 50a46 46 0 0 0 92 0z" fill="#f4f7f6"/>
+          <rect x="4" y="45" width="92" height="10" fill="#0b1417"/><circle cx="50" cy="50" r="14" fill="#f4f7f6" stroke="#0b1417" stroke-width="7"/>
+        </svg>
+        <span>Dexplorer</span>
+      </a>
+      <nav aria-label="Main">
+        <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#screens">Screens</a></li>
+          <li><a href="#download">Download</a></li>
+        </ul>
+      </nav>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch to dark mode">
+        <svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero: the app's launch-screen colors, which never change with light/dark mode. -->
+    <section class="hero" id="top">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <div class="launch" aria-hidden="true">
+            <div class="launch-glow"></div>
+            <svg class="launch-ball" viewBox="0 0 100 100">
+              <path class="lid" d="M4 50a46 46 0 0 1 92 0z" fill="#e8453c"/>
+              <path class="base" d="M4 50a46 46 0 0 0 92 0z" fill="#f4f7f6"/>
+              <g class="belt"><rect x="4" y="46" width="92" height="8" fill="#0b1417"/><circle cx="50" cy="50" r="14" fill="#f4f7f6" stroke="#0b1417" stroke-width="6"/></g>
+            </svg>
+          </div>
+          <p class="eyebrow">Free · Android · Works offline</p>
+          <h1>Every Pokémon,<br>even offline.</h1>
+          <p class="lede">Dexplorer is a fast, free Pokédex for Android. Search all 1,025 Pokémon, follow their evolution trees, and build a team that covers its weak spots.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest">
+              <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>
+              Download for Android
+            </a>
+            <a class="btn btn-ghost" href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile">
+              <svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>
+              View the code
+            </a>
+          </div>
+          <p class="fine">Android 7.0 or newer · No account · No ads</p>
+        </div>
+        <div class="hero-phones">
+          <figure class="phone phone-back">
+            <img src="assets/screens/list-light.webp" width="600" height="890" alt="The Pokédex list: search, type filters, sorting and a grid of Pokémon cards">
+          </figure>
+          <figure class="phone phone-front">
+            <img src="assets/screens/detail-dark.webp" width="600" height="890" alt="Eevee's detail screen in dark mode, with its Pokédex entry, height, weight and abilities">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="facts" aria-label="At a glance">
+      <ul class="wrap facts-row">
+        <li><strong>1,025</strong><span>Pokémon</span></li>
+        <li><strong>18</strong><span>types and every matchup</span></li>
+        <li><strong>6</strong><span>team slots, checked for weak spots</span></li>
+        <li><strong>0</strong><span>bars of signal needed once viewed</span></li>
+      </ul>
+    </section>
+
+    <section class="section" id="features" aria-labelledby="features-title">
+      <div class="wrap">
+        <p class="kicker">What it does</p>
+        <h2 id="features-title">A Pokédex that answers the next question.</h2>
+        <p class="section-lede">Not just stats on a page. Dexplorer shows how Pokémon connect, what beats what, and whether your team holds up.</p>
+
+        <ul class="cards">
+          <li class="card reveal" style="--t:#4caf6a;--td:#2f7d4a">
+            <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></span>
+            <h3>Find any Pokémon</h3>
+            <p>Search by name or number, filter by any of the 18 types, and sort by number, name or total power. Every filter covers all 1,025 Pokémon.</p>
+          </li>
+          <li class="card reveal" style="--t:#3b8fe0;--td:#1f68b8">
+            <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-tree"/></svg></span>
+            <h3>Follow every evolution</h3>
+            <p>Evolution lines are drawn as trees, so Eevee's eight branches all fit. Each arrow says how it happens: “Level 16”, “Thunder Stone”, “Friendship, night”.</p>
+          </li>
+          <li class="card reveal" style="--t:#ee6b3a;--td:#b8431a">
+            <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
+            <h3>Know the matchups</h3>
+            <p>See what each Pokémon is weak to, what it resists and what can't touch it, worked out for both of its types.</p>
+          </li>
+          <li class="card reveal" style="--t:#5b6ee0;--td:#3a47b0">
+            <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-sparkle"/></svg></span>
+            <h3>Build a balanced team</h3>
+            <p>Pick six. A weak-spot table checks your team against all 18 attack types and flags the ones nobody covers.</p>
+          </li>
+          <li class="card reveal" style="--t:#f2c230;--td:#8a6500">
+            <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-offline"/></svg></span>
+            <h3>Works without signal</h3>
+            <p>Every Pokémon you open is saved on your phone, artwork included. On a train, on a plane, out of range: it still opens.</p>
+          </li>
+          <li class="card reveal" style="--t:#e391d4;--td:#a3449a">
+            <span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span>
+            <h3>Comfortable to use</h3>
+            <p>Light and dark mode, shiny colors, favorites, gentle haptics, and support for TalkBack, larger text and reduced motion.</p>
+          </li>
+        </ul>
+
+        <div class="types reveal" aria-label="The 18 types">
+          <span class="pill" style="--t:#9a9a8a">Normal</span><span class="pill" style="--t:#ee6b3a">Fire</span><span class="pill" style="--t:#3b8fe0">Water</span><span class="pill" style="--t:#f2c230">Electric</span><span class="pill" style="--t:#4caf6a">Grass</span><span class="pill" style="--t:#6fc7d6">Ice</span><span class="pill" style="--t:#d64236">Fighting</span><span class="pill" style="--t:#9b59b6">Poison</span><span class="pill" style="--t:#d4a065">Ground</span><span class="pill" style="--t:#7b9de0">Flying</span><span class="pill" style="--t:#e85d8f">Psychic</span><span class="pill" style="--t:#9bbf3a">Bug</span><span class="pill" style="--t:#a8a07a">Rock</span><span class="pill" style="--t:#7a62a8">Ghost</span><span class="pill" style="--t:#5b6ee0">Dragon</span><span class="pill" style="--t:#6a5a55">Dark</span><span class="pill" style="--t:#8da5b5">Steel</span><span class="pill" style="--t:#e391d4">Fairy</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section split" aria-labelledby="evo-title">
+      <div class="wrap split-grid">
+        <figure class="phone reveal">
+          <img src="assets/screens/evolution-light.webp" width="600" height="890" loading="lazy" alt="Eevee's evolution tree: eight branches, each labeled with how it evolves">
+        </figure>
+        <div class="split-copy reveal">
+          <p class="kicker">Evolution trees</p>
+          <h2 id="evo-title">See the whole family at once.</h2>
+          <p>Some Pokémon evolve in one straight line. Others branch. Dexplorer draws both, and tapping any Pokémon in the tree takes you straight to it.</p>
+          <ul class="ticks">
+            <li>The About section changes as you move along the line</li>
+            <li>Baby Pokémon and hidden abilities are marked</li>
+            <li>Every evolution method in plain words</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section split split-flip" aria-labelledby="team-title">
+      <div class="wrap split-grid">
+        <figure class="phone reveal">
+          <img src="assets/screens/team-light.webp" width="600" height="890" loading="lazy" alt="The Team tab: two Pokémon chosen and four empty slots">
+        </figure>
+        <div class="split-copy reveal">
+          <p class="kicker">Team builder</p>
+          <h2 id="team-title">Find the gap before your opponent does.</h2>
+          <p>Add up to six Pokémon. Dexplorer counts how many of them are weak to, or resist, each attack type, and tells you in plain words where you need cover.</p>
+          <ul class="ticks">
+            <li>“Needs cover” flags, not just colors</li>
+            <li>Average stats for the whole team</li>
+            <li>Add from the list or from any Pokémon's page</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="screens" aria-labelledby="screens-title">
+      <div class="wrap">
+        <p class="kicker">Screens</p>
+        <h2 id="screens-title">Light, dark, and everything in between.</h2>
+      </div>
+      <div class="gallery" tabindex="0" aria-label="App screenshots, scroll sideways for more">
+        <figure class="shot"><div class="phone"><img src="assets/screens/list-dark.webp" width="600" height="890" loading="lazy" alt="The Pokédex list in dark mode"></div><figcaption>The full Pokédex</figcaption></figure>
+        <figure class="shot"><div class="phone"><img src="assets/screens/detail-light.webp" width="600" height="890" loading="lazy" alt="Eevee's detail screen in light mode"></div><figcaption>Pokédex entry and facts</figcaption></figure>
+        <figure class="shot"><div class="phone"><img src="assets/screens/sheet-light.webp" width="600" height="890" loading="lazy" alt="The Add to team sheet with a searchable list of Pokémon"></div><figcaption>Add to your team</figcaption></figure>
+        <figure class="shot"><div class="phone"><img src="assets/screens/detail-dark.webp" width="600" height="890" loading="lazy" alt="Eevee's detail screen in dark mode"></div><figcaption>Dark mode</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section download" id="download" aria-labelledby="download-title">
+      <div class="wrap">
+        <div class="download-card reveal">
+          <div>
+            <p class="kicker kicker-on-dark">Get Dexplorer</p>
+            <h2 id="download-title">Download it for Android.</h2>
+            <p>Free, no account, no ads. Dexplorer isn't on the Play Store yet, so you install it directly.</p>
+            <a class="btn btn-primary" href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest">
+              <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>
+              Download the APK
+            </a>
+            <p class="fine">Android 7.0 or newer.</p>
+          </div>
+          <ol class="steps">
+            <li><strong>Download the APK</strong><span>Open the download link on your Android phone and tap the <code>.apk</code> file.</span></li>
+            <li><strong>Allow the install</strong><span>If Android asks, allow your browser to install unknown apps. You only need to do this once.</span></li>
+            <li><strong>Open Dexplorer</strong><span>It loads the Pokédex once, then works offline for everything you've opened.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <p class="footer-brand">Dexplorer</p>
+        <p>Built by <a href="https://github.com/ARMSTRONG-AISOSA">Armstrong Aisosa</a>. The code is open source under the <a href="https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/blob/main/LICENSE">MIT License</a>.</p>
+      </div>
+      <div>
+        <p>Pokémon data from <a href="https://pokeapi.co">PokéAPI</a>.</p>
+        <p class="disclaimer">Dexplorer is an unofficial fan project. It is not affiliated with or endorsed by Nintendo, Game Freak, Creatures or The Pokémon Company. Pokémon and Pokémon character names are trademarks of Nintendo.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

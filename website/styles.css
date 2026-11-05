@@ -1,0 +1,312 @@
+/* Dexplorer website. Tokens come from the app (src/theme/tokens.ts, DESIGN.md);
+   see pokedex-mobile-website.md §1 for the full design system. */
+
+/* ---------- 1. Tokens ---------- */
+:root {
+  /* App palette, light */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --field: #e9f0ee;
+  --ink: #13222b;
+  --muted: #55666e;
+  --line: #d3dfdc;
+  --rule: #94a9a9;
+
+  /* Brand (launch screen): the same in light and dark mode */
+  --brand-bg: #13222b;
+  --brand-ink: #ffffff;
+  --brand-muted: #b9c9cc;
+  --ball-red: #e8453c;
+  --cta: #c03028;        /* white text on it is above 4.5:1 */
+  --cta-hover: #a5281f;
+
+  /* Type */
+  --display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --body: 'Figtree', system-ui, sans-serif;
+
+  /* Shape (app radii) */
+  --r-card: 22px;
+  --r-btn: 16px;
+  --r-pill: 999px;
+  --r-sheet: 28px;
+
+  /* Motion (theme/motion.ts) */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-overshoot: cubic-bezier(0.3, 1.4, 0.5, 1);
+
+  --wrap: 1120px;
+  --gutter: 20px;
+
+  color-scheme: light;
+}
+
+/* App palette, dark: follows the system unless the visitor picked a theme */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1618;
+    --surface: #162226;
+    --field: #162226;
+    --ink: #e8f1f0;
+    --muted: #94a7ac;
+    --line: #263a3f;
+    --rule: #4a666b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1618;
+  --surface: #162226;
+  --field: #162226;
+  --ink: #e8f1f0;
+  --muted: #94a7ac;
+  --line: #263a3f;
+  --rule: #4a666b;
+  color-scheme: dark;
+}
+
+/* ---------- 2. Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 17px/1.55 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+h1, h2, h3 { font-family: var(--display); margin: 0; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 6px; }
+.icon { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.wrap { width: min(var(--wrap), 100% - 2 * var(--gutter)); margin-inline: auto; }
+
+.skip {
+  position: absolute; left: 12px; top: -60px; z-index: 50;
+  padding: 10px 16px; border-radius: var(--r-btn);
+  background: var(--ink); color: var(--bg); font-weight: 600; text-decoration: none;
+}
+.skip:focus { top: 12px; }
+
+/* ---------- 3. Header ---------- */
+.site-header {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.header-row { display: flex; align-items: center; gap: 16px; height: 64px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 800 22px/1 var(--display); letter-spacing: -0.03em; }
+.brand-ball { width: 28px; height: 28px; }
+nav { margin-left: auto; }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a {
+  display: inline-flex; align-items: center; height: 44px; padding: 0 14px;
+  border-radius: var(--r-pill); text-decoration: none; font-weight: 500; color: var(--muted);
+  transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+.nav-links a:hover { background: var(--field); color: var(--ink); }
+.icon-btn {
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid var(--line); background: var(--field); color: var(--ink); cursor: pointer;
+}
+
+/* ---------- 4. Buttons, pills ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 52px; padding: 0 22px; border-radius: var(--r-btn);
+  font: 600 16px/1 var(--body); text-decoration: none; cursor: pointer;
+  transition: transform 0.15s var(--ease-out), background-color 0.2s var(--ease-out);
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--cta); color: #fff; }
+.btn-primary:hover { background: var(--cta-hover); }
+.btn-ghost { color: var(--brand-ink); border: 1px solid rgba(255, 255, 255, 0.28); }
+.btn-ghost:hover { background: rgba(255, 255, 255, 0.08); }
+
+/* Type pill: same recipe as the app (24% type tint, colored dot, ink text) */
+.pill {
+  display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 13px;
+  border-radius: var(--r-pill); font-size: 14px; font-weight: 500;
+  background: color-mix(in srgb, var(--t) 24%, var(--surface));
+}
+.pill::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--t); }
+
+/* ---------- 5. Phone frame ---------- */
+.phone {
+  margin: 0; padding: 7px; border-radius: 34px; background: #0b1417;
+  box-shadow: 0 30px 60px -20px rgba(4, 12, 15, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.phone img { border-radius: 27px; aspect-ratio: 600 / 890; width: 100%; object-fit: cover; }
+
+/* ---------- 6. Hero ---------- */
+.hero {
+  background: var(--brand-bg); color: var(--brand-ink);
+  overflow: hidden; position: relative;
+}
+.hero::after { /* soft light behind the phones */
+  content: ""; position: absolute; right: -10%; top: 10%; width: 60%; aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(59, 90, 100, 0.55), transparent 65%); pointer-events: none;
+}
+.hero-grid {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: 1.05fr 1fr; align-items: center; gap: 40px;
+  padding: 72px 0 88px;
+}
+.eyebrow {
+  display: inline-block; margin-top: 22px; padding: 6px 12px; border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.08); color: var(--brand-muted); font-size: 14px; font-weight: 500;
+}
+.hero h1 {
+  margin-top: 18px; font-weight: 800; letter-spacing: -0.035em;
+  font-size: clamp(44px, 7vw, 76px); line-height: 0.98;
+}
+.lede { margin-top: 20px; max-width: 34em; color: var(--brand-muted); font-size: 19px; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.fine { margin-top: 14px; font-size: 14px; color: var(--brand-muted); }
+
+/* Launch ball: the app's launch animation, shortened: drop, wobble, a flash. Plays once. */
+.launch { position: relative; width: 64px; height: 64px; }
+.launch-ball { position: relative; width: 64px; height: 64px; overflow: visible; }
+.launch-glow {
+  position: absolute; inset: 0; border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle, #fff 0%, rgba(255, 255, 255, 0) 68%);
+}
+.launch-ball { animation: ballDrop 0.45s var(--ease-overshoot) both, ballWobble 0.6s 0.45s ease-in-out both; }
+.launch-glow { animation: burst 0.55s 1.05s ease-out both; }
+@keyframes ballDrop { from { transform: translateY(-90px) scale(0.7); opacity: 0; } 50% { opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes ballWobble { 0%, 100% { rotate: 0deg; } 20% { rotate: -14deg; } 45% { rotate: 12deg; } 70% { rotate: -6deg; } 85% { rotate: 3deg; } }
+@keyframes burst { 0% { transform: scale(0.3); opacity: 0.9; } 100% { transform: scale(3.2); opacity: 0; } }
+
+.hero-phones { position: relative; height: 540px; }
+.hero-phones .phone { position: absolute; width: 300px; }
+.phone-back { left: 0; top: 70px; rotate: -6deg; }
+.phone-front { right: 0; top: 10px; rotate: 4deg; }
+.hero-phones .phone { animation: rise 0.7s var(--ease-out) both; }
+.phone-front { animation-delay: 0.12s; }
+@keyframes rise { from { opacity: 0; translate: 0 44px; } to { opacity: 1; translate: 0 0; } }
+
+/* ---------- 7. Facts strip ---------- */
+.facts { border-bottom: 1px solid var(--line); }
+.facts-row { display: grid; grid-template-columns: repeat(4, 1fr); }
+.facts-row li { padding: 28px 16px; display: flex; flex-direction: column; gap: 2px; }
+.facts-row li + li { border-left: 1px solid var(--line); }
+.facts-row strong { font: 800 40px/1 var(--display); letter-spacing: -0.03em; }
+.facts-row span { color: var(--muted); font-size: 15px; }
+
+/* ---------- 8. Sections ---------- */
+.section { padding: 96px 0; }
+.kicker { font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.section h2, .split-copy h2 {
+  margin-top: 10px; max-width: 18em; font-weight: 800; letter-spacing: -0.03em;
+  font-size: clamp(32px, 4.4vw, 46px); line-height: 1.04;
+}
+.section-lede { margin-top: 16px; max-width: 38em; color: var(--muted); font-size: 18px; }
+
+/* Feature cards: tinted like the app's Pokémon cards (16% tint, 30% border) */
+.cards { margin-top: 48px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card {
+  padding: 24px; border-radius: var(--r-card);
+  background: color-mix(in srgb, var(--t) 16%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--t) 30%, var(--line));
+}
+.card-icon { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--td); color: #fff; }
+.card h3 { margin-top: 18px; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.card p { margin-top: 8px; color: var(--muted); font-size: 16px; }
+.types { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Split sections */
+.split { background: var(--field); }
+.split + .split { padding-top: 0; }
+.split-grid { display: grid; grid-template-columns: 300px 1fr; gap: 72px; align-items: center; }
+.split-flip .split-grid { grid-template-columns: 1fr 300px; }
+.split-flip .phone { order: 2; }
+.split-copy > p:not(.kicker) { margin-top: 16px; color: var(--muted); font-size: 18px; max-width: 32em; }
+.ticks { margin-top: 22px; display: grid; gap: 10px; }
+.ticks li { display: flex; gap: 12px; align-items: baseline; }
+.ticks li::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--ink); translate: 0 -1px; }
+
+/* Gallery: swipe on phones, a row on wide screens */
+.gallery {
+  margin-top: 40px; display: flex; justify-content: safe center; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding: 4px max(var(--gutter), (100% - var(--wrap)) / 2) 24px;
+  scrollbar-width: thin;
+}
+.shot { flex: none; width: 240px; margin: 0; scroll-snap-align: center; }
+.shot figcaption { margin-top: 14px; text-align: center; font-weight: 500; color: var(--muted); font-size: 15px; }
+
+/* Download */
+.download { padding-top: 24px; }
+.download-card {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+  padding: 48px; border-radius: var(--r-sheet);
+  background: var(--brand-bg); color: var(--brand-ink);
+}
+.download-card h2 { margin-top: 10px; }
+.download-card p:not(.kicker):not(.fine) { margin: 14px 0 26px; color: var(--brand-muted); font-size: 18px; }
+.kicker-on-dark { color: var(--brand-muted); }
+.steps { counter-reset: step; display: grid; gap: 14px; }
+.steps li {
+  counter-increment: step; position: relative; padding: 18px 18px 18px 66px;
+  border-radius: var(--r-card); background: rgba(255, 255, 255, 0.06);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.steps li::before {
+  content: counter(step); position: absolute; left: 18px; top: 18px;
+  width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--ball-red); color: #fff; font: 800 16px/1 var(--display);
+}
+.steps span { color: var(--brand-muted); font-size: 15px; }
+.steps code { font-size: 14px; }
+
+/* ---------- 9. Footer ---------- */
+.site-footer { margin-top: 72px; padding: 40px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; }
+.footer-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 32px; }
+.footer-grid p + p { margin-top: 8px; }
+.footer-brand { font: 800 20px/1 var(--display); letter-spacing: -0.03em; color: var(--ink); margin-bottom: 10px; }
+.site-footer a { color: var(--ink); }
+.disclaimer { font-size: 13.5px; }
+
+/* ---------- 10. Scroll reveal (only when JS runs, so content is never hidden without it) ---------- */
+.js .reveal { opacity: 0; translate: 0 14px; transition: opacity 0.5s var(--ease-out), translate 0.5s var(--ease-out); }
+.js .reveal.in { opacity: 1; translate: 0 0; }
+
+/* ---------- 11. Responsive ---------- */
+@media (max-width: 960px) {
+  .hero-grid { grid-template-columns: 1fr; padding: 48px 0 0; gap: 8px; }
+  .hero-phones { height: 440px; max-width: 460px; width: 100%; margin-inline: auto; }
+  .hero-phones .phone { width: 210px; }
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .split-grid, .split-flip .split-grid { grid-template-columns: 220px 1fr; gap: 40px; }
+  .download-card { grid-template-columns: 1fr; padding: 36px 28px; }
+}
+@media (max-width: 640px) {
+  :root { --gutter: 16px; }
+  body { font-size: 16px; }
+  .nav-links li:not(:last-child) { display: none; }
+  .facts-row { grid-template-columns: repeat(2, 1fr); }
+  .facts-row li:nth-child(3) { border-left: 0; }
+  .facts-row li:nth-child(n + 3) { border-top: 1px solid var(--line); }
+  .facts-row strong { font-size: 32px; }
+  .section { padding: 72px 0; }
+  .cards { grid-template-columns: 1fr; }
+  .split-grid, .split-flip .split-grid { grid-template-columns: 1fr; gap: 32px; }
+  .split .phone { width: min(260px, 80%); margin-inline: auto; }
+  .split-flip .phone { order: 0; }
+  .hero-phones { height: 380px; }
+  .hero-phones .phone { width: 180px; }
+  .cta-row .btn { flex: 1 1 100%; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .download-card { padding: 28px 20px; }
+}
+
+/* ---------- 12. Reduced motion: no launch ball, no rises, no smooth scrolling ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .launch-ball, .launch-glow, .hero-phones .phone { animation: none; }
+  .js .reveal { opacity: 1; translate: 0 0; transition: none; }
+  .btn:active { transform: none; }
+}
