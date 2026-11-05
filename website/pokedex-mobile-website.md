@@ -93,7 +93,7 @@ The body text is a little larger than the app's (17px rather than 16px) because 
 | Split section | Phone on one side, kicker + title + text + dot list on the other; sides alternate | n/a |
 | Gallery | Row of phone frames with captions; swipes sideways on phones | n/a |
 | Download card | Brand background, button, three numbered install steps | Launch screen colors |
-| Footer | Wordmark; “Designed and built by Armstrong Aisosa” linking to the developer portfolio (https://bossstrong-dev.vercel.app/), GitHub, MIT License, PokéAPI credit, fan-project disclaimer | n/a |
+| Footer | Wordmark; “Designed and built by Bossstrong-Dev” linking to the developer portfolio (https://bossstrong-dev.vercel.app/), GitHub, MIT License, PokéAPI credit, fan-project disclaimer | n/a |
 
 **Icons.** The icons are the app's own: search, moon, sun, heart, shield and sparkle, on a 24×24 grid with a 2px round stroke. Four new ones are drawn in the same style: evolution tree, offline, download and code. They are defined once in an inline SVG sprite and used with `<use>`.
 
@@ -199,7 +199,7 @@ All paths in the page are relative (`styles.css`, `assets/…`), so the site wor
 | Asset | Size |
 |---|---|
 | HTML + CSS + JS | about 32 KB uncompressed |
-| Screenshots | about 540 KB for all eight (lossless); below-the-fold images use `loading="lazy"` |
+| Screenshots | about 600 KB for all nine (lossless); below-the-fold images use `loading="lazy"` |
 | Share image | about 185 KB (only fetched by social networks) |
 | Fonts | 5 font files from Google Fonts, `display=swap` |
 
@@ -220,8 +220,8 @@ Check before every publish:
 
 ### 2.9 Before shipping
 
-- [ ] **Replace the screenshots** with ones from the release APK (`python3 website/tools/make-screens.py RAW_DIR`). The current ones come from the app running in Expo Go during testing: they show Expo Go's "Tools" button in the top-right corner, and the evolution screenshot still has a name-wrapping bug that has since been fixed. Then rerun `python3 website/tools/make-og-image.py` from the repo root.
-- [ ] **Publish the first GitHub Release** with the APK attached (Phase 11, EAS build), so the download buttons work.
+- [x] **Screenshots from the release APK** (1.0.0, tablet), processed with `python3 website/tools/make-screens.py RAW_DIR`; share image rebuilt with `python3 website/tools/make-og-image.py`.
+- [x] **First GitHub Release** published: [v1.0.0](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/tag/v1.0.0) with `dexplorer-1.0.0.apk`.
 - [ ] **Add `.github/workflows/pages.yml`** and set Settings → Pages → Source to "GitHub Actions".
 - [ ] Run the §2.8 checks on the live URL, then add the link to the app's README.
 

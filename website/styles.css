@@ -237,6 +237,8 @@ nav { margin-left: auto; }
   scrollbar-width: thin;
 }
 .shot { flex: none; width: 260px; margin: 0; scroll-snap-align: center; }
+/* Wide screens: all five phones fit in one row, no sideways scrolling. */
+@media (min-width: 1160px) { .shot { width: 208px; } }
 .shot figcaption { margin-top: 14px; text-align: center; font-weight: 500; color: var(--muted); font-size: 15px; }
 
 /* Download */
