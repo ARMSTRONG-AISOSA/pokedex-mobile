@@ -93,6 +93,7 @@ The body text is a little larger than the app's (17px rather than 16px) because 
 | Split section | Phone on one side, kicker + title + text + dot list on the other; sides alternate | n/a |
 | Gallery | Row of phone frames with captions; swipes sideways on phones | n/a |
 | Download card | Brand background, button, three numbered install steps | Launch screen colors |
+| Footer | Wordmark; “Designed and built by Armstrong Aisosa” linking to the developer portfolio (https://bossstrong-dev.vercel.app/), GitHub, MIT License, PokéAPI credit, fan-project disclaimer | n/a |
 
 **Icons.** The icons are the app's own: search, moon, sun, heart, shield and sparkle, on a 24×24 grid with a 2px round stroke. Four new ones are drawn in the same style: evolution tree, offline, download and code. They are defined once in an inline SVG sprite and used with `<use>`.
 
