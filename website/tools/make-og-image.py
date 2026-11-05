@@ -55,7 +55,7 @@ def main():
     draw.text((96, 491), 'Download the APK', font=pill, fill=(255, 255, 255))
 
     phone(img, ASSETS + 'screens/list-light.webp', 700, 120, 250, 6)
-    phone(img, ASSETS + 'screens/detail-dark.webp', 900, 70, 250, -4)
+    phone(img, ASSETS + 'screens/detail-charizard-dark.webp', 900, 70, 250, -4)
     img.save(ASSETS + 'og-image.png', optimize=True)
 
 

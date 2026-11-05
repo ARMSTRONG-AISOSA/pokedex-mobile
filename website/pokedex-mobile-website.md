@@ -197,7 +197,7 @@ All paths in the page are relative (`styles.css`, `assets/…`), so the site wor
 | Asset | Size |
 |---|---|
 | HTML + CSS + JS | about 32 KB uncompressed |
-| Screenshots | about 190 KB for all seven; below-the-fold images use `loading="lazy"` |
+| Screenshots | about 220 KB for all eight; below-the-fold images use `loading="lazy"` |
 | Share image | about 185 KB (only fetched by social networks) |
 | Fonts | 5 font files from Google Fonts, `display=swap` |
 
