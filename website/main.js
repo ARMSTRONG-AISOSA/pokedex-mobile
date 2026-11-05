@@ -38,6 +38,38 @@
 
   render();
 
+  // ---------- Sharing: the phone's share sheet where available, and "Copy link" ----------
+  var SHARE = {
+    title: 'Dexplorer',
+    text: 'Dexplorer: a free, offline Pokédex for Android',
+    url: 'https://armstrong-aisosa.github.io/pokedex-mobile/'
+  };
+  var nativeBtn = document.getElementById('share-native');
+  var copyBtn = document.getElementById('share-copy');
+  var status = document.getElementById('share-status');
+
+  if (navigator.share) {
+    nativeBtn.hidden = false;
+    nativeBtn.addEventListener('click', function () {
+      navigator.share(SHARE).catch(function () {
+        // The visitor closed the share sheet. Nothing to do.
+      });
+    });
+  }
+
+  copyBtn.addEventListener('click', function () {
+    function done(ok) {
+      copyBtn.textContent = ok ? 'Link copied' : 'Couldn’t copy';
+      status.textContent = ok ? 'Link copied to the clipboard.' : 'Couldn’t copy the link.';
+      setTimeout(function () { copyBtn.textContent = 'Copy link'; }, 2000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(SHARE.url).then(function () { done(true); }, function () { done(false); });
+    } else {
+      done(false);
+    }
+  });
+
   // ---------- Scroll reveal: sections rise in once as they come into view ----------
   var items = document.querySelectorAll('.reveal');
   if (!('IntersectionObserver' in window)) {

@@ -137,7 +137,7 @@ Keep those three file names: the website and this README link to `releases/lates
 
 ## Website
 
-The promotional site lives in [`website/`](website/): plain HTML, CSS and JavaScript using the app's own design tokens, published to GitHub Pages by a GitHub Actions workflow. Its design system and architecture are in [website/pokedex-mobile-website.md](website/pokedex-mobile-website.md).
+The promotional site lives in [`website/`](website/): plain HTML, CSS and JavaScript using the app's own design tokens, published to GitHub Pages by a GitHub Actions workflow. It has share links (with the phone's share sheet where available), link-preview tags for social networks and chat apps, and structured data and a sitemap for search engines. Its design system and architecture are in [website/pokedex-mobile-website.md](website/pokedex-mobile-website.md).
 
 ## Credits
 

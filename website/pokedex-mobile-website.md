@@ -93,6 +93,7 @@ The body text is a little larger than the app's (17px rather than 16px) because 
 | Split section | Phone on one side, kicker + title + text + dot list on the other; sides alternate | n/a |
 | Gallery | Row of phone frames with captions; swipes sideways on phones | n/a |
 | Download card | Brand background, button, three numbered install steps | Launch screen colors |
+| Share row | “Know someone who'd like it? Share Dexplorer.” and pill buttons (`--field` background, 44px tall): Share… (phones only), WhatsApp, X, Facebook, LinkedIn, Copy link | Type chips |
 | Footer | Wordmark; “Designed and built by Bossstrong-Dev” linking to the developer portfolio (https://bossstrong-dev.vercel.app/), GitHub, MIT License, PokéAPI credit, fan-project disclaimer | n/a |
 
 **Icons.** The icons are the app's own: search, moon, sun, heart, shield and sparkle, on a 24×24 grid with a 2px round stroke. Four new ones are drawn in the same style: evolution tree, offline, download and code. They are defined once in an inline SVG sprite and used with `<use>`.
@@ -153,9 +154,10 @@ Plain **HTML, CSS and JavaScript**. There's no framework, no build step and no n
 website/
 ├── index.html                  The page (content, meta tags, inline SVG icon sprite)
 ├── styles.css                  All styles, in numbered sections (tokens → base → … → reduced motion)
-├── main.js                     Theme toggle and scroll reveal (about 60 lines)
+├── main.js                     Theme toggle, share buttons and scroll reveal
+├── sitemap.xml                 For search engines (§2.6)
 ├── assets/
-│   ├── favicon.svg
+│   ├── favicon.svg, favicon-32.png, apple-touch-icon.png
 │   ├── og-image.png            Share preview (generated)
 │   └── screens/*.webp          App screenshots, 800×1187 lossless
 ├── tools/
@@ -173,10 +175,11 @@ website/
 
 ### 2.4 JavaScript
 
-`main.js` is loaded with `defer` and does two things:
+`main.js` is loaded with `defer` and does three things:
 
 1. **Theme toggle** (§2.3).
-2. **Scroll reveal.** It adds a `js` class to `<html>`, and only then does the CSS hide `.reveal` elements, so the page is fully readable with JavaScript turned off. An `IntersectionObserver` adds `.in` to each element once as it enters the viewport, then stops watching it. Browsers without `IntersectionObserver` simply show everything.
+2. **Sharing** (§2.6): shows the Share… button where `navigator.share` exists, and handles Copy link.
+3. **Scroll reveal.** It adds a `js` class to `<html>`, and only then does the CSS hide `.reveal` elements, so the page is fully readable with JavaScript turned off. An `IntersectionObserver` adds `.in` to each element once as it enters the viewport, then stops watching it. Browsers without `IntersectionObserver` simply show everything.
 
 ### 2.5 Download link
 
@@ -194,7 +197,39 @@ All download links and “View the code” open in a new tab (§1.8).
 
 Release 1.0.0 had a single universal file, `dexplorer-1.0.0.apk`; it stays on the Releases page.
 
-### 2.6 Hosting
+### 2.6 Sharing, link previews and search
+
+**Share row.** The share links are plain URLs with the page address and a short text built in: no social-network scripts, cookies or tracking.
+
+| Button | Opens |
+|---|---|
+| Share… | The phone's own share sheet (`navigator.share`); the button only appears where the browser supports it |
+| WhatsApp | `wa.me/?text=…` |
+| X | `x.com/intent/post?text=…&url=…` |
+| Facebook | `facebook.com/sharer/sharer.php?u=…` |
+| LinkedIn | `linkedin.com/sharing/share-offsite/?url=…` |
+| Copy link | Copies the URL; the button says “Link copied” for 2 seconds and a hidden live region announces it |
+
+**Link previews.** When the URL is pasted into a chat or a post, the preview comes from the `<head>`:
+
+- Open Graph tags: `og:site_name`, `og:title`, `og:description`, `og:url`, `og:locale`, and `og:image` with its type, size and alt text. These are read by WhatsApp, Facebook, LinkedIn, Slack and Discord.
+- X card tags: `twitter:card` (`summary_large_image`), title, description, image and image alt.
+- The image is `assets/og-image.png` (1200×630).
+- All of these URLs are absolute, because social networks require it.
+
+**Search engines.**
+
+- `<title>` and `<meta name="description">` written for search results.
+- `<link rel="canonical">`, so all copies of the URL count as one page.
+- `robots` set to `index, follow, max-image-preview:large`.
+- **Structured data** (JSON-LD, schema.org `MobileApplication`): name, description, Android requirement, free offer, download URL, screenshots, license, code repository, and the author (Armstrong Aisosa / Bossstrong-Dev, with links to the portfolio and GitHub). There is deliberately **no rating**, because there are no real ratings to report. Without ratings, Google may not show a rich "app" result, but it still understands the page.
+- `sitemap.xml` lists the page. Submit it in Google Search Console (owner verification needed) to get indexed faster.
+- **No `robots.txt`.** Search engines only read it at the domain root (`armstrong-aisosa.github.io/robots.txt`), not inside `/pokedex-mobile/`, and nothing on this site needs blocking.
+- Icons: `favicon.svg`, `favicon-32.png` (browsers without SVG favicons), and `apple-touch-icon.png` (180×180, for home screens and bookmarks).
+
+**Checking.** Paste the URL into the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/), the [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) and Google's [Rich Results Test](https://search.google.com/test/rich-results). Networks cache previews: after changing the image or text, use the debugger's "Scrape again".
+
+### 2.7 Hosting
 
 The site will be published with **GitHub Pages from the `website/` folder, using a GitHub Actions workflow** (`.github/workflows/pages.yml`, added when shipping). The workflow uploads `website/` and deploys it whenever something in `website/` changes on `main`.
 
@@ -206,7 +241,7 @@ The site will be published with **GitHub Pages from the `website/` folder, using
 
 All paths in the page are relative (`styles.css`, `assets/…`), so the site works both from the `/pokedex-mobile/` subpath and when opened as a local file. The Open Graph tags use absolute URLs because social networks require them.
 
-### 2.7 Performance budget
+### 2.8 Performance budget
 
 | Asset | Size |
 |---|---|
@@ -217,7 +252,7 @@ All paths in the page are relative (`styles.css`, `assets/…`), so the site wor
 
 Images have `width` and `height` set, so the layout doesn't jump as they load. Target: fully loaded in under 2 seconds on a mid-range phone over 4G.
 
-### 2.8 Testing
+### 2.9 Testing
 
 Check before every publish:
 
@@ -228,16 +263,16 @@ Check before every publish:
   - Keyboard: Tab reaches the skip link, the nav, both buttons and the gallery, with a visible focus ring on each.
   - With reduced motion turned on, nothing animates.
 - **Links:** both download buttons download `dexplorer-arm64.apk`, the armv7 and universal links download their files, “All versions” opens the Releases page, and all of them open in a new tab. The GitHub links work.
-- **Sharing:** paste the URL into a chat app and the preview image and title appear.
+- **Sharing:** paste the URL into a chat app and the preview image and title appear. Check the share buttons open the right sites, and Copy link copies. Run the preview and structured-data checkers in §2.6.
 
-### 2.9 Shipping checklist (first release)
+### 2.10 Shipping checklist (first release)
 
 - [x] **Screenshots from the release APK** (1.0.0, tablet), processed with `python3 website/tools/make-screens.py RAW_DIR`; share image rebuilt with `python3 website/tools/make-og-image.py`.
 - [x] **First GitHub Release** published: [v1.0.0](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/tag/v1.0.0) with `dexplorer-1.0.0.apk`.
 - [x] **`.github/workflows/pages.yml`** added; Pages enabled with source “GitHub Actions” (done with `gh api`).
 - [x] Live URL checked (page, assets, share image, download link → v1.0.0); link added to the app's README.
 
-### 2.10 Decisions
+### 2.11 Decisions
 
 | # | Decision | Why | Alternatives considered |
 |---|---|---|---|
@@ -246,6 +281,8 @@ Check before every publish:
 | W-3 | Deploy with an Actions workflow | Lets the folder be called `website/` | Pages from `/docs`: the name suggests documentation |
 | W-4 | Download through `releases/latest/download/<fixed file name>` (was `releases/latest` for 1.0.0) | One tap downloads the right file, and the site never needs changing for a new version | A versioned file link: breaks with every release; the Releases page: an extra step and three files to choose from |
 | W-7 | Download and code links open in a new tab, announced to screen readers | The visitor keeps the page open (user request) | Same tab |
+| W-9 | Share links as plain URLs plus the phone's share sheet | Works everywhere, no third-party scripts or tracking, fast | Social networks' share widgets (scripts, cookies, slower) |
+| W-10 | Structured data without ratings; no `robots.txt` | Never invent ratings; `robots.txt` isn't read inside a project path | Fake or placeholder ratings; a `robots.txt` that would be ignored |
 | W-8 | arm64 as the main download, armv7 and universal as alternatives | Smallest file for almost everyone; nobody is left out (user asked to keep the universal APK as a fallback) | One universal APK only (114 MB) |
 | W-5 | Shortened launch animation (the ball doesn't split open) | The ball stays on screen as a logo; a full split would leave an empty space | The full app animation |
 | W-6 | Download button `#c03028`, not the ball red | Passes 4.5:1 contrast with white text | `#e8453c`: about 3.9:1, fails |

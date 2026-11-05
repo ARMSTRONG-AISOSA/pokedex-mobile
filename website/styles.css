@@ -270,10 +270,26 @@ nav { margin-left: auto; }
 .steps span { color: var(--brand-muted); font-size: 15px; }
 .steps code { font-size: 14px; }
 
+/* Share row */
+.share { padding: 56px 0 8px; }
+.share-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+.share-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin: 0; max-width: none; }
+.share-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.share-btn {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px;
+  border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--field);
+  color: var(--ink); font: 500 15px/1 var(--body); text-decoration: none; cursor: pointer;
+  transition: background-color 0.2s var(--ease-out), transform 0.15s var(--ease-out);
+}
+.share-btn:hover { background: color-mix(in srgb, var(--ink) 8%, var(--field)); }
+.share-btn:active { transform: scale(0.97); }
+.share-btn[hidden] { display: none; }
+
 /* ---------- 9. Footer ---------- */
 .site-footer { margin-top: 72px; padding: 40px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; }
 .footer-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 32px; }
 .footer-grid p + p { margin-top: 8px; }
+.site-footer { margin-top: 40px; }
 .footer-brand { font: 800 20px/1 var(--display); letter-spacing: -0.03em; color: var(--ink); margin-bottom: 10px; }
 .site-footer a { color: var(--ink); }
 .disclaimer { font-size: 13.5px; }

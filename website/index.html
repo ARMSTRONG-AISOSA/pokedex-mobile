@@ -6,17 +6,70 @@
   <title>Dexplorer: a free, offline Pokédex for Android</title>
   <meta name="description" content="Dexplorer is a free Pokédex app for Android. Search all 1,025 Pokémon, follow branching evolution trees, check type matchups and build a balanced team. Works offline.">
   <meta name="theme-color" content="#13222b">
+  <meta name="author" content="Armstrong Aisosa (Bossstrong-Dev)">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://armstrong-aisosa.github.io/pokedex-mobile/">
 
+  <!-- Link previews (WhatsApp, Facebook, LinkedIn, Slack, Discord…). Social networks need absolute URLs. -->
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Dexplorer">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="Dexplorer: every Pokémon, even offline">
   <meta property="og:description" content="A free Pokédex app for Android. Search, evolution trees, type matchups and a team builder.">
   <meta property="og:url" content="https://armstrong-aisosa.github.io/pokedex-mobile/">
   <meta property="og:image" content="https://armstrong-aisosa.github.io/pokedex-mobile/assets/og-image.png">
+  <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Dexplorer: every Pokémon, even offline. Two phones showing the Pokédex list and Charizard's page.">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dexplorer: every Pokémon, even offline">
+  <meta name="twitter:description" content="A free Pokédex app for Android. Search, evolution trees, type matchups and a team builder.">
+  <meta name="twitter:image" content="https://armstrong-aisosa.github.io/pokedex-mobile/assets/og-image.png">
+  <meta name="twitter:image:alt" content="Dexplorer: every Pokémon, even offline. Two phones showing the Pokédex list and Charizard's page.">
+
+  <!-- Tells search engines this page is about a free Android app (schema.org). No ratings: there are none to report. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MobileApplication",
+    "name": "Dexplorer",
+    "description": "A free, offline-first Pokédex for Android. Search all 1,025 Pokémon, follow branching evolution trees, check type matchups and build a balanced team.",
+    "url": "https://armstrong-aisosa.github.io/pokedex-mobile/",
+    "image": "https://armstrong-aisosa.github.io/pokedex-mobile/assets/og-image.png",
+    "screenshot": [
+      "https://armstrong-aisosa.github.io/pokedex-mobile/assets/screens/list-light.webp",
+      "https://armstrong-aisosa.github.io/pokedex-mobile/assets/screens/detail-charizard-dark.webp",
+      "https://armstrong-aisosa.github.io/pokedex-mobile/assets/screens/evolution-light.webp",
+      "https://armstrong-aisosa.github.io/pokedex-mobile/assets/screens/team-light.webp"
+    ],
+    "operatingSystem": "Android 7.0 or newer",
+    "applicationCategory": "ReferenceApplication",
+    "downloadUrl": "https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-arm64.apk",
+    "installUrl": "https://armstrong-aisosa.github.io/pokedex-mobile/#download",
+    "isAccessibleForFree": true,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "license": "https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/blob/main/LICENSE",
+    "codeRepository": "https://github.com/ARMSTRONG-AISOSA/pokedex-mobile",
+    "author": {
+      "@type": "Person",
+      "name": "Armstrong Aisosa",
+      "alternateName": "Bossstrong-Dev",
+      "url": "https://bossstrong-dev.vercel.app/",
+      "sameAs": [
+        "https://github.com/ARMSTRONG-AISOSA"
+      ]
+    }
+  }
+  </script>
 
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
@@ -234,6 +287,22 @@
             <li><strong>Open Dexplorer</strong><span>It loads the Pokédex once, then works offline for everything you've opened.</span></li>
           </ol>
         </div>
+      </div>
+    </section>
+    <!-- Share links are plain URLs (no social-network scripts, no tracking). "Share…" uses the phone's
+         own share sheet and only appears where the browser supports it (main.js). -->
+    <section class="share" aria-labelledby="share-title">
+      <div class="wrap share-row">
+        <h2 id="share-title" class="share-title">Know someone who'd like it? Share Dexplorer.</h2>
+        <ul class="share-links">
+          <li><button class="share-btn" id="share-native" type="button" hidden>Share…</button></li>
+          <li><a class="share-btn" data-share="whatsapp" href="https://wa.me/?text=Dexplorer%3A%20a%20free%2C%20offline%20Pok%C3%A9dex%20for%20Android%20https%3A%2F%2Farmstrong-aisosa.github.io%2Fpokedex-mobile%2F" target="_blank" rel="noopener">WhatsApp<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><a class="share-btn" data-share="x" href="https://x.com/intent/post?text=Dexplorer%3A%20a%20free%2C%20offline%20Pok%C3%A9dex%20for%20Android&amp;url=https%3A%2F%2Farmstrong-aisosa.github.io%2Fpokedex-mobile%2F" target="_blank" rel="noopener">X<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><a class="share-btn" data-share="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Farmstrong-aisosa.github.io%2Fpokedex-mobile%2F" target="_blank" rel="noopener">Facebook<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><a class="share-btn" data-share="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Farmstrong-aisosa.github.io%2Fpokedex-mobile%2F" target="_blank" rel="noopener">LinkedIn<span class="sr-only"> (opens in a new tab)</span></a></li>
+          <li><button class="share-btn" id="share-copy" type="button">Copy link</button></li>
+        </ul>
+        <p class="sr-only" id="share-status" aria-live="polite"></p>
       </div>
     </section>
   </main>
