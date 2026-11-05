@@ -2,7 +2,7 @@
 
 The promotional site for the Dexplorer app: one page that explains what the app does and links to the Android download. It lives in `website/` in the app's repository and will be published with GitHub Pages at **https://armstrong-aisosa.github.io/pokedex-mobile/**.
 
-Status (2026-11-05): built and reviewed locally, **not published yet**. See §2.9 for what's left before shipping.
+Status: **live since 2026-11-05** at https://armstrong-aisosa.github.io/pokedex-mobile/ (published by `.github/workflows/pages.yml`).
 
 ---
 
@@ -218,12 +218,12 @@ Check before every publish:
 - **Links:** both download buttons reach the latest release (the APK is attached), and the GitHub links work.
 - **Sharing:** paste the URL into a chat app and the preview image and title appear.
 
-### 2.9 Before shipping
+### 2.9 Shipping checklist (first release)
 
 - [x] **Screenshots from the release APK** (1.0.0, tablet), processed with `python3 website/tools/make-screens.py RAW_DIR`; share image rebuilt with `python3 website/tools/make-og-image.py`.
 - [x] **First GitHub Release** published: [v1.0.0](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/tag/v1.0.0) with `dexplorer-1.0.0.apk`.
-- [ ] **Add `.github/workflows/pages.yml`** and set Settings → Pages → Source to "GitHub Actions".
-- [ ] Run the §2.8 checks on the live URL, then add the link to the app's README.
+- [x] **`.github/workflows/pages.yml`** added; Pages enabled with source “GitHub Actions” (done with `gh api`).
+- [x] Live URL checked (page, assets, share image, download link → v1.0.0); link added to the app's README.
 
 ### 2.10 Decisions
 

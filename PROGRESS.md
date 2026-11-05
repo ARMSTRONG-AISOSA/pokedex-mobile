@@ -49,7 +49,7 @@ Last updated: **2026-11-05** · Session: **3**
 | 8. Team builder, Saved, add-to-team sheet | ✅ Done 2026-11-05 (checked on both devices after the sheet fix) |
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ✅ Done 2026-11-05 (checked by the user) |
 | 10. Offline and error QA, accessibility, dark mode pass | ⏳ Done over adb on the tablet 2026-11-05. **Waiting on the user's airplane-mode and TalkBack checks** |
-| 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ⬜ |
+| 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ✅ Released 2026-11-05: v1.0.0 APK on GitHub Releases, website live on GitHub Pages |
 
 ---
 
@@ -268,9 +268,10 @@ Do these in order. Stop and ask where marked.
 6. TalkBack (Settings → Accessibility → TalkBack): swipe through the list header, a card, the detail screen and the Team tab. Every button should say what it does (“Show shiny colors”, “Remove Caterpie from team”…). Turn TalkBack off after.
 
 **Phase 11, Release**
-- [ ] README with a GIF/screenshots, feature list, architecture summary, "what I learned"
-- [ ] Android build via EAS; APK linked in the README
-- [ ] Clean commit history
+- [x] README with screenshots, feature list, architecture summary, "what I learned", download and website links
+- [x] Android build via EAS (profile `apk`, keystore stored by Expo); APK in [release v1.0.0](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/tag/v1.0.0), linked in the README
+- [x] Promo website live: https://armstrong-aisosa.github.io/pokedex-mobile/ (`website/`, see `website/pokedex-mobile-website.md`)
+- [x] Clean commit history (all commits by the user, no AI attribution)
 
 ---
 
@@ -309,7 +310,11 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - The user picked the name **Dexplorer** and package id `com.armstrongaisosa.dexplorer` (D-028); repo `ARMSTRONG-AISOSA/pokedex-mobile`. Wrote `README.md` (features, stack, how it works, structure, running, testing, what I learned, credits/disclaimer). Removed the dead `reset-project` script from `package.json`.
 - License: **MIT, copyright Armstrong Aisosa** (replaced Expo's template LICENSE). Branch renamed `master` → `main` and **pushed to GitHub** (`git@github.com:ARMSTRONG-AISOSA/pokedex-mobile.git`). SSH to GitHub needs IPv4 here; the repo has `core.sshCommand "ssh -4"` set locally.
 - **Promo website built locally** in `website/` (static HTML/CSS/JS, app design tokens, real screenshots, share image). Design system and architecture: `website/pokedex-mobile-website.md`. Not published; screenshots are temporary (taken in Expo Go). Shipping checklist in that file §2.9.
-- **Next action:** the user reviews the website (open `website/index.html` in a browser) and the README; the airplane-mode and TalkBack checks (§7 Phase 10). Then: app icon → EAS build → GitHub Release with the APK → clean screenshots for the README and site → publish the site with GitHub Pages.
+- Website: Charizard in the hero, sharper screenshots (full-resolution lossless WebP, no tilt), footer credits Bossstrong-Dev (the user's own edit) with the portfolio link.
+- App icon: concept B “explorer lens” (D-029). EAS: logged in with device login (`eas login --device`, no password used), project `b999a6d2-…` under **armstrong-aisosas-team**, keystore generated and stored by Expo. Build `091a74f6` finished in ~20 min; APK 114 MB (universal: all four CPU types; could be split later). Installed and launched on the tablet: native splash with the new icon, launch animation, list loads, no crashes.
+- Installed **GitHub CLI 2.103.3** in `~/.local/bin` (checksum verified; user approved) and logged in with the browser code flow. Tagged `v1.0.0` and created the GitHub Release with `dexplorer-1.0.0.apk`. Enabled Pages (source: Actions) via `gh api`; the workflow deployed the site. Clean screenshots taken from the APK.
+- The user changed their Expo password after sharing it in chat (it was not used).
+- **Next action:** the user's airplane-mode and TalkBack checks (§7 Phase 10). Possible next steps: smaller per-CPU APKs, Play Store listing (would need a non-trademark icon/name review), README GIF.
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
 - Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).

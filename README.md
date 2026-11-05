@@ -2,6 +2,15 @@
 
 An offline-first Pokédex for Android, built with Expo and React Native. Browse all 1,025 Pokémon, follow their evolution lines, build a team of six and see where it's weak. Anything you've opened keeps working without an internet connection.
 
+**[Download the APK](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest)** (Android 7.0 or newer) · **[Website](https://armstrong-aisosa.github.io/pokedex-mobile/)**
+
+<p align="center">
+  <img src="website/assets/screens/list-light.webp" width="200" alt="The Pokédex list with search, type filters and sorting">
+  <img src="website/assets/screens/detail-charizard-dark.webp" width="200" alt="Charizard's detail screen in dark mode">
+  <img src="website/assets/screens/evolution-light.webp" width="200" alt="Eevee's branching evolution tree">
+  <img src="website/assets/screens/team-light.webp" width="200" alt="The team builder with three Pokémon chosen">
+</p>
+
 ## Features
 
 - **The full Pokédex.** All 1,025 Pokémon in one list. Search by name or number, filter by any of the 18 types, and sort by number, name or total base stats.
@@ -108,6 +117,10 @@ npx tsc --noEmit    # type check
 - **Offline-first is mostly about deciding what's "fresh".** Caching was easy. Deciding when cached data is too old, and refreshing it without making the user wait, took more thought.
 - **Real data has edge cases.** Evolution chains are recursive trees, some Pokémon evolve in several ways, and the first evolution method listed isn't always the main one. Leafeon showed a location-based method from an old game until I picked the right entry.
 - **Test on real devices.** Some bugs only showed up on a phone. A sheet closed itself right after a fresh start, and the tab you'd just left kept catching taps for a moment during the slide animation. Screenshots and logs pulled over adb found both.
+
+## Website
+
+The promotional site lives in [`website/`](website/): plain HTML, CSS and JavaScript using the app's own design tokens, published to GitHub Pages by a GitHub Actions workflow. Its design system and architecture are in [website/pokedex-mobile-website.md](website/pokedex-mobile-website.md).
 
 ## Credits
 
