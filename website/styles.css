@@ -100,7 +100,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 .header-row { display: flex; align-items: center; gap: 16px; height: 64px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 800 22px/1 var(--display); letter-spacing: -0.03em; }
-.brand-ball { width: 28px; height: 28px; }
+.brand-ball { width: 30px; height: 30px; border-radius: 8px; }
 nav { margin-left: auto; }
 .nav-links { display: flex; gap: 4px; }
 .nav-links a {
