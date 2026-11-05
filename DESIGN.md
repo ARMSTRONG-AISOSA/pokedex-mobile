@@ -274,6 +274,8 @@ The floating "Haptic: …" label in the draft exists only so reviewers on a lapt
 | Server error | "The Pokémon server isn’t responding. Try again in a minute." + **Retry** |
 | Unexpected data | "This Pokémon’s data couldn’t be read. Try again, or open another one." |
 | Save failed | "Couldn’t save your team. Try again." |
+| Database failed to open (app runs network-only) | "Offline cache unavailable. Pokémon you open won’t be kept for offline use." (notice under the list title) |
+| Pokémon not found (404) | "Pokémon not found" / "This Pokémon isn’t in the Pokédex. Go back and pick another one." No **Retry** (it can’t succeed) |
 | Team full | "Team is full (6 of 6)" (disabled button) |
 | Does not evolve | "{Name} does not evolve." |
 

@@ -47,8 +47,8 @@ Last updated: **2026-11-05** · Session: **3**
 | 6. Pokédex list screen | ✅ Done 2026-11-04 (checked on the user's phone) |
 | 7. Detail screen (hero, stats, matchups, evolution tree, shiny) | ✅ Done 2026-11-04 (checked on the user's phone). Extra: **About** section (see below) |
 | 8. Team builder, Saved, add-to-team sheet | ✅ Done 2026-11-05 (checked on both devices after the sheet fix) |
-| 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ⏳ Built 2026-11-05, spot-checked over adb on both devices. **Waiting on the user's device check** |
-| 10. Offline and error QA, accessibility, dark mode pass | ⬜ |
+| 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ✅ Done 2026-11-05 (checked by the user) |
+| 10. Offline and error QA, accessibility, dark mode pass | ⏳ Done over adb on the tablet 2026-11-05. **Waiting on the user's airplane-mode and TalkBack checks** |
 | 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ⬜ |
 
 ---
@@ -230,15 +230,15 @@ Do these in order. Stop and ask where marked.
 7. Close Expo Go fully and reopen: team and saved Pokémon are still there.
 
 **Phase 9, Motion and haptics**
-*Built 2026-11-05 (session 3). Tick after the device check.*
-- [ ] Tab switch: the new tab slides in 40 px from its side while fading in (400 ms); the bar above the tabs slides to the new tab (380 ms) and the active icon lifts 2 px and grows to 1.1 (`features/navigation/tab-transitions.ts`, `tab-bar.tsx`)
-- [ ] Only the focused tab takes taps (`focus-gate.tsx`); found over adb: during the slide the tab you just left caught taps
-- [ ] Open detail: slides in from the right, the tabs underneath shift left and dim to 50%; Back plays it in reverse, visibly (D-027, `detail-dim.tsx`)
-- [ ] Slot pop: a Pokémon chosen in the sheet pops into its slot (.82 → 1, 500 ms, after 300 ms)
-- [ ] Launch animation (`features/launch/launch-animation.tsx`): ball drops, wobbles, splits with a flash, “Pokédex” wordmark, fade out (~2.4 s). Once per cold start, tap to skip, skipped with reduced motion. Splash colour in `app.json` is now `#13222b` (only visible in a real build; Expo Go shows its own loading screen)
+*Built 2026-11-05 (session 3). Device check passed 2026-11-05.*
+- [x] Tab switch: the new tab slides in 40 px from its side while fading in (400 ms); the bar above the tabs slides to the new tab (380 ms) and the active icon lifts 2 px and grows to 1.1 (`features/navigation/tab-transitions.ts`, `tab-bar.tsx`)
+- [x] Only the focused tab takes taps (`focus-gate.tsx`); found over adb: during the slide the tab you just left caught taps
+- [x] Open detail: slides in from the right, the tabs underneath shift left and dim to 50%; Back plays it in reverse, visibly (D-027, `detail-dim.tsx`)
+- [x] Slot pop: a Pokémon chosen in the sheet pops into its slot (.82 → 1, 500 ms, after 300 ms)
+- [x] Launch animation (`features/launch/launch-animation.tsx`): ball drops, wobbles, splits with a flash, “Pokédex” wordmark, fade out (~2.4 s). Once per cold start, tap to skip, skipped with reduced motion. Splash colour in `app.json` is now `#13222b` (only visible in a real build; Expo Go shows its own loading screen)
 - [x] Already built in earlier phases: detail entrance, stat bars, shiny swap + sparkles, card press, sort arrow, sheet slide, skeleton shimmer
 - [x] Haptics map (DESIGN.md §9) audited: every call matches the table
-- [ ] Reduced motion: tabs cross-fade (150 ms), no launch animation, slot and sparkles fade instead of popping (sparkles fixed this phase)
+- [x] Reduced motion: tabs cross-fade (150 ms), no launch animation, slot and sparkles fade instead of popping (sparkles fixed this phase)
 
 **Device check for Phase 9:**
 1. Close Expo Go fully and reopen: the dark launch screen plays (ball drop → wobble → flash → “Pokédex”) and fades into the list. Reopen from the background: it does **not** replay. Cold start again and tap during it: it skips.
@@ -249,11 +249,23 @@ Do these in order. Stop and ask where marked.
 6. Haptics: tab switch, filters and sort tick lightly; save/add to team/shiny on give a “success” buzz; remove from team a firmer tap.
 
 **Phase 10, QA**
-- [ ] Airplane-mode test: visited Pokémon and their evolution chains open offline
-- [ ] Force failures: 404, 429, bad JSON, corrupt AsyncStorage value, DB open failure, each shows the right state
-- [ ] Dark mode and light mode on every screen
-- [ ] TalkBack pass on the main flow; font scaling at 130%
-- [ ] No console errors or warnings
+*Done 2026-11-05 (session 3) on the Maxwest tablet over adb, except the two checks only the user can do.*
+- [ ] Airplane-mode test: visited Pokémon and their evolution chains open offline (user check below; adb runs over Wi-Fi, so it can't drive airplane mode)
+- [x] Forced failures with temporary code (not committed): 429 → “Too many requests”, 500 → “Server not responding”, bad JSON → “Data couldn’t be read”, no connection → “No connection”, each with Try again, and only in the failing section (stats/matchups still show). A real unknown id → “Pokémon not found” (Try again now hidden there). Corrupt saved settings → defaults, no crash. Database open failure → app works network-only and shows the new “Offline cache unavailable” notice (it was promised in ARCHITECTURE §8.2 but missing)
+- [x] Dark mode and light mode on every screen (list, detail top/tree/stats, Team, weak spots, add sheet, Saved)
+- [ ] TalkBack pass on the main flow (user check below). Done: every tappable element has a label (checked in the view tree)
+- [x] Touch targets ≥ 44 dp: type chips (38) and sort segments (36) got invisible touch margins; the team “×” already had one
+- [x] Font size 130%: evolution-tree names no longer break mid-word (Umbreon broke even at 100%), arrow labels and the stat label column grow with the text (`theme/useTextGrowth.ts`)
+- [x] No JS warnings or errors in logcat during the passes (only the expected ones from the forced failures)
+- [x] `errorCopy` tests (169 tests total)
+
+**Device check for Phase 10 (on the tablet):**
+1. Open 3 Pokémon you haven't opened before, scroll down to their evolution chains, then go back to the list.
+2. Turn on airplane mode (Expo Go stays open; the warning about losing the dev server is expected).
+3. Open those 3 Pokémon again: everything shows, including the About text and the evolution chain. Their artwork shows too.
+4. Open a Pokémon you've never opened: the About and Evolution sections say “No connection” with Try again; stats and matchups still show.
+5. Turn airplane mode off and tap Try again: the sections load. Re-run `adb connect` if you want me to keep testing.
+6. TalkBack (Settings → Accessibility → TalkBack): swipe through the list header, a card, the detail screen and the Team tab. Every button should say what it does (“Show shiny colors”, “Remove Caterpie from team”…). Turn TalkBack off after.
 
 **Phase 11, Release**
 - [ ] README with a GIF/screenshots, feature list, architecture summary, "what I learned"
@@ -279,7 +291,7 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 
 ## 9. Session log
 
-### Session 3, 2026-11-05 (adb device access, add-to-team bug, Phase 9 motion)
+### Session 3, 2026-11-05 (adb device access, add-to-team bug, Phase 9 motion, Phase 10 QA)
 - The user reported: (1) tab switches aren't smooth (planned for Phase 9), (2) tapping “Add Pokémon” on the Team tab did nothing after an app refresh, on both devices.
 - An attempt to reproduce (2) with Testing Library screen tests went badly (Reanimated 4 / Worklets Jest mocks wouldn't load; a hand-made mock hung). The user stopped it and asked for a cheaper way to see the app.
 - **Set up Wi-Fi adb** (`sudo apt install adb`, 34.0.4; phone: Developer options → Wireless debugging → pair with code → `adb connect IP:PORT`). Ports change after a phone restart; re-run `adb connect` with the new port. Now possible: `adb exec-out screencap -p` (screenshots), `adb shell input tap/text/keyevent` (drive the app), `adb logcat -s ReactNativeJS:V` (JS logs), `am start -d exp://LAPTOP-IP:8081` / `am force-stop host.exp.exponent` (open / fresh-restart Expo Go). Decision D-026.
@@ -290,7 +302,11 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - **Bug found over adb while testing:** after switching tabs, the tab you just left stayed on top (invisible) for over a second and caught taps (tapping an empty spot on the Pokédex opened a Team member). Fixed with `FocusGate` (only the focused tab takes touches); re-tested on the Samsung.
 - Tip: a change to a `_layout.tsx` file may not hot-reload; force-stop and reopen Expo Go before judging it. To see fast animations over adb, temporarily multiply the durations in `theme/motion.ts` (adb screenshots come ~0.4 s apart), then put them back.
 - Spot-checked on both devices with adb: launch animation, tab slide, indicator, detail open/close (tabs undimmed after back), slot pop. 163 tests, tsc and lint pass.
-- **Next action:** the user runs the Phase 9 device check (§7) on both devices. Then Phase 10 (offline/error QA, accessibility, dark mode pass).
+- The user confirmed Phase 9. **Phase 9 done.**
+- My animation-speed test left the user's Samsung at 10× slow animations (`settings delete` didn't take effect); the user reset it in Developer options. **From now on test only on the Maxwest tablet**, and restore any system setting to its recorded value with `settings put`, then verify.
+- **Phase 10 (QA) done over adb on the tablet** (see §7): forced failures, dark/light, touch targets, 130% font, logcat. Fixes: “Offline cache unavailable” notice (`isDatabaseAvailable()`), no Try again on “Pokémon not found”, bigger touch areas for chips and sort segments, text-holding widths grow with font size, evolution names on one line. Font size was set to 130% and restored to 1.0 (verified).
+- While tapping the theme button I hit Expo Go's floating “Tools” button (it overlaps the top-right of the app on the tablet) and probably switched Expo Go's Fast Refresh off; switched it back on (verified green).
+- **Next action:** the user's airplane-mode and TalkBack checks (§7 Phase 10). Then Phase 11 (README, EAS build, release), starting with OD-6 (app name / package id) and OD-7 (repo/README).
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
 - Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).
