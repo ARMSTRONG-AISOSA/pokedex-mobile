@@ -140,7 +140,7 @@ nav { margin-left: auto; }
   margin: 0; padding: 7px; border-radius: 34px; background: #0b1417;
   box-shadow: 0 30px 60px -20px rgba(4, 12, 15, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
-.phone img { border-radius: 27px; aspect-ratio: 600 / 890; width: 100%; object-fit: cover; }
+.phone img { border-radius: 27px; aspect-ratio: 800 / 1187; width: 100%; object-fit: cover; }
 
 /* ---------- 6. Hero ---------- */
 .hero {
@@ -181,10 +181,11 @@ nav { margin-left: auto; }
 @keyframes ballWobble { 0%, 100% { rotate: 0deg; } 20% { rotate: -14deg; } 45% { rotate: 12deg; } 70% { rotate: -6deg; } 85% { rotate: 3deg; } }
 @keyframes burst { 0% { transform: scale(0.3); opacity: 0.9; } 100% { transform: scale(3.2); opacity: 0; } }
 
-.hero-phones { position: relative; height: 540px; }
-.hero-phones .phone { position: absolute; width: 300px; }
-.phone-back { left: 0; top: 70px; rotate: -6deg; }
-.phone-front { right: 0; top: 10px; rotate: 4deg; }
+/* Not tilted: browsers soften rotated images, and the screenshots should stay sharp. */
+.hero-phones { position: relative; height: 560px; }
+.hero-phones .phone { position: absolute; width: 310px; }
+.phone-back { left: 0; top: 80px; }
+.phone-front { right: 0; top: 0; }
 .hero-phones .phone { animation: rise 0.7s var(--ease-out) both; }
 .phone-front { animation-delay: 0.12s; }
 @keyframes rise { from { opacity: 0; translate: 0 44px; } to { opacity: 1; translate: 0 0; } }
@@ -221,8 +222,8 @@ nav { margin-left: auto; }
 /* Split sections */
 .split { background: var(--field); }
 .split + .split { padding-top: 0; }
-.split-grid { display: grid; grid-template-columns: 300px 1fr; gap: 72px; align-items: center; }
-.split-flip .split-grid { grid-template-columns: 1fr 300px; }
+.split-grid { display: grid; grid-template-columns: 330px 1fr; gap: 72px; align-items: center; }
+.split-flip .split-grid { grid-template-columns: 1fr 330px; }
 .split-flip .phone { order: 2; }
 .split-copy > p:not(.kicker) { margin-top: 16px; color: var(--muted); font-size: 18px; max-width: 32em; }
 .ticks { margin-top: 22px; display: grid; gap: 10px; }
@@ -235,7 +236,7 @@ nav { margin-left: auto; }
   padding: 4px max(var(--gutter), (100% - var(--wrap)) / 2) 24px;
   scrollbar-width: thin;
 }
-.shot { flex: none; width: 240px; margin: 0; scroll-snap-align: center; }
+.shot { flex: none; width: 260px; margin: 0; scroll-snap-align: center; }
 .shot figcaption { margin-top: 14px; text-align: center; font-weight: 500; color: var(--muted); font-size: 15px; }
 
 /* Download */
@@ -278,7 +279,7 @@ nav { margin-left: auto; }
 @media (max-width: 960px) {
   .hero-grid { grid-template-columns: 1fr; padding: 48px 0 0; gap: 8px; }
   .hero-phones { height: 440px; max-width: 460px; width: 100%; margin-inline: auto; }
-  .hero-phones .phone { width: 210px; }
+  .hero-phones .phone { width: 220px; }
   .cards { grid-template-columns: repeat(2, 1fr); }
   .split-grid, .split-flip .split-grid { grid-template-columns: 220px 1fr; gap: 40px; }
   .download-card { grid-template-columns: 1fr; padding: 36px 28px; }
