@@ -51,7 +51,7 @@ Last updated: **2026-11-08** · Session: **4**
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ✅ Done 2026-11-05 (checked by the user) |
 | 10. Offline and error QA, accessibility, dark mode pass | ✅ Done 2026-11-05 (adb QA on the tablet + the user's airplane-mode and TalkBack checks on the release APK) |
 | 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ✅ Released 2026-11-05: v1.0.0, then v1.0.1 (per-CPU APKs) on GitHub Releases; website live on GitHub Pages |
-| 12. Website SEO (Search Console, Bing, sitemap) | ⏳ 2026-11-08: verification tag, 404 page, repo About box done. **Waiting on the user** to verify in Search Console, submit the sitemap, import into Bing, link from the portfolio |
+| 12. Website SEO (Search Console, Bing, sitemap) | ✅ 2026-11-08: Search Console verified, sitemap submitted, indexing requested, Bing imported. Left: the sitemap status (showed the usual “Couldn't fetch” before Google's first read; recheck after about a week) and a link from the portfolio |
 
 ---
 
@@ -327,7 +327,9 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - The user dropped the Play Store idea (trademark risk); distribution stays GitHub Releases + website.
 - Researched SEO for a GitHub Pages project site. Use a **URL-prefix** Search Console property with the HTML meta-tag method (no DNS access on `github.io`). Bing Webmaster Tools can import the verified site and sitemap from Search Console. No `robots.txt`: it only counts at the domain root, and the user has no `ARMSTRONG-AISOSA.github.io` repo.
 - Added the user's `google-site-verification` tag, a styled `website/404.html` (noindex, absolute paths), and set the sitemap `lastmod` to 2026-11-08. Set the GitHub repo's About box (description, website, topics) with `gh`. Fixed this file's stale snapshot (name, branch, distribution).
-- **Next action (user):** click Verify in Search Console → submit `sitemap.xml` → URL inspection → Request indexing → Bing Webmaster Tools → Import from Google Search Console → link the site from the portfolio and GitHub profile README.
+- The user verified the site in Search Console, submitted `sitemap.xml`, requested indexing (URL inspection worked) and imported the site into Bing Webmaster Tools.
+- The sitemap showed “Couldn't fetch” right after submitting, with “Last read” empty. Checked it as Googlebot: 200, `application/xml`, valid sitemap XML, correct URL, not blocked. This is Search Console's status before its first read, so no change was needed.
+- **Next action (user):** recheck the sitemap status around 2026-11-15. If it still says “Couldn't fetch”, remove it and resubmit the full URL `https://armstrong-aisosa.github.io/pokedex-mobile/sitemap.xml`. Link the site from the portfolio and the GitHub profile README.
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
 - Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).
