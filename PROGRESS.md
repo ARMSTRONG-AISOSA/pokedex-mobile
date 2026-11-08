@@ -6,6 +6,35 @@ Last updated: **2026-11-08** · Session: **4**
 
 ---
 
+## ▶ Resume here (current state, kept up to date)
+
+**The app is built, released and promoted. All planned phases (0–12) are done.**
+
+| What | Where / state |
+|---|---|
+| App | **Dexplorer** 1.0.1, package `com.armstrongaisosa.dexplorer`. Screens and launch wordmark say “Pokédex” |
+| Latest release | [v1.0.1](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/tag/v1.0.1): `dexplorer-arm64.apk` (39 MB, main), `dexplorer-armv7.apk` (31 MB), `dexplorer-universal.apk` (114 MB). [v1.0.0](https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/tag/v1.0.0) (single universal APK) kept |
+| Website | https://armstrong-aisosa.github.io/pokedex-mobile/ (`website/`, auto-published by `.github/workflows/pages.yml` on changes to `website/**`). Docs: `website/pokedex-mobile-website.md` |
+| Repo | https://github.com/ARMSTRONG-AISOSA/pokedex-mobile (branch `main`, MIT license, About box set) |
+| Distribution | GitHub Releases + website only. **Play Store dropped** (Pokémon trademark risk) |
+| Search | Google Search Console verified (URL-prefix, meta tag in `index.html`), sitemap submitted, indexing requested; Bing imported from Search Console |
+| Developer credit | “Bossstrong-Dev” (Armstrong Aisosa), portfolio https://bossstrong-dev.vercel.app/ |
+
+**Open items (user):**
+1. Recheck the sitemap in Search Console around **2026-11-15**. If it still says “Couldn't fetch”, remove it and resubmit `https://armstrong-aisosa.github.io/pokedex-mobile/sitemap.xml`.
+2. **In progress (2026-11-08):** add Dexplorer to the portfolio (bossstrong-dev.vercel.app) and the GitHub profile README. The handoff details given to the user are in Session 4 below.
+
+**Optional ideas (not planned):** README GIF of the launch animation; `npm audit` review (12 moderate, don't use `--force`); store-safe original app for Play Store practice.
+
+**How to work on this machine:**
+- Test only on the **Maxwest tablet** (Wi-Fi adb, see §9 Session 3). The Samsung is the user's daily phone.
+- Never change a device setting without recording the value and restoring it with `settings put`.
+- npm/npx need `NODE_OPTIONS="--dns-result-order=ipv4first --network-family-autoselection-attempt-timeout=2000"` (IPv6 hangs). GitHub SSH is IPv4-only here; the repo has `core.sshCommand "ssh -4"`.
+- Tools: EAS CLI via `npx eas-cli@27.4.1` (logged in as `armstrong-aisosa`; project under `armstrong-aisosas-team`), GitHub CLI `~/.local/bin/gh` (logged in as ARMSTRONG-AISOSA).
+- New release: follow README “Releasing a new version” (bump `version` + `versionCode`, build profiles `apk-arm64`, `apk-armv7`, `apk`, keep the three fixed file names).
+
+---
+
 ## 0. Rules for whoever continues
 
 1. **Confirm versions before installing anything.** Verify the latest stable version (`npm view <pkg> version`, release notes, peer deps), tell the user what you found, and get a yes before installing. Expo-managed packages go in with `npx expo install` so the SDK picks the compatible version. Record every install in §5. (Policy detail: `ARCHITECTURE.md` §2.)
@@ -30,7 +59,7 @@ Last updated: **2026-11-08** · Session: **4**
 | Distribution | **GitHub Releases + the website** (https://armstrong-aisosa.github.io/pokedex-mobile/). Play Store dropped by the user (trademark risk) |
 | Developer | Experienced with JavaScript, TypeScript, React, Next.js. New to React Native |
 | Dev machine | Linux Mint PC, VS Code |
-| Test devices | Samsung Galaxy A07 (SM-A075F, Android 16, 720×1600) and Maxwest MX-A10R (Android 12, 800×1280). Connected to the laptop over **Wi-Fi adb** (see §9 Session 3) |
+| Test devices | Maxwest MX-A10R (Android 12, 800×1280, arm64): **the test device**. Samsung Galaxy A07 (SM-A075F, Android 16, 720×1600): the user's daily phone, **not for testing** since 2026-11-05. Both over **Wi-Fi adb** (see §9 Session 3) |
 | Design reference | `design-reference/pokedex-design.html`; also published as a (possibly private) claude.ai artifact: https://claude.ai/artifact/DmV2kx56owwDXjZDaJgvnd |
 
 ---
@@ -51,7 +80,7 @@ Last updated: **2026-11-08** · Session: **4**
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ✅ Done 2026-11-05 (checked by the user) |
 | 10. Offline and error QA, accessibility, dark mode pass | ✅ Done 2026-11-05 (adb QA on the tablet + the user's airplane-mode and TalkBack checks on the release APK) |
 | 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ✅ Released 2026-11-05: v1.0.0, then v1.0.1 (per-CPU APKs) on GitHub Releases; website live on GitHub Pages |
-| 12. Website SEO (Search Console, Bing, sitemap) | ✅ 2026-11-08: Search Console verified, sitemap submitted, indexing requested, Bing imported. Left: the sitemap status (showed the usual “Couldn't fetch” before Google's first read; recheck after about a week) and a link from the portfolio |
+| 12. Website SEO (Search Console, Bing, sitemap) | ✅ Done 2026-11-08: Search Console verified, sitemap submitted, indexing requested, Bing imported. Follow-ups: see “Resume here” |
 
 ---
 
@@ -61,11 +90,11 @@ Last updated: **2026-11-08** · Session: **4**
 |---|---|---|---|
 | ~~OD-1~~ | **RESOLVED 2026-11-04: use SDK 58, run it with the Play Store Expo Go.** The user confirmed Expo Go on their phone shows SDK 58. *(Original question: which Expo SDK, and how to run it on the Android phone?)* | SDK 58 is the latest stable (React Native 0.88). On 2026-10-15 Expo said the **Play Store Expo Go would still support only SDK 57** for "a few weeks". We could not confirm whether the Play Store Expo Go now supports SDK 58. Also: `npx create-expo-app` may default to SDK 57 or ask which to use. | Nothing more to do. If a later Expo Go update ever stops matching the project, ask the user before changing the SDK. |
 | ~~OD-2~~ | **RESOLVED 2026-11-04: option 1** (20 per page, ≤ 5 requests at once, SQLite cache), see D-016. *(Original: how to fill the list without hammering PokéAPI?)* | | Done |
-| OD-3 | Custom tab bar vs Expo Router `NativeTabs` | Design uses a custom sliding indicator | Custom first (matches the approved design) |
-| OD-4 | Keep AsyncStorage next to SQLite, or use `expo-sqlite/kv-store` for everything small? | One fewer dependency with kv-store | Keep AsyncStorage for now (user agreed to both earlier); revisit |
+| ~~OD-3~~ | **RESOLVED 2026-11-04: custom tab bar** on `expo-router/js-tabs` (D-022), sliding indicator added in Phase 9. *(Original: custom tab bar vs `NativeTabs`)* | | Done |
+| ~~OD-4~~ | **RESOLVED: kept AsyncStorage** for favorites/team/settings next to SQLite for cached API data (shipped in 1.0.0/1.0.1). *(Original: switch small data to `expo-sqlite/kv-store`?)* | | Done |
 | ~~OD-5~~ | **RESOLVED 2026-11-04: all 18 type colors approved** (after revising fighting, ground, fairy). In `src/theme/tokens.ts`. *(Original: approve the 9 proposed type colors)* | Contrast-checked. Swatch page: `design-reference/type-colors.html` (shown 2026-11-04). Round 1: the user asked for Fighting → brick red `#c03028`, Ground → `#9a6b3f`, and Fairy moved away from Psychic (Fairy changed, since Psychic was already approved). Revised in `DESIGN.md` §2.2 | Done |
-| ~~OD-6~~ | **RESOLVED 2026-11-05 (name + package id): app name “Dexplorer”, package id `com.armstrongaisosa.dexplorer`** (Android `package`, iOS `bundleIdentifier`, scheme `dexplorer`). Screens and the launch wordmark still say “Pokédex”. Slug stays `pokedex-mobile` (Expo Go keys saved data by slug). See D-028. Icon: **concept B “explorer lens”** (Poké Ball as a magnifying glass on `#13222b`), chosen 2026-11-05; PNGs from `scripts/make-icons.py`, concepts in `design-reference/icon-concepts.png` | | Done |
-| ~~OD-7~~ | **RESOLVED 2026-11-05: repo `https://github.com/ARMSTRONG-AISOSA/pokedex-mobile`** (empty on GitHub; nothing pushed yet). README written for recruiters and developers. **Open: license** (the `LICENSE` file is Expo's template, copyright 650 Industries) and when to push | | Ask the user |
+| ~~OD-6~~ | **RESOLVED 2026-11-05: app name “Dexplorer”, package id `com.armstrongaisosa.dexplorer`** (Android `package`, iOS `bundleIdentifier`, scheme `dexplorer`). Screens and the launch wordmark still say “Pokédex”. Slug stays `pokedex-mobile` (Expo Go keys saved data by slug). See D-028. Icon: **concept B “explorer lens”** (Poké Ball as a magnifying glass on `#13222b`), chosen 2026-11-05; PNGs from `scripts/make-icons.py`, concepts in `design-reference/icon-concepts.png` | | Done |
+| ~~OD-7~~ | **RESOLVED 2026-11-05: repo `https://github.com/ARMSTRONG-AISOSA/pokedex-mobile`**, pushed on `main`; README written for recruiters and developers; **MIT license**, copyright Armstrong Aisosa | | Done |
 
 ---
 
@@ -102,7 +131,6 @@ Template packages come from the SDK 58 default template (see `package.json`). Ad
 | `@expo-google-fonts/figtree` | 0.4.1 | 2026-11-04 | ✅ | Weights 300–900 (+ italics). Imports like `Figtree_400Regular` |
 | `expo-haptics` | 58.0.7 | 2026-11-04 | ✅ | |
 | `expo-network` | 58.0.4 | 2026-11-04 | ✅ | |
-
 | `jest-expo` (dev) | 58.0.14 | 2026-11-04 | ✅ | SDK pin. `"jest": { "preset": "jest-expo" }` in package.json, `npm test` |
 | `jest` (dev) | 30.5.2 | 2026-11-04 | ✅ | |
 | `@types/jest` (dev) | 30.0.0 | 2026-11-04 | ✅ | TypeScript 6 needs `"types": ["jest"]` in tsconfig (it no longer loads @types automatically) |
@@ -110,7 +138,15 @@ Template packages come from the SDK 58 default template (see `package.json`). Ad
 | `@react-native/jest-preset` (dev) | 0.88.1 | 2026-11-04 | ✅ | Peer of jest-expo; matches React Native 0.88.1 |
 | `test-renderer` (dev) | 1.3.0 | 2026-11-04 | ✅ | Peer of Testing Library; same version jest-expo pins |
 
-`npm audit` reports 12 moderate vulnerabilities. Do **not** run `npm audit fix --force`, because it can break SDK pins. Review this at the QA phase.
+`npm audit` reports 12 moderate vulnerabilities. Do **not** run `npm audit fix --force`, because it can break SDK pins. **Not reviewed yet** (optional follow-up).
+
+**Machine tools (not project dependencies):**
+
+| Tool | Version | How | Date | Confirmed by user |
+|---|---|---|---|---|
+| adb | 34.0.4 | `sudo apt install adb` (user) | 2026-11-05 | ✅ |
+| EAS CLI | 27.4.1 | `npx eas-cli@27.4.1` (not installed in the project) | 2026-11-05 | ✅ |
+| GitHub CLI (`gh`) | 2.103.3 | Official Linux build in `~/.local/bin/gh`, checksum verified | 2026-11-05 | ✅ |
 
 **Network quirk on the dev machine:** IPv6 to the npm registry hangs, so npm/npx time out (`ETIMEDOUT`). Fix: run them with
 `NODE_OPTIONS="--dns-result-order=ipv4first --network-family-autoselection-attempt-timeout=2000"`. Even then, downloads are slow (an install can take ~10 min).
@@ -169,7 +205,7 @@ Do these in order. Stop and ask where marked.
 4. With the app open, turn on airplane mode and tap “Load 20 more”. The “No connection” message appears and nothing crashes. Turn airplane mode off and tap again: it loads.
 *A cold start with no internet can't be tested in Expo Go, because Expo Go loads the code from the computer. Do that test with the APK in Phase 10/11.*
 
-**Open for Phase 6 (ask the user):** sorting by Name/Power and filtering by type across *all* 1025 Pokémon needs data we haven't downloaded yet (paging only fetches what you scroll to). Options to discuss when Phase 6 starts.
+*(Resolved in Phase 6: one GraphQL summary request covers all 1025 Pokémon, D-021.)*
 
 **Phase 6, List**
 *Checked on the user's phone 2026-11-04.*
@@ -295,6 +331,19 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 
 ## 9. Session log
 
+### Session 4, 2026-11-08 (SEO)
+- The user dropped the Play Store idea (trademark risk); distribution stays GitHub Releases + website.
+- Researched SEO for a GitHub Pages project site. Use a **URL-prefix** Search Console property with the HTML meta-tag method (no DNS access on `github.io`). Bing Webmaster Tools can import the verified site and sitemap from Search Console. No `robots.txt`: it only counts at the domain root, and the user has no `ARMSTRONG-AISOSA.github.io` repo.
+- Added the user's `google-site-verification` tag, a styled `website/404.html` (noindex, absolute paths), and set the sitemap `lastmod` to 2026-11-08. Set the GitHub repo's About box (description, website, topics) with `gh`. Fixed this file's stale snapshot (name, branch, distribution).
+- The user verified the site in Search Console, submitted `sitemap.xml`, requested indexing (URL inspection worked) and imported the site into Bing Webmaster Tools.
+- The sitemap showed “Couldn't fetch” right after submitting, with “Last read” empty. Checked it as Googlebot: 200, `application/xml`, valid sitemap XML, correct URL, not blocked. This is Search Console's status before its first read, so no change was needed.
+- Cleaned this file: added “Resume here”, resolved stale open decisions (OD-3, OD-4, OD-7), listed machine tools, fixed the §5 table, put sessions newest first.
+- **Portfolio handoff** (the user's portfolio is maintained in a separate Claude session). Given to the user to paste there:
+  - Links: website https://armstrong-aisosa.github.io/pokedex-mobile/ (primary), code https://github.com/ARMSTRONG-AISOSA/pokedex-mobile, download https://github.com/ARMSTRONG-AISOSA/pokedex-mobile/releases/latest/download/dexplorer-arm64.apk, releases page.
+  - Images hosted on the site: `assets/og-image.png` (1200×630 card), `assets/screens/*.webp` (800×1187 screenshots), `assets/apple-touch-icon.png` (icon).
+  - Copy: title “Dexplorer”, tagline “Every Pokémon, even offline.”, short and long descriptions, stack, highlights, fan-project disclaimer.
+- **Next action (user):** finish the portfolio and GitHub profile links; recheck the sitemap around 2026-11-15.
+
 ### Session 3, 2026-11-05 (adb device access, add-to-team bug, Phase 9 motion, Phase 10 QA)
 - The user reported: (1) tab switches aren't smooth (planned for Phase 9), (2) tapping “Add Pokémon” on the Team tab did nothing after an app refresh, on both devices.
 - An attempt to reproduce (2) with Testing Library screen tests went badly (Reanimated 4 / Worklets Jest mocks wouldn't load; a hand-made mock hung). The user stopped it and asked for a cheaper way to see the app.
@@ -312,7 +361,7 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - While tapping the theme button I hit Expo Go's floating “Tools” button (it overlaps the top-right of the app on the tablet) and probably switched Expo Go's Fast Refresh off; switched it back on (verified green).
 - The user picked the name **Dexplorer** and package id `com.armstrongaisosa.dexplorer` (D-028); repo `ARMSTRONG-AISOSA/pokedex-mobile`. Wrote `README.md` (features, stack, how it works, structure, running, testing, what I learned, credits/disclaimer). Removed the dead `reset-project` script from `package.json`.
 - License: **MIT, copyright Armstrong Aisosa** (replaced Expo's template LICENSE). Branch renamed `master` → `main` and **pushed to GitHub** (`git@github.com:ARMSTRONG-AISOSA/pokedex-mobile.git`). SSH to GitHub needs IPv4 here; the repo has `core.sshCommand "ssh -4"` set locally.
-- **Promo website built locally** in `website/` (static HTML/CSS/JS, app design tokens, real screenshots, share image). Design system and architecture: `website/pokedex-mobile-website.md`. Not published; screenshots are temporary (taken in Expo Go). Shipping checklist in that file §2.9.
+- **Promo website built locally** in `website/` (static HTML/CSS/JS, app design tokens, real screenshots, share image). Design system and architecture: `website/pokedex-mobile-website.md`. (Published later in this session; see below.)
 - Website: Charizard in the hero, sharper screenshots (full-resolution lossless WebP, no tilt), footer credits Bossstrong-Dev (the user's own edit) with the portfolio link.
 - App icon: concept B “explorer lens” (D-029). EAS: logged in with device login (`eas login --device`, no password used), project `b999a6d2-…` under **armstrong-aisosas-team**, keystore generated and stored by Expo. Build `091a74f6` finished in ~20 min; APK 114 MB (universal: all four CPU types; could be split later). Installed and launched on the tablet: native splash with the new icon, launch animation, list loads, no crashes.
 - Installed **GitHub CLI 2.103.3** in `~/.local/bin` (checksum verified; user approved) and logged in with the browser code flow. Tagged `v1.0.0` and created the GitHub Release with `dexplorer-1.0.0.apk`. Enabled Pages (source: Actions) via `gh api`; the workflow deployed the site. Clean screenshots taken from the APK.
@@ -320,16 +369,7 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - The user confirmed the airplane-mode and TalkBack checks. **Phase 10 done. All planned phases (0–11) are complete.**
 - **1.0.1 (per-CPU APKs):** the 1.0.0 APK is 114 MB because it holds native code for four CPU types; arm64 alone is about 38 MB. The user chose separate APKs (arm64 + armv7) and asked to keep the universal APK as a fallback. Added EAS profiles `apk-arm64` and `apk-armv7` (`gradleCommand … -PreactNativeArchitectures=…`), bumped to version 1.0.1 / versionCode 2, started all three builds. Files get fixed names (`dexplorer-arm64.apk`, `dexplorer-armv7.apk`, `dexplorer-universal.apk`) so `releases/latest/download/<name>` links never change (D-030).
 - Website: “Download for Android” / “Download the APK” now download the arm64 APK directly, with links to the armv7 and universal versions and all releases; download and code links open in a new tab (user request), announced to screen readers. README gained the three download links and a “Releasing a new version” section. Builds checked: each per-CPU APK holds only its own native code. 1.0.1 installed on the tablet as an update over 1.0.0 (same signing key, versionCode 1 → 2); after unlocking, the app opened with the saved team intact (Charizard, Pikachu, Lapras), so updates keep user data. Tagged `v1.0.1` at the build commit and published the release with the three files and SHA-256 checksums; pushed the site afterwards.
-- Website **sharing and SEO** (user request): share row (Share… on phones, WhatsApp, X, Facebook, LinkedIn, Copy link; plain links, no tracking), fuller Open Graph and X card tags, canonical URL, schema.org `MobileApplication` structured data (no ratings), `sitemap.xml`, PNG favicon and apple-touch-icon. No `robots.txt` (ignored inside a project path). Details in `website/pokedex-mobile-website.md` §2.6. Optional for the user: verify the site in Google Search Console and submit the sitemap.
-- **Possible next steps:** smaller per-CPU APKs, Play Store listing (would need a non-trademark icon/name review), README GIF.
-
-### Session 4, 2026-11-08 (SEO)
-- The user dropped the Play Store idea (trademark risk); distribution stays GitHub Releases + website.
-- Researched SEO for a GitHub Pages project site. Use a **URL-prefix** Search Console property with the HTML meta-tag method (no DNS access on `github.io`). Bing Webmaster Tools can import the verified site and sitemap from Search Console. No `robots.txt`: it only counts at the domain root, and the user has no `ARMSTRONG-AISOSA.github.io` repo.
-- Added the user's `google-site-verification` tag, a styled `website/404.html` (noindex, absolute paths), and set the sitemap `lastmod` to 2026-11-08. Set the GitHub repo's About box (description, website, topics) with `gh`. Fixed this file's stale snapshot (name, branch, distribution).
-- The user verified the site in Search Console, submitted `sitemap.xml`, requested indexing (URL inspection worked) and imported the site into Bing Webmaster Tools.
-- The sitemap showed “Couldn't fetch” right after submitting, with “Last read” empty. Checked it as Googlebot: 200, `application/xml`, valid sitemap XML, correct URL, not blocked. This is Search Console's status before its first read, so no change was needed.
-- **Next action (user):** recheck the sitemap status around 2026-11-15. If it still says “Couldn't fetch”, remove it and resubmit the full URL `https://armstrong-aisosa.github.io/pokedex-mobile/sitemap.xml`. Link the site from the portfolio and the GitHub profile README.
+- Website **sharing and SEO** (user request): share row (Share… on phones, WhatsApp, X, Facebook, LinkedIn, Copy link; plain links, no tracking), fuller Open Graph and X card tags, canonical URL, schema.org `MobileApplication` structured data (no ratings), `sitemap.xml`, PNG favicon and apple-touch-icon. No `robots.txt` (ignored inside a project path). Details in `website/pokedex-mobile-website.md` §2.6. (Search Console and Bing set up in Session 4.)
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
 - Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).
@@ -364,14 +404,7 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - **New feature (user request):** an **About** section on the detail screen. The user added it to the HTML draft (committed as `design: add About section…`). Built: `domain/about.ts` (+ `parentOf` in evolution.ts), GraphQL `fetchAbout`/`toAbout`, `data/db/aboutRepo.ts`, migration 3 (`pokemon_about`), `useAbout`, `features/detail/about-section.tsx`. DESIGN.md §5.2 and ARCHITECTURE.md §7 updated; D-024.
 - The user confirmed the About section works. **Phase 7b done.**
 - **Phase 8 built:** `domain/team.ts` (+ tests), `useTeamMembers`, `features/team/*` (team-screen, team-slot, weak-spot-table, picker-sheet), Saved mode in `PokedexScreen`, `StatBars` moved to `components/ui` (with `showTotal`). Placeholder screen removed. D-025 (picker as Modal).
-- **Next action:** Phase 8 device check (§7), then Phase 9 (motion polish + the launch animation the user asked about).
-- *(Earlier:)* device check for the About section (§7 “Phase 7b”), then Phase 8 (Team, Saved, add-to-team sheet).
-- *(Earlier:)* Phase 7 device check (§7), then Phase 8 (Team, Saved, add-to-team sheet).
-- *(Earlier:)* Phase 7 (detail screen), unless the user wants the launch animation pulled forward.
-- *(Earlier:)* Phase 6 device check (§7), then Phase 7 (detail screen).
-- *(Earlier next action, done:)* device check for Phase 5 (§7), then Phase 6 (list screen). Raise the Phase 6 open question about sort/filter across all Pokémon.
-- *(Earlier next action, done:)* Phase 5 (data layer): `fetchJson` + zod schemas + repositories + query hooks. Decide OQ-3 (how to fill the list) at the start.
-- *(Old next action, done:)* the user runs the Phase 3 device check (§7). Then, with the user's OK, install the test tooling and start Phase 4 (domain logic, tests first). Also worth noting: the splash background in `app.json` is still the template blue `#208AEF`; change it to `#13222b` in Phase 9 with the launch animation. Start with `theme/tokens.ts` from `DESIGN.md`, and show the user the type-color swatch page for OD-5 before building on those colors.
+- *(Session 2's next actions were all completed in Session 3.)*
 
 ### Session 1, 2026-11-04 (planning and design)
 - Chose the stack direction: Expo + Expo Router + TypeScript, TanStack Query, SQLite for cached API data, AsyncStorage for favorites/team/settings.
@@ -380,7 +413,7 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - Wrote `ARCHITECTURE.md`, `DESIGN.md`, `PROGRESS.md`.
 - Verified current versions against the npm registry and Expo's release notes (§4). Found that **Expo Go on the Play Store may not yet support SDK 58** and that the **Node requirement is 22.13+** (earlier note of "Node 20+" was wrong). Nothing was installed or scaffolded.
 - **Decision:** the user chose **Expo SDK 58**. Checks passed: Node v24.19.0, and Expo Go on their Android phone shows SDK 58 (OD-1 resolved).
-- **Next action:** Phase 2 step 3: scaffold with `npx create-expo-app@latest pokedex --template default@sdk-58`, run it on the phone before changing anything.
+- *(Next action at the time, done in Session 2: scaffold with `npx create-expo-app@latest pokedex --template default@sdk-58`.)*
 
 <!-- Add new sessions above this line, newest first. Template:
 
