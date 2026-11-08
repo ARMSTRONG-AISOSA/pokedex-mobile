@@ -2,7 +2,7 @@
 
 > **Any AI assistant or developer picking this project up: read this file top to bottom first.** Then read `ARCHITECTURE.md` (how it is built) and `DESIGN.md` (how it looks and moves). Update this file before you stop working.
 
-Last updated: **2026-11-05** · Session: **3**
+Last updated: **2026-11-08** · Session: **4**
 
 ---
 
@@ -25,8 +25,9 @@ Last updated: **2026-11-05** · Session: **3**
 | Goal | A portfolio-quality Pokédex in React Native with a standout **evolution chain viewer**, a **team builder**, and **offline support** |
 | Audience | Portfolio reviewers and interviewers; the user must be able to explain every part |
 | Data | PokéAPI (free, no key, fair use = cache locally) |
-| Working name | "Pokédex" (final app name and Android package id not chosen yet, see OD-6) |
-| Project folder | `pokedex-mobile` (git branch `master`) |
+| App name | **Dexplorer** (screens say “Pokédex”), package id `com.armstrongaisosa.dexplorer` (D-028) |
+| Project folder | `pokedex-mobile` (git branch `main`, GitHub `ARMSTRONG-AISOSA/pokedex-mobile`) |
+| Distribution | **GitHub Releases + the website** (https://armstrong-aisosa.github.io/pokedex-mobile/). Play Store dropped by the user (trademark risk) |
 | Developer | Experienced with JavaScript, TypeScript, React, Next.js. New to React Native |
 | Dev machine | Linux Mint PC, VS Code |
 | Test devices | Samsung Galaxy A07 (SM-A075F, Android 16, 720×1600) and Maxwest MX-A10R (Android 12, 800×1280). Connected to the laptop over **Wi-Fi adb** (see §9 Session 3) |
@@ -49,7 +50,8 @@ Last updated: **2026-11-05** · Session: **3**
 | 8. Team builder, Saved, add-to-team sheet | ✅ Done 2026-11-05 (checked on both devices after the sheet fix) |
 | 9. Motion and navigation polish (tab slide, parallax, launch animation, haptics) | ✅ Done 2026-11-05 (checked by the user) |
 | 10. Offline and error QA, accessibility, dark mode pass | ✅ Done 2026-11-05 (adb QA on the tablet + the user's airplane-mode and TalkBack checks on the release APK) |
-| 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ✅ Released 2026-11-05: v1.0.0 APK on GitHub Releases, website live on GitHub Pages |
+| 11. Release: README with screenshots/GIF, APK via EAS, GitHub | ✅ Released 2026-11-05: v1.0.0, then v1.0.1 (per-CPU APKs) on GitHub Releases; website live on GitHub Pages |
+| 12. Website SEO (Search Console, Bing, sitemap) | ⏳ 2026-11-08: verification tag, 404 page, repo About box done. **Waiting on the user** to verify in Search Console, submit the sitemap, import into Bing, link from the portfolio |
 
 ---
 
@@ -320,6 +322,12 @@ Draft-only data limits (do not copy): 18 Pokémon, 9 types, placeholder Poké Ba
 - Website: “Download for Android” / “Download the APK” now download the arm64 APK directly, with links to the armv7 and universal versions and all releases; download and code links open in a new tab (user request), announced to screen readers. README gained the three download links and a “Releasing a new version” section. Builds checked: each per-CPU APK holds only its own native code. 1.0.1 installed on the tablet as an update over 1.0.0 (same signing key, versionCode 1 → 2); after unlocking, the app opened with the saved team intact (Charizard, Pikachu, Lapras), so updates keep user data. Tagged `v1.0.1` at the build commit and published the release with the three files and SHA-256 checksums; pushed the site afterwards.
 - Website **sharing and SEO** (user request): share row (Share… on phones, WhatsApp, X, Facebook, LinkedIn, Copy link; plain links, no tracking), fuller Open Graph and X card tags, canonical URL, schema.org `MobileApplication` structured data (no ratings), `sitemap.xml`, PNG favicon and apple-touch-icon. No `robots.txt` (ignored inside a project path). Details in `website/pokedex-mobile-website.md` §2.6. Optional for the user: verify the site in Google Search Console and submit the sitemap.
 - **Possible next steps:** smaller per-CPU APKs, Play Store listing (would need a non-trademark icon/name review), README GIF.
+
+### Session 4, 2026-11-08 (SEO)
+- The user dropped the Play Store idea (trademark risk); distribution stays GitHub Releases + website.
+- Researched SEO for a GitHub Pages project site. Use a **URL-prefix** Search Console property with the HTML meta-tag method (no DNS access on `github.io`). Bing Webmaster Tools can import the verified site and sitemap from Search Console. No `robots.txt`: it only counts at the domain root, and the user has no `ARMSTRONG-AISOSA.github.io` repo.
+- Added the user's `google-site-verification` tag, a styled `website/404.html` (noindex, absolute paths), and set the sitemap `lastmod` to 2026-11-08. Set the GitHub repo's About box (description, website, topics) with `gh`. Fixed this file's stale snapshot (name, branch, distribution).
+- **Next action (user):** click Verify in Search Console → submit `sitemap.xml` → URL inspection → Request indexing → Bing Webmaster Tools → Import from Google Search Console → link the site from the portfolio and GitHub profile README.
 
 ### Session 2, 2026-11-04 (docs in place, blank app committed)
 - Moved the docs to the project root and the HTML draft to `design-reference/`. Project folder is `pokedex-mobile` (user confirmed).

@@ -156,6 +156,7 @@ website/
 ├── styles.css                  All styles, in numbered sections (tokens → base → … → reduced motion)
 ├── main.js                     Theme toggle, share buttons and scroll reveal
 ├── sitemap.xml                 For search engines (§2.6)
+├── 404.html                    “Page not found”, styled like the site (§2.6)
 ├── assets/
 │   ├── favicon.svg, favicon-32.png, apple-touch-icon.png
 │   ├── og-image.png            Share preview (generated)
@@ -223,7 +224,10 @@ Release 1.0.0 had a single universal file, `dexplorer-1.0.0.apk`; it stays on th
 - `<link rel="canonical">`, so all copies of the URL count as one page.
 - `robots` set to `index, follow, max-image-preview:large`.
 - **Structured data** (JSON-LD, schema.org `MobileApplication`): name, description, Android requirement, free offer, download URL, screenshots, license, code repository, and the author (Armstrong Aisosa / Bossstrong-Dev, with links to the portfolio and GitHub). There is deliberately **no rating**, because there are no real ratings to report. Without ratings, Google may not show a rich "app" result, but it still understands the page.
-- `sitemap.xml` lists the page. Submit it in Google Search Console (owner verification needed) to get indexed faster.
+- `sitemap.xml` lists the page; update its `<lastmod>` when the page changes.
+- **Google Search Console:** URL-prefix property `https://armstrong-aisosa.github.io/pokedex-mobile/` (a Domain property needs DNS access, which `github.io` doesn't give). Verified with the `google-site-verification` meta tag in `index.html`. **Keep that tag**, or Google drops the verification. Sitemap submitted there.
+- **Bing Webmaster Tools:** imported from Google Search Console, which carries over the verification and sitemap. Bing also feeds DuckDuckGo and Yahoo.
+- **`404.html`:** GitHub Pages shows it for any missing address under `/pokedex-mobile/`. It uses absolute paths (`/pokedex-mobile/…`) because it can be served from any depth, and it's marked `noindex`.
 - **No `robots.txt`.** Search engines only read it at the domain root (`armstrong-aisosa.github.io/robots.txt`), not inside `/pokedex-mobile/`, and nothing on this site needs blocking.
 - Icons: `favicon.svg`, `favicon-32.png` (browsers without SVG favicons), and `apple-touch-icon.png` (180×180, for home screens and bookmarks).
 
